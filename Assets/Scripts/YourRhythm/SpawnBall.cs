@@ -5,7 +5,7 @@ public class SpawnBall : MonoBehaviour
 {
     public GameObject markerPrefab;  // Префаб для создания новой точки
     public Transform accuracyBar; // Зона для отображения точности
-    //public AudioSource sound;        // Звук, который будет проигрываться
+    public AudioSource sound;        // Звук, который будет проигрываться
 
     private float interval = 1f;   // Интервал между звуками (в секундах)
     private float lastSoundTime = 0f;     // Время последнего звука
@@ -34,7 +34,7 @@ public class SpawnBall : MonoBehaviour
     void PlaySound()
     {
         //Debug.Log("huy");
-        //sound.Play();                // Проигрываем звук
+        sound.Play();                // Проигрываем звук
         canClick = true;             // Активируем возможность нажатия
         //lastSoundTime = Time.time;
     }
@@ -43,13 +43,9 @@ public class SpawnBall : MonoBehaviour
     {
         startTime = Time.time;
         isCounting = true;
-        float deltaTime = (lastSoundTime - interval) / interval * 10f;
+        float screenWidth = accuracyBar.transform.lossyScale.x / 2;
+        float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
         Debug.Log(lastSoundTime);
-        //if (deltaTime < interval)
-        //{
-        //    Debug.Log(deltaTime);
-        //    deltaTime = -deltaTime;
-        //}
         GameObject newMarker = Instantiate(markerPrefab, accuracyBar.transform);
         newMarker.transform.position += new Vector3(deltaTime, 0);
         newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
