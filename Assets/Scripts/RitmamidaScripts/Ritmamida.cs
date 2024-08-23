@@ -70,6 +70,7 @@ public class Ritmamida : MonoBehaviour
         float yOffset = GetTotalLineHeight() + lineSpacing;
         newLine.transform.position += new Vector3(0, yOffset / 2.5f);
         target.transform.position = newLine.transform.position;
+        target.transform.position += new Vector3(0, 0,-10);
         // Устанавливаем цвет линии
         Renderer lineRenderer = newLine.GetComponent<Renderer>();
         if (lineRenderer != null)
