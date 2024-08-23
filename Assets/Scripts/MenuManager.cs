@@ -4,42 +4,46 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject menuPanel; // Панель с меню
-    public Button openMenuButton; // Кнопка для открытия меню
-    public Slider speedSlider; // Ползунок для скорости мяча
-    public Slider volumeSlider; // Ползунок для громкости
-    public Button mainMenuButton; // Кнопка для выхода в главное меню
+    // Ссылки на UI-элементы
+    public GameObject menuPanel;         // Панель меню
+    public Button openMenuButton;        // Кнопка открытия меню
+    public Slider speedSlider;           // Ползунок для скорости мяча
+    public Slider volumeSlider;          // Ползунок для громкости
+    public Button mainMenuButton;        // Кнопка выхода в главное меню
+    public Button closeButton;           // Кнопка закрытия меню
 
     private void Start()
     {
         // Отключаем панель меню при старте
         menuPanel.SetActive(false);
 
-        // Подписываем кнопку открытия меню на метод открытия
+        // Подписываем кнопки на методы
         openMenuButton.onClick.AddListener(OpenMenu);
+        closeButton.onClick.AddListener(CloseMenu);
+        mainMenuButton.onClick.AddListener(ReturnToMainMenu);
 
         // Устанавливаем начальные значения ползунков
         speedSlider.value = PlayerPrefs.GetFloat("BallSpeed", 5f);
         volumeSlider.value = PlayerPrefs.GetFloat("Volume", 1f);
 
-        // Подписываем методы на события ползунков и кнопок
+        // Подписываем ползунки на обработчики изменений
         speedSlider.onValueChanged.AddListener(SetBallSpeed);
         volumeSlider.onValueChanged.AddListener(SetVolume);
-        mainMenuButton.onClick.AddListener(ReturnToMainMenu);
     }
 
+    // Метод открытия меню
     public void OpenMenu()
     {
-        // Включаем панель меню
-        menuPanel.SetActive(true);
+        menuPanel.SetActive(true); // Включаем панель меню
     }
 
+    // Метод закрытия меню
     public void CloseMenu()
     {
-        // Отключаем панель меню
-        menuPanel.SetActive(false);
+        menuPanel.SetActive(false); // Отключаем панель меню
     }
 
+    // Метод установки скорости мяча
     public void SetBallSpeed(float speed)
     {
         PlayerPrefs.SetFloat("BallSpeed", speed);
@@ -47,6 +51,7 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Скорость мяча установлена на: " + speed);
     }
 
+    // Метод установки громкости
     public void SetVolume(float volume)
     {
         AudioListener.volume = volume;
@@ -55,6 +60,7 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Громкость установлена на: " + volume);
     }
 
+    // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
