@@ -15,6 +15,9 @@ public class Ritmamida : MonoBehaviour
     private bool firstPress = true;
     public GameObject target;
 
+    private float previousLineWidth = -1f; // Хранит длину предыдущей линии
+    private int matchCounter = 0; // Счетчик совпадений длины линий
+
     private void Start()
     {
         // Назначаем целевой объект для CameraFollow
@@ -63,13 +66,32 @@ public class Ritmamida : MonoBehaviour
         Transform lineTransform = newLine.transform;
 
         // Изменение длины линии в зависимости от длительности паузы
-        float lineWidth = duration * lineWidthMultiplier;
+        float lineWidth = (duration/8f) * lineWidthMultiplier;
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
 
         // Позиционирование линии выше предыдущей
         float yOffset = GetTotalLineHeight() + lineSpacing;
         newLine.transform.position += new Vector3(0, yOffset / 2.5f);
+
+        
+        if (previousLineWidth > 0) // Проверяем только если уже есть предыдущая линия
+        {
+            float lowerBound = previousLineWidth * 0.9f; 
+            float upperBound = previousLineWidth * 1.1f; 
+
+            if (lineWidth >= lowerBound && lineWidth <= upperBound)
+            {
+                matchCounter++; // Увеличиваем счетчик при совпадении длины
+            }
+        }
+
+        // Обновляем предыдущую длину линии
+        previousLineWidth = lineWidth;
+
+        // Обновляем позицию целевого объекта для камеры
         target.transform.position = newLine.transform.position;
+        target.transform.position += new Vector3(0, 0, -10);
+
         // Устанавливаем цвет линии
         Renderer lineRenderer = newLine.GetComponent<Renderer>();
         if (lineRenderer != null)
@@ -96,5 +118,13 @@ public class Ritmamida : MonoBehaviour
             Destroy(child.gameObject);
         }
         firstPress = true; // Сбрасываем флаг первого нажатия
+        previousLineWidth = -1f; // Сбрасываем длину предыдущей линии
+        matchCounter = 0; // Сбрасываем счетчик совпадений
+    }
+
+    private void OnGUI()
+    {
+        // Отображаем счетчик совпадений в левом верхнем углу
+        GUI.Label(new Rect(10, 10, 200, 20), "Очки: " + matchCounter);
     }
 }
