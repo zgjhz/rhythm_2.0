@@ -42,19 +42,16 @@ public class Ritmamida : MonoBehaviour
     }
     void PlayHitSound()
     {
-        if (!audioSource.isPlaying) // Проверка, чтобы звук не наложился друг на друга
-        {
-            audioSource.clip = hitSound;
-            audioSource.Play();
-        }
+        audioSource.Stop();
+        audioSource.clip = hitSound;
+        audioSource.Play();
+
     }
     void PlaySuccesHitSound()
     {
-        if (!audioSource.isPlaying) // Проверка, чтобы звук не наложился друг на друга
-        {
-            audioSource.clip = SuccesHitSound;
-            audioSource.Play();
-        }
+        audioSource.Stop();
+        audioSource.clip = SuccesHitSound;
+        audioSource.Play();
     }
     void OnButtonPress(Color lineColor)
     {
@@ -105,10 +102,10 @@ public class Ritmamida : MonoBehaviour
             }
             else { PlayHitSound(); }
         }
-        else
-        {
-            PlayHitSound();
-        };
+        //else
+        //{
+        //    PlayHitSound();
+        //};
 
         // Обновляем предыдущую длину линии
         previousLineWidth = lineWidth;

@@ -6,7 +6,7 @@ public class MenuManager : MonoBehaviour
 {
     // Ссылки на UI-элементы
     public GameObject menuPanel;         // Панель меню
-    public Button openMenuButton;        // Кнопка открытия меню
+    public Button openMenuButton;        // Кнопка открытия/закрытия меню
     public Slider speedSlider;           // Ползунок для скорости мяча
     public Slider volumeSlider;          // Ползунок для громкости
     public Button mainMenuButton;        // Кнопка выхода в главное меню
@@ -18,7 +18,7 @@ public class MenuManager : MonoBehaviour
         menuPanel.SetActive(false);
 
         // Подписываем кнопки на методы
-        openMenuButton.onClick.AddListener(OpenMenu);
+        openMenuButton.onClick.AddListener(ToggleMenu);  // Изменено на ToggleMenu
         closeButton.onClick.AddListener(CloseMenu);
         mainMenuButton.onClick.AddListener(ReturnToMainMenu);
 
@@ -31,10 +31,13 @@ public class MenuManager : MonoBehaviour
         volumeSlider.onValueChanged.AddListener(SetVolume);
     }
 
-    // Метод открытия меню
-    public void OpenMenu()
+    // Метод открытия/закрытия меню
+    public void ToggleMenu()
     {
-        menuPanel.SetActive(true); // Включаем панель меню
+        if (!Input.GetKeyDown(KeyCode.Space)) // Проверка нажатия пробела
+        {
+           menuPanel.SetActive(!menuPanel.activeSelf); // Переключаем состояние панели меню
+        }
     }
 
     // Метод закрытия меню
