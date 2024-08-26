@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Ritmamida : MonoBehaviour
 {
+    public AudioClip hitSound; // Звук удара
+    public AudioClip SuccesHitSound;
+    private AudioSource audioSource; // Аудиоисточник
     public CameraFollow cameraFollow;
     public GameObject linePrefab; // Префаб для линии
     public Transform lineContainer; // Контейнер для линий
@@ -20,6 +23,9 @@ public class Ritmamida : MonoBehaviour
 
     private void Start()
     {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false; // Звук не воспроизводится при старте
+        audioSource.volume = 1.0f; // Убедитесь, что громкость установлена правильно
         // Назначаем целевой объект для CameraFollow
         if (cameraFollow != null)
         {
@@ -34,7 +40,22 @@ public class Ritmamida : MonoBehaviour
             OnButtonPress(lineColor);
         }
     }
-
+    void PlayHitSound()
+    {
+        if (!audioSource.isPlaying) // Проверка, чтобы звук не наложился друг на друга
+        {
+            audioSource.clip = hitSound;
+            audioSource.Play();
+        }
+    }
+    void PlaySuccesHitSound()
+    {
+        if (!audioSource.isPlaying) // Проверка, чтобы звук не наложился друг на друга
+        {
+            audioSource.clip = SuccesHitSound;
+            audioSource.Play();
+        }
+    }
     void OnButtonPress(Color lineColor)
     {
         if (firstPress) // Если это первое нажатие, сохраняем время
@@ -44,7 +65,6 @@ public class Ritmamida : MonoBehaviour
             firstPress = false;
             return;
         }
-
         float currentTime = Time.time; // Текущее время
         float duration = currentTime - lastPressTime; // Разница между текущим временем и временем последнего нажатия
         lastPressTime = currentTime;
@@ -66,24 +86,29 @@ public class Ritmamida : MonoBehaviour
         Transform lineTransform = newLine.transform;
 
         // Изменение длины линии в зависимости от длительности паузы
-        float lineWidth = (duration/8f) * lineWidthMultiplier;
+        float lineWidth = (duration / 8f) * lineWidthMultiplier;
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
 
         // Позиционирование линии выше предыдущей
         float yOffset = GetTotalLineHeight() + lineSpacing;
         newLine.transform.position += new Vector3(0, yOffset / 2.5f);
 
-        
         if (previousLineWidth > 0) // Проверяем только если уже есть предыдущая линия
         {
-            float lowerBound = previousLineWidth * 0.9f; 
-            float upperBound = previousLineWidth * 1.1f; 
+            float lowerBound = previousLineWidth * 0.97f;
+            float upperBound = previousLineWidth * 1.03f;
 
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {
                 matchCounter++; // Увеличиваем счетчик при совпадении длины
+                PlaySuccesHitSound(); // Воспроизводим звук успешного попадания
             }
+            else { PlayHitSound(); }
         }
+        else
+        {
+            PlayHitSound();
+        };
 
         // Обновляем предыдущую длину линии
         previousLineWidth = lineWidth;
@@ -99,6 +124,7 @@ public class Ritmamida : MonoBehaviour
             lineRenderer.material.color = lineColor;
         }
     }
+
 
     float GetTotalLineHeight()
     {
