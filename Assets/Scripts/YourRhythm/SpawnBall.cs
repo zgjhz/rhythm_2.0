@@ -4,8 +4,10 @@ using UnityEngine.UI;
 public class SpawnBall : MonoBehaviour
 {
     public GameObject markerPrefab;  // Префаб для создания новой точки
-    public Transform accuracyBar; // Зона для отображения точности
-    public AudioSource sound;        // Звук, который будет проигрываться
+    public RectTransform accuracyBar; // Зона для отображения точности
+    public AudioSource audioSource;        // Звук, который будет проигрываться
+    public AudioClip hitClip;
+    public AudioClip missClip;
 
     private float interval = 1f;   // Интервал между звуками (в секундах)
     private float lastSoundTime = 0f;     // Время последнего звука
@@ -31,12 +33,17 @@ public class SpawnBall : MonoBehaviour
         }
     }
 
-    void PlaySound()
+    void PlaySound(float markerPosition)
     {
-        //Debug.Log("huy");
-        sound.Play();                // Проигрываем звук
-        canClick = true;             // Активируем возможность нажатия
-        //lastSoundTime = Time.time;
+        float accuracyBarLen = accuracyBar.localScale.x;
+        if (markerPosition < accuracyBarLen / 2 && markerPosition > -accuracyBarLen / 2)
+        {
+            audioSource.clip = hitClip;
+        }
+        else {
+            audioSource.clip = missClip;
+        }
+        audioSource.Play();
     }
 
     void OnSpacePressed()
