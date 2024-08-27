@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SpawnBall : MonoBehaviour
 {
@@ -8,12 +9,16 @@ public class SpawnBall : MonoBehaviour
     public AudioSource audioSource;        // Звук, который будет проигрываться
     public AudioClip hitClip;
     public AudioClip missClip;
+    public TMP_Text scoreText;
+    public Transform spawnPoint;
+    public float interval = 2f;   // Интервал между звуками (в секундах)
 
-    private float interval = 1f;   // Интервал между звуками (в секундах)
     private float lastSoundTime = 0f;     // Время последнего звука
     private bool canClick = true;   // Можно ли нажимать кнопку
     private bool isCounting;
     private float startTime;
+    private int hitStreakNum = 0;
+    private int score = 0;
 
     void Start()
     {
@@ -41,20 +46,26 @@ public class SpawnBall : MonoBehaviour
             audioSource.clip = hitClip;
         }
         else {
+            hitStreakNum = 0;
             audioSource.clip = missClip;
         }
         audioSource.Play();
+        score += hitStreakNum;
+        scoreText.text = "Счёт: " + score;
     }
 
     void OnSpacePressed()
     {
         startTime = Time.time;
         isCounting = true;
-        float screenWidth = accuracyBar.transform.lossyScale.x / 2;
+        float screenWidth = spawnPoint.transform.lossyScale.x / 2;
         float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
-        Debug.Log(lastSoundTime);
-        GameObject newMarker = Instantiate(markerPrefab, accuracyBar.transform);
-        newMarker.transform.position += new Vector3(deltaTime, 0);
+        GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
+        float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
+        float rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
+        newMarker.transform.position += new Vector3(deltaTime, rndY);
         newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
+        hitStreakNum++;
+        PlaySound(newMarker.transform.position.x);
     }
 }
