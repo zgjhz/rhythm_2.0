@@ -41,6 +41,7 @@ public class SpawnBall : MonoBehaviour
     void PlaySound(float markerPosition)
     {
         float accuracyBarLen = accuracyBar.localScale.x;
+        Debug.Log(accuracyBarLen);
         if (markerPosition < accuracyBarLen / 2 && markerPosition > -accuracyBarLen / 2)
         {
             audioSource.clip = hitClip;
