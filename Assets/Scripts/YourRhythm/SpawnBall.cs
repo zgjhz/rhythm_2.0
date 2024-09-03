@@ -12,6 +12,8 @@ public class SpawnBall : MonoBehaviour
     public TMP_Text scoreText;
     public Transform spawnPoint;
     public float interval = 2f;   // Интервал между звуками (в секундах)
+    public Sprite hitSprite;
+    public Sprite missSprite;
 
     private float lastSoundTime = 0f;     // Время последнего звука
     private bool canClick = true;   // Можно ли нажимать кнопку
@@ -38,21 +40,25 @@ public class SpawnBall : MonoBehaviour
         }
     }
 
-    void PlaySound(float markerPosition)
+    bool PlaySound(float markerPosition)
     {
         float accuracyBarLen = accuracyBar.localScale.x;
         Debug.Log(accuracyBarLen);
+        bool flag = false;
         if (markerPosition < accuracyBarLen / 2 && markerPosition > -accuracyBarLen / 2)
         {
             audioSource.clip = hitClip;
+            flag =  true;
         }
         else {
             hitStreakNum = 0;
             audioSource.clip = missClip;
+            flag = false;
         }
         audioSource.Play();
         score += hitStreakNum;
         scoreText.text = "Счёт: " + score;
+        return flag;
     }
 
     void OnSpacePressed()
@@ -62,11 +68,18 @@ public class SpawnBall : MonoBehaviour
         float screenWidth = spawnPoint.transform.lossyScale.x / 2;
         float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
         GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
+        SpriteRenderer sr = newMarker.GetComponent<SpriteRenderer>();
         float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
         float rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
         newMarker.transform.position += new Vector3(deltaTime, rndY);
         newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
         hitStreakNum++;
-        PlaySound(newMarker.transform.position.x);
+        if (PlaySound(newMarker.transform.position.x))
+        {
+            sr.sprite = hitSprite;
+        }
+        else {
+            sr.sprite = missSprite;
+        }
     }
 }
