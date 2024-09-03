@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems; // Добавлено для работы с EventSystem
 
 public class MenuManager : MonoBehaviour
 {
@@ -34,9 +35,19 @@ public class MenuManager : MonoBehaviour
     // Метод открытия/закрытия меню
     public void ToggleMenu()
     {
-        if (!Input.GetKeyDown(KeyCode.Space)) // Проверка нажатия пробела
+        bool isMenuActive = menuPanel.activeSelf; // Текущее состояние панели меню
+        menuPanel.SetActive(!isMenuActive); // Переключаем состояние панели меню
+
+        if (menuPanel.activeSelf)
         {
-           menuPanel.SetActive(!menuPanel.activeSelf); // Переключаем состояние панели меню
+            // Если меню открыто, сбрасываем выделение с кнопки и останавливаем игру
+            EventSystem.current.SetSelectedGameObject(null);
+            Time.timeScale = 0f; // Останавливаем игру
+        }
+        else
+        {
+            // Если меню закрыто, продолжаем игру
+            Time.timeScale = 1f; // Продолжаем игру
         }
     }
 
@@ -44,6 +55,8 @@ public class MenuManager : MonoBehaviour
     public void CloseMenu()
     {
         menuPanel.SetActive(false); // Отключаем панель меню
+        EventSystem.current.SetSelectedGameObject(null); // Сбрасываем выделение с кнопки
+        Time.timeScale = 1f; // Продолжаем игру
     }
 
     // Метод установки скорости мяча
@@ -66,6 +79,7 @@ public class MenuManager : MonoBehaviour
     // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
+        Time.timeScale = 1f; // Восстанавливаем скорость игры перед выходом
         SceneManager.LoadScene("MainMenu");
     }
 }

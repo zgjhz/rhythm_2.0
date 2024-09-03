@@ -18,6 +18,7 @@ public class Ritmamida : MonoBehaviour
     private bool firstPress = true;
     public GameObject target;
 
+    private int consecutiveHits = 0; // Счетчик для прогрессивного набора очков
     private float previousLineWidth = -1f; // Хранит длину предыдущей линии
     private int matchCounter = 0; // Счетчик совпадений длины линий
 
@@ -97,15 +98,21 @@ public class Ritmamida : MonoBehaviour
 
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {
-                matchCounter++; // Увеличиваем счетчик при совпадении длины
+                consecutiveHits++; // Увеличиваем счетчик успешных попаданий подряд
+                matchCounter += consecutiveHits;
+
                 PlaySuccesHitSound(); // Воспроизводим звук успешного попадания
             }
-            else { PlayHitSound(); }
+            else
+            {
+                PlayHitSound();
+                consecutiveHits = 0;
+            }
         }
-        //else
-        //{
-        //    PlayHitSound();
-        //};
+        else
+        {
+            PlayHitSound();
+        };
 
         // Обновляем предыдущую длину линии
         previousLineWidth = lineWidth;
