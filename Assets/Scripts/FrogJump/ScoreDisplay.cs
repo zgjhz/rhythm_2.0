@@ -1,13 +1,14 @@
 using UnityEngine;
-using TMPro; // Добавьте это пространство имен
+using TMPro;
 
 public class ScoreDisplay : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText; // Используем TextMeshProUGUI вместо Text
+    public TextMeshProUGUI scoreText; // Ссылка на текстовое поле для вывода очков
     private RhythmController rhythmController;
 
     void Start()
     {
+        // Находим RhythmController на сцене
         rhythmController = FindObjectOfType<RhythmController>();
 
         if (rhythmController == null)
@@ -23,6 +24,7 @@ public class ScoreDisplay : MonoBehaviour
 
     void Update()
     {
+        // Обновляем текстовое поле, если оба компонента заданы
         if (rhythmController != null && scoreText != null)
         {
             scoreText.text = "Очки: " + rhythmController.GetScore().ToString();

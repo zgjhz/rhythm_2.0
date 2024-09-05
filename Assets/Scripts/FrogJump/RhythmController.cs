@@ -17,6 +17,9 @@ public class RhythmController : MonoBehaviour
 
     void Update()
     {
+        // Проверка на паузу
+        if (Time.timeScale == 0) return;  // Если игра на паузе, не выполняем действия
+
         if (Time.time >= nextBeatTime)
         {
             nextBeatTime += rhythmInterval; // Обновить время следующего удара
@@ -62,4 +65,3 @@ public class RhythmController : MonoBehaviour
         return score;
     }
 }
-

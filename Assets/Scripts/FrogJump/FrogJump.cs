@@ -5,7 +5,7 @@ public class FrogJump : MonoBehaviour
     public Transform startPosition;   // Позиция левого берега (стартовая)
     public Transform targetPosition;  // Позиция правого берега (целевая)
     public float jumpDuration = 1f;   // Время прыжка в секундах
-
+    
     private bool isJumping = false;   // Флаг, указывающий на выполнение прыжка
     private bool onStartPosition = true; // Флаг, указывающий на текущее положение (стартовое или целевое)
     private Vector3 jumpStart;        // Начальная позиция прыжка
@@ -17,6 +17,7 @@ public class FrogJump : MonoBehaviour
     {
         // Устанавливаем начальную позицию лягушки
         transform.position = startPosition.position;
+        
     }
 
     void Update()
