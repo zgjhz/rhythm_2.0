@@ -21,15 +21,22 @@ public class SpawnBall : MonoBehaviour
     private float startTime;
     private int hitStreakNum = 0;
     private int score = 0;
+    public MenuManager menuManager;
+
+    public void UpdateInterval(float newInterval) {
+        interval = newInterval;
+    }
 
     void Start()
     {
         //InvokeRepeating("CountSeconds", 1.0f, interval); // Начало ритма
         isCounting = false;
+        interval = menuManager.interval;
     }
 
     void Update()
     {
+        interval = menuManager.interval;
         if (isCounting)
         {
             lastSoundTime = Time.time - startTime;
@@ -70,10 +77,21 @@ public class SpawnBall : MonoBehaviour
         GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
         SpriteRenderer sr = newMarker.GetComponent<SpriteRenderer>();
         float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
-        float rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
+        float rndY = 0;
+        if (Mathf.Abs(deltaTime) >= 5 && Mathf.Abs(deltaTime) < 6) {
+            rndY = Random.Range(1, -1);
+        }
+        else if (Mathf.Abs(deltaTime) >= 4 && Mathf.Abs(deltaTime) < 5)
+        {
+            rndY = Random.Range(3.5f, -3.5f);
+        }
+        else if (Mathf.Abs(deltaTime) < 4)
+        {
+            rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
+        }
         newMarker.transform.position += new Vector3(deltaTime, rndY);
         newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
-        hitStreakNum++;
+        hitStreakNum = 1;
         if (PlaySound(newMarker.transform.position.x))
         {
             sr.sprite = hitSprite;
