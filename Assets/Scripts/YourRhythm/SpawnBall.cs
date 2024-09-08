@@ -1,26 +1,42 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SpawnBall : MonoBehaviour
 {
     public GameObject markerPrefab;  // Префаб для создания новой точки
-    public Transform accuracyBar; // Зона для отображения точности
-    public AudioSource sound;        // Звук, который будет проигрываться
+    public RectTransform accuracyBar; // Зона для отображения точности
+    public AudioSource audioSource;        // Звук, который будет проигрываться
+    public AudioClip hitClip;
+    public AudioClip missClip;
+    public TMP_Text scoreText;
+    public Transform spawnPoint;
+    public float interval = 2f;   // Интервал между звуками (в секундах)
+    public Sprite hitSprite;
+    public Sprite missSprite;
 
-    private float interval = 1f;   // Интервал между звуками (в секундах)
     private float lastSoundTime = 0f;     // Время последнего звука
     private bool canClick = true;   // Можно ли нажимать кнопку
     private bool isCounting;
     private float startTime;
+    private int hitStreakNum = 0;
+    private int score = 0;
+    public MenuManager menuManager;
+
+    public void UpdateInterval(float newInterval) {
+        interval = newInterval;
+    }
 
     void Start()
     {
         //InvokeRepeating("CountSeconds", 1.0f, interval); // Начало ритма
         isCounting = false;
+        interval = menuManager.interval;
     }
 
     void Update()
     {
+        interval = menuManager.interval;
         if (isCounting)
         {
             lastSoundTime = Time.time - startTime;
@@ -31,23 +47,57 @@ public class SpawnBall : MonoBehaviour
         }
     }
 
-    void PlaySound()
+    bool PlaySound(float markerPosition)
     {
-        //Debug.Log("huy");
-        sound.Play();                // Проигрываем звук
-        canClick = true;             // Активируем возможность нажатия
-        //lastSoundTime = Time.time;
+        float accuracyBarLen = accuracyBar.localScale.x;
+        Debug.Log(accuracyBarLen);
+        bool flag = false;
+        if (markerPosition < accuracyBarLen / 2 && markerPosition > -accuracyBarLen / 2)
+        {
+            audioSource.clip = hitClip;
+            flag =  true;
+        }
+        else {
+            hitStreakNum = 0;
+            audioSource.clip = missClip;
+            flag = false;
+        }
+        audioSource.Play();
+        score += hitStreakNum;
+        scoreText.text = "Счёт: " + score;
+        return flag;
     }
 
     void OnSpacePressed()
     {
         startTime = Time.time;
         isCounting = true;
-        float screenWidth = accuracyBar.transform.lossyScale.x / 2;
+        float screenWidth = spawnPoint.transform.lossyScale.x / 2;
         float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
-        Debug.Log(lastSoundTime);
-        GameObject newMarker = Instantiate(markerPrefab, accuracyBar.transform);
-        newMarker.transform.position += new Vector3(deltaTime, 0);
+        GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
+        SpriteRenderer sr = newMarker.GetComponent<SpriteRenderer>();
+        float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
+        float rndY = 0;
+        if (Mathf.Abs(deltaTime) >= 5 && Mathf.Abs(deltaTime) < 6) {
+            rndY = Random.Range(1, -1);
+        }
+        else if (Mathf.Abs(deltaTime) >= 4 && Mathf.Abs(deltaTime) < 5)
+        {
+            rndY = Random.Range(3.5f, -3.5f);
+        }
+        else if (Mathf.Abs(deltaTime) < 4)
+        {
+            rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
+        }
+        newMarker.transform.position += new Vector3(deltaTime, rndY);
         newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
+        hitStreakNum = 1;
+        if (PlaySound(newMarker.transform.position.x))
+        {
+            sr.sprite = hitSprite;
+        }
+        else {
+            sr.sprite = missSprite;
+        }
     }
 }

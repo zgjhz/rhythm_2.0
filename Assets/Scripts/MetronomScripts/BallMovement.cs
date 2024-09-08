@@ -9,13 +9,15 @@ public class BallMovement : MonoBehaviour
     private AudioSource audioSource; // Аудиоисточник
     private Vector2 direction = Vector2.right;
     private bool canMove = true;
-    public float wallBoundary = 8f; // Позиция стен
+    public float wallBoundary = 7.4f; // Позиция стен
+    public WallHighlightController wallHighlightControllerLeft;
+    public WallHighlightController wallHighlightControllerRight;
 
     void Start()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.playOnAwake = false; // Звук не воспроизводится при старте
-        audioSource.volume = 1.0f; // Убедитесь, что громкость установлена правильно
+        audioSource.playOnAwake = false;
+        audioSource.volume = 1.0f;
     }
 
     void Update()
@@ -24,44 +26,54 @@ public class BallMovement : MonoBehaviour
         {
             transform.Translate(direction * speed * Time.deltaTime);
 
-            // Проверка на достижение границ
-            if (transform.position.x <= -wallBoundary || transform.position.x >= wallBoundary)
+            if (transform.position.x >= wallBoundary)
             {
-                StartCoroutine(HandleWallHit()); // Обрабатываем удар
+                StartCoroutine(HandleWallHit(wallHighlightControllerRight));
+            }
+
+            else if (transform.position.x <= -wallBoundary)
+            {
+                StartCoroutine(HandleWallHit(wallHighlightControllerLeft));
             }
         }
 
-        // Проверка нажатия пробела
         if (Input.GetKeyDown(KeyCode.Space))
         {
             CheckHit();
         }
     }
 
-    private IEnumerator HandleWallHit()
+   private IEnumerator HandleWallHit(WallHighlightController wallHighlightController)
+{
+    canMove = false;
+    PlayHitSound();
+
+    // Запуск подсветки
+    if (wallHighlightController != null)
     {
-        canMove = false; // Остановить движение
-        PlayHitSound(); // Воспроизвести звук удара
-
-        // Корректируем позицию мяча, чтобы он не застрял в стене
-        if (transform.position.x <= -wallBoundary)
-        {
-            transform.position = new Vector2(-wallBoundary + 0.1f, transform.position.y); // Смещаем немного от стены
-        }
-        else if (transform.position.x >= wallBoundary)
-        {
-            transform.position = new Vector2(wallBoundary - 0.1f, transform.position.y); // Смещаем немного от стены
-        }
-
-        yield return new WaitForSeconds(delayAfterHit); // Задержка
-
-        direction = -direction; // Изменить направление
-        canMove = true; // Возобновить движение
+        wallHighlightController.TriggerHighlight();
     }
+
+    // Логика изменения направления мяча
+    if (transform.position.x <= -wallBoundary)
+    {
+        transform.position = new Vector2(-wallBoundary + 0.1f, transform.position.y);
+    }
+    else if (transform.position.x >= wallBoundary)
+    {
+        transform.position = new Vector2(wallBoundary - 0.1f, transform.position.y);
+    }
+
+    yield return new WaitForSeconds(delayAfterHit);
+
+    direction = -direction;
+    canMove = true;
+}
+
 
     void PlayHitSound()
     {
-        if (!audioSource.isPlaying) // Проверка, чтобы звук не наложился друг на друга
+        if (!audioSource.isPlaying)
         {
             audioSource.clip = hitSound;
             audioSource.Play();
