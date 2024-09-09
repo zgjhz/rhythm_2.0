@@ -595,7 +595,6 @@ MonoBehaviour:
   target: {fileID: 1905912139}
   smoothSpeed: 0.125
   offset: {x: 0, y: 0, z: 0}
-  pauseKey: 112
 --- !u!1 &699484493
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,6 +1514,8 @@ MonoBehaviour:
   lineWidthMultiplier: 100
   lineSpacing: 1
   target: {fileID: 1905912139}
+  MenuButton: {fileID: 889311500}
+  BackButton: {fileID: 699484495}
 --- !u!4 &1251916780
 Transform:
   m_ObjectHideFlags: 0

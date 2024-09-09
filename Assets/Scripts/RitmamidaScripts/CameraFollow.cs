@@ -6,11 +6,11 @@ public class CameraFollow : MonoBehaviour
     public float smoothSpeed = 0.125f; // Скорость плавного следования камеры
     public Vector3 offset; // Смещение камеры относительно цели
     private bool isPaused = false; // Флаг для проверки состояния паузы
-    public KeyCode pauseKey = KeyCode.P; // Клавиша для паузы
 
     private void Start()
     {
         // Подписка на событие паузы, если оно существует
+        // В этом случае, мы можем подписаться на статическое событие или установить флаг из другого скрипта
         Ritmamida.OnPauseStateChanged += HandlePauseStateChanged;
     }
 
@@ -20,18 +20,9 @@ public class CameraFollow : MonoBehaviour
         Ritmamida.OnPauseStateChanged -= HandlePauseStateChanged;
     }
 
-    private void Update()
-    {
-        // Обрабатываем нажатие клавиши паузы
-        if (Input.GetKeyDown(pauseKey))
-        {
-            TogglePause();
-        }
-    }
-
     private void LateUpdate()
     {
-        // Если игра на паузе или цель не задана, не обновляем позицию камеры
+        // Если игра на паузе, не обновляем позицию камеры
         if (isPaused || target == null)
             return;
 
@@ -48,22 +39,4 @@ public class CameraFollow : MonoBehaviour
     {
         isPaused = paused;
     }
-
-    // Метод для переключения состояния паузы
-    private void TogglePause()
-    {
-        // Если игра уже на паузе, снимаем паузу
-        if (isPaused)
-        {
-            Time.timeScale = 1f; // Возвращаем время к нормальной скорости
-            isPaused = false;
-        }
-        // Иначе ставим на паузу
-        else
-        {
-            Time.timeScale = 0f; // Останавливаем время
-            isPaused = true;
-        }
-    }
 }
-

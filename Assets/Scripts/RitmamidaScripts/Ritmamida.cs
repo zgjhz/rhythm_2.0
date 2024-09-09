@@ -21,8 +21,12 @@ public class Ritmamida : MonoBehaviour
     private float previousLineWidth = -1f;
     private int matchCounter = 0;
 
-    private bool isPaused = false; // Флаг для проверки состояния паузы
+    private bool isPaused = false;
     public static event System.Action<bool> OnPauseStateChanged;
+
+    // Ссылки на кнопки
+    public Button MenuButton;
+    public Button BackButton;  // Добавляем кнопку "Назад"
 
     private void Start()
     {
@@ -34,49 +38,80 @@ public class Ritmamida : MonoBehaviour
         {
             cameraFollow.target = target;
         }
+
+        // Назначаем функцию TogglePause для кнопки меню
+        if (MenuButton != null)
+        {
+            MenuButton.onClick.AddListener(TogglePause);
+        }
+        else
+        {
+            Debug.LogError("MenuButton is not assigned in the Inspector");
+        }
+
+        // Назначаем функцию ResumeGame для кнопки "Назад"
+        if (BackButton != null)
+        {
+            BackButton.onClick.AddListener(ResumeGame);
+        }
+        else
+        {
+            Debug.LogError("BackButton is not assigned in the Inspector");
+        }
     }
 
     private void Update()
     {
-        // Если игра на паузе, игнорируем нажатие клавиш
         if (isPaused)
         {
             return;
-        } 
-        // Проверка нажатия пробела
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             OnButtonPress(lineColor);
         }
-
-        // Проверка нажатия клавиши Escape для паузы
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            TogglePause();
-        }
     }
 
+    // Метод для переключения паузы
     public void TogglePause()
     {
-        Debug.Log("ХУЙХУЙХУЙХУЙХУЙХУЙХУЙХУЙХУЙХУЙХУЙХ");
+        Debug.Log("TogglePause called");
         isPaused = !isPaused;
 
         if (isPaused)
         {
             Time.timeScale = 0f; // Останавливаем время
             audioSource.Pause(); // Останавливаем звук
-            consecutiveHits = 0; // Сброс последовательных попаданий
+            Debug.Log("Game Paused");
         }
         else
         {
             Time.timeScale = 1f; // Возобновляем время
             audioSource.UnPause(); // Возобновляем звук
+            Debug.Log("Game Unpaused");
         }
 
-        // Оповещаем другие скрипты об изменении состояния паузы
         if (OnPauseStateChanged != null)
         {
             OnPauseStateChanged(isPaused);
+        }
+    }
+
+    // Метод для возобновления игры
+    public void ResumeGame()
+    {
+        if (isPaused)
+        {
+            Debug.Log("Resume Game");
+            isPaused = false;
+            Time.timeScale = 1f; // Возобновляем время
+            audioSource.UnPause(); // Возобновляем звук
+
+            if (OnPauseStateChanged != null)
+            {
+                OnPauseStateChanged(isPaused);
+            }
         }
     }
 
@@ -96,7 +131,6 @@ public class Ritmamida : MonoBehaviour
 
     void OnButtonPress(Color lineColor)
     {
-        // Проверка, что игра не на паузе
         if (isPaused)
         {
             return;
@@ -202,7 +236,7 @@ public class Ritmamida : MonoBehaviour
         GUIStyle style = new GUIStyle();
         style.fontSize = 48;
         style.normal.textColor = Color.white;
-
         GUI.Label(new Rect(10, 10, 300, 50), "Очки: " + matchCounter, style);
     }
 }
+
