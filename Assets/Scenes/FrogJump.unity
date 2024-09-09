@@ -232,6 +232,9 @@ MonoBehaviour:
   volumeSlider: {fileID: 0}
   mainMenuButton: {fileID: 792061682}
   closeButton: {fileID: 1592971124}
+  gameTag: FrogJump
+  metronomSound: {fileID: 0}
+  interval: 1
 --- !u!4 &161708136
 Transform:
   m_ObjectHideFlags: 0
@@ -855,6 +858,8 @@ MonoBehaviour:
   startPosition: {fileID: 629775903}
   targetPosition: {fileID: 1678340497}
   jumpDuration: 1
+  menuManager: {fileID: 161708135}
+  interval: 1
 --- !u!1 &846420078
 GameObject:
   m_ObjectHideFlags: 0
