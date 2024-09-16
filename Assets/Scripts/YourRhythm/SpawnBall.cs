@@ -14,6 +14,7 @@ public class SpawnBall : MonoBehaviour
     public float interval = 2f;   // Интервал между звуками (в секундах)
     public Sprite hitSprite;
     public Sprite missSprite;
+    public MenuManager menuManager;
 
     private float lastSoundTime = 0f;     // Время последнего звука
     private bool canClick = true;   // Можно ли нажимать кнопку
@@ -21,7 +22,6 @@ public class SpawnBall : MonoBehaviour
     private float startTime;
     private int hitStreakNum = 0;
     private int score = 0;
-    public MenuManager menuManager;
 
     public void UpdateInterval(float newInterval) {
         interval = newInterval;
@@ -32,10 +32,12 @@ public class SpawnBall : MonoBehaviour
         //InvokeRepeating("CountSeconds", 1.0f, interval); // Начало ритма
         isCounting = false;
         interval = menuManager.interval;
+        canClick = menuManager.canClick;
     }
 
     void Update()
     {
+        canClick = menuManager.canClick;
         interval = menuManager.interval;
         if (isCounting)
         {
