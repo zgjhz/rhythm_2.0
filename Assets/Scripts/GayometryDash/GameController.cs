@@ -17,21 +17,33 @@ public class GameController : MonoBehaviour
 
     private GameObject newTile;
     private float interval;
+    //private List<GameObject> tiles;
+    private bool isTileSpawned = false;
     // Start is called before the first frame update
     void Start()
     {
         //StartCoroutine(SpawnSpikeTimer());
         //tilePrefab.transform.localScale = new Vector2(spikeScale, spikeScale / 3);
+        //tiles = new List<GameObject> { };
         interval = menuManager.interval;
-        SpawnSpike();
+        //SpawnSpike();
     }
 
     // Update is called once per frame
     void Update()
     {
         interval = menuManager.interval;
-        if (spawnPoint.position.x - newTile.transform.position.x > tileSpace) {
-            SpawnSpike();
+        if (isTileSpawned)
+        {
+            if (spawnPoint.position.x - newTile.transform.position.x > tileSpace)
+            {
+                //SpawnSpike();
+            }
+            //if (tiles[0].transform.position.x < -10)
+            //{
+            //    Destroy(tiles[0]);
+            //    tiles.RemoveAt(0);
+            //}
         }
     }
 
@@ -46,23 +58,25 @@ public class GameController : MonoBehaviour
 
     void SpawnSpike()
     {
+        isTileSpawned = true;
         newTile = Instantiate(tilePrefab, spawnPoint.position, spawnPoint.rotation);
-        newTile.GetComponent<Rigidbody2D>().velocity = new Vector2(- tileSpace / interval, 0);
+        //tiles.Add(newTile);
+        //newTile.GetComponent<Rigidbody2D>().velocity = new Vector2(-tileSpace / interval, 0);
     }
 
 
 
-    IEnumerator SpawnBackgroundTimer()
-    {
-        while (true)
-        {
-            SpawnBackground();
-            yield return new WaitForSeconds(backgroundDelay);
-        }
-    }
+    //IEnumerator SpawnBackgroundTimer()
+    //{
+    //    while (true)
+    //    {
+    //        SpawnBackground();
+    //        yield return new WaitForSeconds(backgroundDelay);
+    //    }
+    //}
 
-    void SpawnBackground()
-    {
-        Instantiate(backgroundPrefab, spawnBackgroundPoint.position, spawnBackgroundPoint.rotation);
-    }
+    //void SpawnBackground()
+    //{
+    //    Instantiate(backgroundPrefab, spawnBackgroundPoint.position, spawnBackgroundPoint.rotation);
+    //}
 }

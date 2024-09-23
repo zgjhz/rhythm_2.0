@@ -6,43 +6,67 @@ public class PlayerMoveScript : MonoBehaviour
 {
     public Rigidbody2D player;
     private float angularVelocity;
-    private float fixedGravity = 20f;
     private float velocity = 5f;
     private bool isGrounded;
     public MenuManager menuManager;
-    public float rayDistance = 2f;
+    public GameObject tilePrefab;
+    public float rayDistance = 0.8f;
+    public Transform spawnPoint;
+    public Transform tileCollector;
 
     private float interval;
-    private float gravity;
+    private float gravity = 20f;
+    public float tileSpace = 5f;
+    private float timer;
+    private float xVelocity;
+    private bool isFirst = true;
+    private GameObject newTile;
+    private int tileIndex = 0;
+    private float deltaTime = 0f;
+
 
     // Start is called before the first frame update
     void Start()
     {
         interval = menuManager.interval;
-        player.gravityScale = -0.34f * interval + 1.13f;
-        gravity = (-0.34f * interval + 1.13f) * fixedGravity;
+        timer = interval;
+        xVelocity = tileSpace / interval;
+        //player.gravityScale = -0.34f * interval + 1.13f;
+        //gravity = (-0.34f * interval + 1.13f) * fixedGravity;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "spike") {
-            Debug.Log("you lose");
-        }
+        //if (collision.gameObject.tag == "spike") {
+        //    Debug.Log("you lose");
+        //}
     }
 
     // Update is called once per frame
     void Update()
     {
-        interval = menuManager.interval;
-        player.gravityScale = -0.34f * interval + 1.13f;
-        gravity = (-0.34f * interval + 1.13f) * fixedGravity;
-        Debug.Log(gravity);
+        tileCollector.position = new Vector2(player.position.x - 50f, 0);
+        if (isFirst == false)
+        {
+            timer -= Time.deltaTime;
+        }
+
+        if (isFirst == false && tileIndex >= 4) {
+            tileSpace = newTile.transform.position.x - player.transform.position.x - 20f;
+        }
+        interval = menuManager.interval + deltaTime;
         velocity = gravity * interval / 2;
+        xVelocity = tileSpace / interval;
         if (Input.GetKeyDown("space") && isGrounded)
         {
+            isFirst = false;
+            newTile = Instantiate(tilePrefab, spawnPoint.position + new Vector3(tileIndex * 5f, 0f, 0f), spawnPoint.rotation);
+            tileIndex++;
+            deltaTime = interval - timer;
+            xVelocity += 10 * xVelocity * (interval - timer) / interval;
             angularVelocity = 90 * gravity / (velocity * 2);
             player.angularVelocity = -angularVelocity;
-            player.velocity = new Vector2(0f, velocity);
+            player.velocity = new Vector2(xVelocity, velocity);
         }
 
         RaycastHit2D hit = Physics2D.Raycast(player.position, Vector2.down, rayDistance, LayerMask.GetMask("Ground"));
@@ -51,11 +75,16 @@ public class PlayerMoveScript : MonoBehaviour
 
         if (hit.collider != null || hit_left.collider != null || hit_right.collider != null)
         {
+            timer = interval;
             isGrounded = true;
         }
         else
         {
             isGrounded = false;
+        }
+        if(player.transform.position.y < -1)
+        {
+
         }
     }
 
