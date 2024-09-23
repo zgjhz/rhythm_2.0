@@ -18,6 +18,7 @@ public class MenuManager : MonoBehaviour
     public float interval = 1f;
     private float timer;
     public bool canClick = true;
+    private bool isSpacePressed = false;
 
 
     private void Start()
@@ -44,12 +45,20 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        timer -= Time.deltaTime;
-
-        if (timer <= 0f)
+        if (!isSpacePressed && Input.GetKeyDown("space"))
         {
-            PlaySound();
-            timer = interval;
+            timer = 0;
+            isSpacePressed = true;
+        }
+        if (isSpacePressed)
+        {
+            timer -= Time.deltaTime;
+
+            if (timer <= 0f)
+            {
+                PlaySound();
+                timer = interval;
+            }
         }
     }
 
