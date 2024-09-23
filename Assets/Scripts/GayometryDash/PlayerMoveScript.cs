@@ -16,6 +16,7 @@ public class PlayerMoveScript : MonoBehaviour
 
     private float interval;
     private float gravity = 20f;
+    private float fixedGravity = 20f;
     public float tileSpace = 5f;
     private float timer;
     private float xVelocity;
@@ -31,8 +32,9 @@ public class PlayerMoveScript : MonoBehaviour
         interval = menuManager.interval;
         timer = interval;
         xVelocity = tileSpace / interval;
-        //player.gravityScale = -0.34f * interval + 1.13f;
-        //gravity = (-0.34f * interval + 1.13f) * fixedGravity;
+        player.gravityScale /= interval;
+        gravity = fixedGravity / interval;
+        Debug.Log(interval);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -54,15 +56,18 @@ public class PlayerMoveScript : MonoBehaviour
         if (isFirst == false && tileIndex >= 4) {
             tileSpace = newTile.transform.position.x - player.transform.position.x - 20f;
         }
-        interval = menuManager.interval + deltaTime;
+        interval = menuManager.interval;
         velocity = gravity * interval / 2;
         xVelocity = tileSpace / interval;
         if (Input.GetKeyDown("space") && isGrounded)
         {
+            xVelocity = tileSpace / interval;
+            player.freezeRotation = false;
             isFirst = false;
             newTile = Instantiate(tilePrefab, spawnPoint.position + new Vector3(tileIndex * 5f, 0f, 0f), spawnPoint.rotation);
             tileIndex++;
             deltaTime = interval - timer;
+            Debug.Log(deltaTime);
             xVelocity += 10 * xVelocity * (interval - timer) / interval;
             angularVelocity = 90 * gravity / (velocity * 2);
             player.angularVelocity = -angularVelocity;
@@ -88,19 +93,21 @@ public class PlayerMoveScript : MonoBehaviour
         }
     }
 
-    //void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.CompareTag("floor"))
-    //    {
-    //        isGrounded = true;
-    //    }
-    //}
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("tile"))
+        {
+            player.velocity = new Vector2(0, 0);
+            //player.position = collision.gameObject.transform.position + new Vector3(0, 0.55f, 0);
+            player.freezeRotation = true;
+        }
+    }
 
-    //void OnCollisionExit2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.CompareTag("floor"))
-    //    {
-    //        isGrounded = false;
-    //    }
-    //}
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("tile"))
+        {
+            player.freezeRotation = false;
+        }
+    }
 }
