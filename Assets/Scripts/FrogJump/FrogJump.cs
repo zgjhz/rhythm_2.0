@@ -5,16 +5,16 @@ public class FrogJump : MonoBehaviour
     public Transform startPosition;   // Позиция левого берега (стартовая)
     public Transform targetPosition;  // Позиция правого берега (целевая)
     public float jumpDuration = 1f;   // Время прыжка в секундах
-    
     private bool isJumping = false;   // Флаг, указывающий на выполнение прыжка
     private bool onStartPosition = true; // Флаг, указывающий на текущее положение (стартовое или целевое)
     private Vector3 jumpStart;        // Начальная позиция прыжка
     private Vector3 jumpEnd;          // Конечная позиция прыжка
     private float jumpTime;           // Текущее время прыжка
     private bool isGamePaused = true; // Флаг, указывающий на состояние игры (на паузе или активна)
-
+    public MenuManager menuManager;
     void Start()
     {
+        jumpDuration = menuManager.interval;
         // Устанавливаем начальную позицию лягушки
         transform.position = startPosition.position;
         
@@ -22,6 +22,7 @@ public class FrogJump : MonoBehaviour
 
     void Update()
     {
+        jumpDuration = menuManager.interval;
         // Если игра на паузе и игрок нажимает пробел, возобновляем игру
         if (isGamePaused && Input.GetKeyDown(KeyCode.Space))
         {

@@ -1,117 +1,74 @@
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
 
 public class Ritmamida : MonoBehaviour
 {
+    private float lastSoundTime = 0f;
     public AudioClip hitSound;
     public AudioClip SuccesHitSound;
     private AudioSource audioSource;
-    public CameraFollow cameraFollow;
     public GameObject linePrefab;
     public Transform lineContainer;
-    public float lineWidthMultiplier = 100f;
+    public float lineWidthMultiplier = 20f;
     public float lineSpacing = 20f;
-    private Color lineColor = Color.green;
     private float lastPressTime;
     private float startTime;
     private bool firstPress = true;
-    public GameObject target;
-
+    public MenuManager menuManager;
     private int consecutiveHits = 0;
     private float previousLineWidth = -1f;
     private int matchCounter = 0;
-
-    private bool isPaused = false;
-    public static event System.Action<bool> OnPauseStateChanged;
-
-    // Ссылки на кнопки
-    public Button MenuButton;
-    public Button BackButton;  // Добавляем кнопку "Назад"
+    public TMP_Text scoreText;
+    private bool isCounting;
+    private bool isPaused = false;  // Игра начинается без паузы
+    public GameObject menuPanel;  // Ссылка на панель меню
+    public Button openMenuUIButton;  // Кнопка открытия меню
+    public Button closeMenuUIButton;  // Кнопка закрытия меню
 
     private void Start()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.volume = 1.0f;
+        isCounting = false;
 
-        if (cameraFollow != null)
+        // Убедимся, что панель меню выключена при старте
+        if (menuPanel != null)
         {
-            cameraFollow.target = target;
-        }
-
-        // Назначаем функцию TogglePause для кнопки меню
-        if (MenuButton != null)
-        {
-            MenuButton.onClick.AddListener(TogglePause);
-        }
-        else
-        {
-            Debug.LogError("MenuButton is not assigned in the Inspector");
+            menuPanel.SetActive(false);
         }
 
-        // Назначаем функцию ResumeGame для кнопки "Назад"
-        if (BackButton != null)
+        // Добавляем слушатель на кнопку для открытия меню
+        if (openMenuUIButton != null)
         {
-            BackButton.onClick.AddListener(ResumeGame);
+            openMenuUIButton.onClick.AddListener(OpenMenu);
         }
-        else
+
+        // Добавляем слушатель на кнопку для закрытия меню
+        if (closeMenuUIButton != null)
         {
-            Debug.LogError("BackButton is not assigned in the Inspector");
+            closeMenuUIButton.onClick.AddListener(CloseMenu);
         }
     }
 
     private void Update()
     {
+        if (isCounting)
+        {
+            lastSoundTime = Time.time - startTime;
+        }
+
+        // Игнорируем пробел, если игра на паузе
         if (isPaused)
         {
             return;
         }
 
+        // Запуск по пробелу, если игра не на паузе
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            OnButtonPress(lineColor);
-        }
-    }
-
-    // Метод для переключения паузы
-    public void TogglePause()
-    {
-        Debug.Log("TogglePause called");
-        isPaused = !isPaused;
-
-        if (isPaused)
-        {
-            Time.timeScale = 0f; // Останавливаем время
-            audioSource.Pause(); // Останавливаем звук
-            Debug.Log("Game Paused");
-        }
-        else
-        {
-            Time.timeScale = 1f; // Возобновляем время
-            audioSource.UnPause(); // Возобновляем звук
-            Debug.Log("Game Unpaused");
-        }
-
-        if (OnPauseStateChanged != null)
-        {
-            OnPauseStateChanged(isPaused);
-        }
-    }
-
-    // Метод для возобновления игры
-    public void ResumeGame()
-    {
-        if (isPaused)
-        {
-            Debug.Log("Resume Game");
-            isPaused = false;
-            Time.timeScale = 1f; // Возобновляем время
-            audioSource.UnPause(); // Возобновляем звук
-
-            if (OnPauseStateChanged != null)
-            {
-                OnPauseStateChanged(isPaused);
-            }
+            OnButtonPress();
         }
     }
 
@@ -129,29 +86,26 @@ public class Ritmamida : MonoBehaviour
         audioSource.Play();
     }
 
-    void OnButtonPress(Color lineColor)
+    void OnButtonPress()
     {
-        if (isPaused)
-        {
-            return;
-        }
+        isCounting = true;
 
         if (firstPress)
         {
-            startTime = Time.unscaledTime; // Используем Time.unscaledTime для правильного учета времени при паузе
+            startTime = Time.time;  // Используем Time.time для начала
             lastPressTime = startTime;
             firstPress = false;
             return;
         }
 
-        float currentTime = Time.unscaledTime; // Также используем Time.unscaledTime
+        float currentTime = Time.time;
         float duration = currentTime - lastPressTime;
         lastPressTime = currentTime;
 
-        CreateLine(duration, lineColor);
+        CreateLine(duration);
     }
 
-    void CreateLine(float duration, Color lineColor)
+    void CreateLine(float duration)
     {
         if (linePrefab == null || lineContainer == null)
         {
@@ -159,17 +113,21 @@ public class Ritmamida : MonoBehaviour
             return;
         }
 
+        // Перемещаем все существующие линии вниз
+        foreach (Transform child in lineContainer)
+        {
+            float yOffset = linePrefab.transform.localScale.y;  // Используем только высоту блока без дополнительного отступа
+            child.position -= new Vector3(0, yOffset, 0);  // Смещаем только на высоту блока
+        }
+
+        // Создаем новую линию
         GameObject newLine = Instantiate(linePrefab, lineContainer);
         Transform lineTransform = newLine.transform;
 
         // Рассчитываем ширину линии
-        float lineWidth = (duration / 8f) * lineWidthMultiplier;
-        lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
+        float lineWidth = (duration / 25f) * lineWidthMultiplier;
 
-        // Рассчитываем позицию линии
-        float yOffset = GetTotalLineHeight() + lineSpacing;
-        newLine.transform.position += new Vector3(0, yOffset / 2.5f);
-
+        // Проверяем совпадение с предыдущей шириной
         if (previousLineWidth > 0 && !isPaused)
         {
             float lowerBound = previousLineWidth * 0.97f;
@@ -179,7 +137,12 @@ public class Ritmamida : MonoBehaviour
             {
                 consecutiveHits++;
                 matchCounter += consecutiveHits;
+                scoreText.text = "Счёт: " + matchCounter;
+                Debug.Log("Счёт обновлён: " + matchCounter);
                 PlaySuccesHitSound();
+
+                // Устанавливаем ширину новой линии равной предыдущей при успешном попадании
+                lineWidth = previousLineWidth;
             }
             else
             {
@@ -192,31 +155,59 @@ public class Ritmamida : MonoBehaviour
             PlayHitSound();
         }
 
-        // Обновляем позицию цели
-        previousLineWidth = lineWidth;
-        target.transform.position = newLine.transform.position;
-        target.transform.position += new Vector3(0, 0, -10);
+        // Устанавливаем ширину линии
+        lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
+        newLine.transform.localPosition = Vector3.zero;
 
-        // Обновляем цвет линии
-        Renderer lineRenderer = newLine.GetComponent<Renderer>();
-        if (lineRenderer != null)
+        // После всех проверок обновляем previousLineWidth текущей шириной линии
+        previousLineWidth = lineWidth;
+    }
+
+
+
+    // Метод открытия меню
+    void OpenMenu()
+    {
+        if (menuManager != null)
         {
-            lineRenderer.material.color = lineColor;
-        }
-        else
-        {
-            Debug.LogError("Компонент Renderer не найден на созданной линии.");
+            isPaused = true;  // Ставим игру на паузу
+            menuManager.OpenMenu();
         }
     }
 
-    float GetTotalLineHeight()
+    // Метод закрытия меню
+    void CloseMenu()
     {
-        float totalHeight = 0f;
-        foreach (Transform child in lineContainer)
+        if (menuManager != null)
         {
-            totalHeight += child.localScale.y + lineSpacing;
+            isPaused = false;  // Возобновляем игру
+            menuManager.CloseMenu();
         }
-        return totalHeight;
+    }
+
+    // Метод для переключения паузы
+    public void TogglePause(bool paused)
+    {
+        isPaused = paused;
+
+        if (menuPanel != null)
+        {
+            if (paused)
+            {
+                menuPanel.SetActive(true);
+                CanvasGroup canvasGroup = menuPanel.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = 1f;
+                    canvasGroup.interactable = true;
+                    canvasGroup.blocksRaycasts = true;
+                }
+            }
+            else
+            {
+                menuPanel.SetActive(false);
+            }
+        }
     }
 
     public void ResetLines()
@@ -230,13 +221,4 @@ public class Ritmamida : MonoBehaviour
         matchCounter = 0;
         consecutiveHits = 0;
     }
-
-    private void OnGUI()
-    {
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 48;
-        style.normal.textColor = Color.white;
-        GUI.Label(new Rect(10, 10, 300, 50), "Очки: " + matchCounter, style);
-    }
 }
-

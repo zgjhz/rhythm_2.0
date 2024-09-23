@@ -17,6 +17,8 @@ public class MenuManager : MonoBehaviour
 
     public float interval = 1f;
     private float timer;
+    public bool canClick = true;
+
 
     private void Start()
     {
@@ -62,6 +64,7 @@ public class MenuManager : MonoBehaviour
     // Метод открытия меню
     public void OpenMenu()
     {
+        canClick = false;
         Time.timeScale = 0f;
         openMenuButton.gameObject.SetActive(false);
         closeButton.gameObject.SetActive(true);
@@ -71,6 +74,7 @@ public class MenuManager : MonoBehaviour
     // Метод закрытия меню
     public void CloseMenu()
     {
+        canClick = true;
         Time.timeScale = 1f;
         openMenuButton.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
