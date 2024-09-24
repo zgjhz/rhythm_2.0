@@ -45,7 +45,8 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isSpacePressed && Input.GetKeyDown("space")) {
+        if (!isSpacePressed && Input.GetKeyDown("space"))
+        {
             timer = 0;
             isSpacePressed = true;
         }
