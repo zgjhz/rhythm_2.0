@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Metronom.unity
     guid: 545c8d3381395fd46b66454f31f95e0e
+  - enabled: 1
+    path: Assets/Scenes/ArrowGame.unity
+    guid: 42ed19bfdbc8a42b09ec76c050ebc202
   m_configObjects: {}
