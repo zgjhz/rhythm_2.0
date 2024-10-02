@@ -11,4 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Metronom.unity
     guid: 545c8d3381395fd46b66454f31f95e0e
+  - enabled: 1
+    path: Assets/Scenes/FrogJump.unity
+    guid: d6f9310d4d06c4da2b3a3b9230c0afa1
+  - enabled: 1
+    path: Assets/Scenes/RItmamida.unity
+    guid: 7e94155dd9449453ea5b7d9aec4b2a30
+  - enabled: 1
+    path: Assets/Scenes/YourRhythm.unity
+    guid: 81661aa346e62cf42839fcaf977fd78c
   m_configObjects: {}

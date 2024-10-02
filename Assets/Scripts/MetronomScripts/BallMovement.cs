@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class BallMovement : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class BallMovement : MonoBehaviour
     private AudioSource audioSource; // Аудиоисточник
     private Vector2 direction = Vector2.right;
     private bool canMove = true;
+    private int score = 0;
+    public TMP_Text scoreText;
     public float wallBoundary = 7.4f; // Позиция стен
     public WallHighlightController wallHighlightControllerLeft;
     public WallHighlightController wallHighlightControllerRight;
@@ -85,6 +88,8 @@ public class BallMovement : MonoBehaviour
         if (Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary)) < 0.1f)
         {
             Debug.Log("Удар успешен!");
+            score ++;
+            scoreText.text = "Счёт: " + score;
         }
         else
         {
