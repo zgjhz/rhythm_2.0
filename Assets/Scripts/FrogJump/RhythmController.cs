@@ -1,62 +1,109 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class RhythmController : MonoBehaviour
-{
-    public float rhythmInterval = 1.0f; // Интервал ритма в секундах
+{ 
+    public TMP_Text scoreText; // Ссылка на текстовое поле для отображения счёта
+    public AudioSource metronomeAudioSource; // Ссылка на AudioSource для звука метронома
+    private float rhythmInterval = 1.0f; // Интервал ритма в секундах (значение по умолчанию)
     private float nextBeatTime;
-    private int score = 0; // Счет
+    private int score = 0; // Счёт
     private FrogJump frogJump; // Ссылка на компонент FrogJump
-    private bool frogFell = false; // Флаг для проверки, упала ли лягушка
     private bool isGameStarted = false; // Флаг для проверки, началась ли игра
+    private Slider speedSlider; // Ссылка на слайдер скорости
+
+    // Точность попадания в ритм в процентах (20%)
+    private float allowedAccuracy = 0.2f;
 
     void Start()
     {
         frogJump = FindObjectOfType<FrogJump>(); // Находим компонент FrogJump в сцене
-        nextBeatTime = Time.time + rhythmInterval; // Установить время следующего удара
+
+        // Находим слайдер в сцене
+        MenuManager menuManager = FindObjectOfType<MenuManager>();
+        if (menuManager != null)
+        {
+            speedSlider = menuManager.speedSlider;
+        }
+
+        nextBeatTime = Time.time + rhythmInterval; // Устанавливаем время следующего удара
+
+        // Инициализируем отображение счёта
+        if (scoreText != null)
+        {
+            scoreText.text = "Очки: " + score.ToString();
+        }
+
+        // Запускаем игру сразу
+        StartGame();
     }
 
     void Update()
     {
+        // Обновляем интервал ритма на основе значения слайдера
+        if (speedSlider != null)
+        {
+            rhythmInterval = speedSlider.value; // Получаем значение слайдера и устанавливаем его в rhythmInterval
+        }
+
         // Проверка на паузу
         if (Time.timeScale == 0) return;  // Если игра на паузе, не выполняем действия
 
+        // Автоматический прыжок лягушки на каждый удар ритма
         if (Time.time >= nextBeatTime)
         {
             nextBeatTime += rhythmInterval; // Обновить время следующего удара
+
+            if (isGameStarted)
+            {
+                PlayMetronomeSound(); // Воспроизведение звука метронома
+                frogJump.Jump(); // Лягушка прыгает на ритм с длительностью прыжка, равной интервалу ритма
+            }
         }
 
+        // Проверка нажатия пробела и начисление очков
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!isGameStarted)
-            {
-                // Если игра еще не началась и игрок нажимает пробел
-                isGameStarted = true; // Устанавливаем флаг начала игры
-                frogJump.Jump(); // Лягушка сразу начинает прыгать
-                return; // Завершаем выполнение этого кадра
-            }
+            CheckTimingForScore();
+        }
+    }
 
-            if (frogFell)
-            {
-                // Если лягушка упала и пользователь нажал пробел
-                frogJump.Jump(); // Лягушка сразу начинает прыгать
-                frogFell = false; // Сбрасываем флаг падения
-                return; // Завершаем выполнение этого кадра
-            }
+    private void StartGame()
+    {
+        isGameStarted = true; // Устанавливаем флаг начала игры
+        nextBeatTime = Time.time + rhythmInterval; // Запускаем метроном сразу
+        PlayMetronomeSound(); // Воспроизводим звук метронома при старте
+        frogJump.Jump(); // Лягушка сразу начинает прыгать
+    }
 
-            if (Mathf.Abs(Time.time - nextBeatTime) <= rhythmInterval / 2)
-            {
-                // Если игрок попал в ритм
-                Debug.Log("Успешный прыжок!");
-                score += 1; // Увеличить счет
-                frogJump.Jump(); // Вызов метода прыжка
-            }
-            else
-            {
-                // Если игрок не попал в ритм
-                Debug.Log("Пропуск!");
-                frogJump.Fall(); // Лягушка падает в воду
-                frogFell = true; // Устанавливаем флаг падения
-            }
+    private void PlayMetronomeSound()
+    {
+        if (metronomeAudioSource != null)
+        {
+            metronomeAudioSource.Play(); // Воспроизведение звука метронома
+        }
+    }
+
+    private void CheckTimingForScore()
+    {
+        // Рассчитываем допустимое отклонение для попадания в ритм
+        float tolerance = rhythmInterval * allowedAccuracy;
+
+        // Проверяем, попал ли игрок в допустимый интервал
+        if (Mathf.Abs(Time.time - nextBeatTime) <= tolerance)
+        {
+            // Если нажатие в пределах точности — начисляем очки
+            score++;
+            UpdateScoreText();
+        }
+    }
+
+    private void UpdateScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Очки: " + score.ToString();
         }
     }
 
@@ -65,3 +112,4 @@ public class RhythmController : MonoBehaviour
         return score;
     }
 }
+
