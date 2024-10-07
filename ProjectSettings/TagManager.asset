@@ -8,7 +8,6 @@ TagManager:
   - floor
   - tile
   - collector
-  - Wall
   layers:
   - Default
   - TransparentFX
