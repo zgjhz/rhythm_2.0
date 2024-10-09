@@ -1390,7 +1390,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e9cbf8fdf5b44e0b96de5ebf346928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
   scoreText: {fileID: 767728757}
   metronomeAudioSource: {fileID: 416437643}
 --- !u!1 &991911436

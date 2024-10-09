@@ -3,113 +3,125 @@ using UnityEngine.UI;
 using TMPro;
 
 public class RhythmController : MonoBehaviour
-{ 
+{
     public TMP_Text scoreText; // Ссылка на текстовое поле для отображения счёта
-    public AudioSource metronomeAudioSource; // Ссылка на AudioSource для звука метронома
     private float rhythmInterval = 1.0f; // Интервал ритма в секундах (значение по умолчанию)
-    private float nextBeatTime;
+    private float nextBeatTime; // Время следующего удара ритма
     private int score = 0; // Счёт
     private FrogJump frogJump; // Ссылка на компонент FrogJump
     private bool isGameStarted = false; // Флаг для проверки, началась ли игра
     private Slider speedSlider; // Ссылка на слайдер скорости
+    private float lastRhythmInterval; // Последний интервал ритма, для отслеживания изменений
+    private MenuManager menuManager; // Ссылка на MenuManager для управления звуком
 
-    // Точность попадания в ритм в процентах (20%)
-    private float allowedAccuracy = 0.2f;
+    // Точность попадания в ритм в процентах (10%)
+    private const float allowedAccuracy = 0.1f;
 
     void Start()
     {
         frogJump = FindObjectOfType<FrogJump>(); // Находим компонент FrogJump в сцене
 
-        // Находим слайдер в сцене
-        MenuManager menuManager = FindObjectOfType<MenuManager>();
+        // Находим MenuManager и слайдер в сцене
+        menuManager = FindObjectOfType<MenuManager>();
         if (menuManager != null)
         {
             speedSlider = menuManager.speedSlider;
+            rhythmInterval = speedSlider.value; // Устанавливаем начальное значение интервала ритма
+            lastRhythmInterval = rhythmInterval; // Сохраняем значение интервала
         }
-
-        nextBeatTime = Time.time + rhythmInterval; // Устанавливаем время следующего удара
 
         // Инициализируем отображение счёта
-        if (scoreText != null)
-        {
-            scoreText.text = "Очки: " + score.ToString();
-        }
-
-        // Запускаем игру сразу
-        StartGame();
+        UpdateScoreText();
     }
 
     void Update()
     {
-        // Обновляем интервал ритма на основе значения слайдера
-        if (speedSlider != null)
+        // Проверяем нажатие пробела для начала игры или для проверки точности
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            rhythmInterval = speedSlider.value; // Получаем значение слайдера и устанавливаем его в rhythmInterval
-        }
-
-        // Проверка на паузу
-        if (Time.timeScale == 0) return;  // Если игра на паузе, не выполняем действия
-
-        // Автоматический прыжок лягушки на каждый удар ритма
-        if (Time.time >= nextBeatTime)
-        {
-            nextBeatTime += rhythmInterval; // Обновить время следующего удара
-
-            if (isGameStarted)
+            if (!isGameStarted)
             {
-                PlayMetronomeSound(); // Воспроизведение звука метронома
-                frogJump.Jump(); // Лягушка прыгает на ритм с длительностью прыжка, равной интервалу ритма
+                StartGame(); // Запуск игры при нажатии пробела
+            }
+            else
+            {
+                CheckAccuracy(); // Проверяем точность нажатия пробела
             }
         }
 
-        // Проверка нажатия пробела и начисление очков
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Обновляем интервал ритма на основе значения слайдера
+        UpdateRhythmInterval();
+
+        // Проверка на паузу
+        if (Time.timeScale == 0 || !isGameStarted) return; // Если игра на паузе или не началась, не выполняем действия
+
+        // Автоматический прыжок лягушки на каждый удар ритма
+        if (isGameStarted && Time.time >= nextBeatTime) // Изменено, чтобы проверить, началась ли игра
         {
-            CheckTimingForScore();
+            nextBeatTime += rhythmInterval; // Обновить время следующего удара
+            menuManager.PlaySound(); // Воспроизведение звука метронома через MenuManager
+            frogJump.Jump(); // Лягушка прыгает на ритм с длительностью прыжка, равной интервалу ритма
         }
     }
 
     private void StartGame()
     {
         isGameStarted = true; // Устанавливаем флаг начала игры
-        nextBeatTime = Time.time + rhythmInterval; // Запускаем метроном сразу
-        PlayMetronomeSound(); // Воспроизводим звук метронома при старте
+        nextBeatTime = Time.time + rhythmInterval; // Запускаем метроном сразу, но звук начнет позже
         frogJump.Jump(); // Лягушка сразу начинает прыгать
+        menuManager.PlaySound(); // Запуск звука метронома через MenuManager
     }
 
-    private void PlayMetronomeSound()
+    // Проверка точности нажатия пробела
+    private void CheckAccuracy()
     {
-        if (metronomeAudioSource != null)
+        float timeDifference = Mathf.Abs(Time.time - nextBeatTime); // Разница между текущим временем и ритмом
+        float allowedWindow = rhythmInterval * allowedAccuracy; // Вычисляем допустимое отклонение (10%)
+
+        if (timeDifference <= allowedWindow) // Если нажали точно в ритм
         {
-            metronomeAudioSource.Play(); // Воспроизведение звука метронома
+            UpdateScore(); // Обновляем счёт
         }
     }
 
-    private void CheckTimingForScore()
+    private void UpdateRhythmInterval()
     {
-        // Рассчитываем допустимое отклонение для попадания в ритм
-        float tolerance = rhythmInterval * allowedAccuracy;
-
-        // Проверяем, попал ли игрок в допустимый интервал
-        if (Mathf.Abs(Time.time - nextBeatTime) <= tolerance)
+        if (speedSlider != null)
         {
-            // Если нажатие в пределах точности — начисляем очки
-            score++;
-            UpdateScoreText();
+            float newRhythmInterval = speedSlider.value;
+
+            // Если интервал ритма изменился, сбросить лягушку в начальное состояние и ждать пробела
+            if (Mathf.Abs(newRhythmInterval - lastRhythmInterval) > Mathf.Epsilon)
+            {
+                rhythmInterval = newRhythmInterval; // Обновляем интервал ритма
+                lastRhythmInterval = newRhythmInterval; // Сохраняем новое значение интервала
+                isGameStarted = false; // Игра останавливается, ждет нового пробела
+                frogJump.ResetToStart(); // Возвращаем лягушку в начальное положение
+
+                if (menuManager != null)
+                {
+                    menuManager.StopMetronomeSound(); // Останавливаем метроном
+                }
+            }
         }
+    }
+
+    private void UpdateScore()
+    {
+        score++; // Увеличиваем счёт на 1
+        UpdateScoreText(); // Обновляем текст счёта
     }
 
     private void UpdateScoreText()
     {
         if (scoreText != null)
         {
-            scoreText.text = "Очки: " + score.ToString();
+            scoreText.text = "Очки: " + score.ToString(); // Обновляем текст с текущим счётом
         }
     }
 
     public int GetScore()
     {
-        return score;
+        return score; // Возвращаем текущее значение счёта
     }
 }
-

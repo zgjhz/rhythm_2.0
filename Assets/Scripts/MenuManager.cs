@@ -56,13 +56,13 @@ public class MenuManager : MonoBehaviour
 
             if (timer <= 0f)
             {
-                PlaySound();
+                //PlaySound();
                 timer = interval;
             }
         }
     }
 
-    void PlaySound()
+    public void PlaySound()
     {
         if (metronomSound != null)
         {
@@ -113,5 +113,12 @@ public class MenuManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+    public void StopMetronomeSound()
+    {
+        if (metronomSound != null && metronomSound.isPlaying)
+        {
+            metronomSound.Stop();
+        }
     }
 }
