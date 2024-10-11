@@ -205,9 +205,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1771823919}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 3
   m_WholeNumbers: 0
-  m_Value: 0.19
+  m_Value: 1.5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2210,6 +2210,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 695690673}
   label: {fileID: 2029527953}
+  handle: {fileID: 1162919825}
   sliderTag: Speed
 --- !u!4 &1562237900
 Transform:
@@ -2436,6 +2437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 4373502}
   label: {fileID: 83234659}
+  handle: {fileID: 1771823919}
   sliderTag: Volume
 --- !u!4 &1915911913
 Transform:

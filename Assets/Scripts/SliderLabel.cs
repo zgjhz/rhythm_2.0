@@ -4,25 +4,27 @@ using TMPro;
 
 public class SliderLabel : MonoBehaviour
 {
-    public Slider slider;
-    public TMP_Text label;
-    public string sliderTag; // Тег для определения типа слайдера
+    public Slider slider;          // Ссылка на слайдер
+    public TextMeshProUGUI label;  // Ссылка на текст выноски
+    public RectTransform handle;   // Ссылка на RectTransform ручки слайдера
+    public string sliderTag;
+    private float percent;
 
     void Start()
     {
-        if (slider != null && label != null)
-        {
-            slider.onValueChanged.AddListener(UpdateLabel);
-            UpdateLabel(slider.value);
-        }
+        // Установить начальное значение текста и его позицию
+        UpdateLabel(slider.value);
+        
+        // Подписаться на событие изменения значения слайдера
+        slider.onValueChanged.AddListener(UpdateLabel);
     }
 
     void UpdateLabel(float value)
     {
         if (sliderTag == "Volume") // Если слайдер для громкости
         {
-            // Преобразуем значение в проценты
-            label.text = Mathf.RoundToInt(value) + "%";
+            percent = value / 3 * 100;// Преобразуем значение в проценты
+            label.text = Mathf.RoundToInt(percent) + "%";
         }
         else if (sliderTag == "Speed") // Если слайдер для скорости
         {
@@ -31,7 +33,8 @@ public class SliderLabel : MonoBehaviour
         }
 
         // Обновляем позицию текста, чтобы он следовал за ползунком
-        Vector3 labelPos = slider.handleRect.position;
-        label.transform.position = new Vector3(labelPos.x, label.transform.position.y, label.transform.position.z);
+        Vector3 handlePosition = handle.position; // Получаем мировую позицию ручки слайдера
+        label.rectTransform.position = new Vector3(handlePosition.x, handlePosition.y - 40, handlePosition.z); // Позиционируем текст чуть выше ползунка
     }
 }
+
