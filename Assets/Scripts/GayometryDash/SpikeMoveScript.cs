@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpikeMoveScript : MonoBehaviour
 {
-    public Rigidbody2D spike;
+    public GameObject spike;
     public float spikeSpeed = 5f;
 
     // Start is called before the first frame update
@@ -19,20 +19,12 @@ public class SpikeMoveScript : MonoBehaviour
         //spike.velocity = new Vector2(-spikeSpeed, 0);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.collider.CompareTag("floor")) {
-            Debug.Log("huy");
-            spike.velocity = new Vector2(-spikeSpeed, 0);
+        if (other.gameObject.CompareTag("collector"))
+        {
+            Destroy(gameObject);
         }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.collider.CompareTag("floor"))
-        {
-            Debug.Log("huy");
-            spike.velocity = new Vector2(-spikeSpeed, 0);
-        }
-    }
 }
