@@ -8,6 +8,10 @@ TagManager:
   - floor
   - tile
   - collector
+  - Wall
+  - green zone
+  - yellow zone
+  - red zone
   layers:
   - Default
   - TransparentFX
