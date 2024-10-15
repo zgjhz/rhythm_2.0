@@ -59,7 +59,7 @@ public class RhythmController : MonoBehaviour
         if (isGameStarted && Time.time >= nextBeatTime) // Изменено, чтобы проверить, началась ли игра
         {
             nextBeatTime += rhythmInterval; // Обновить время следующего удара
-            menuManager.PlaySound(); // Воспроизведение звука метронома через MenuManager
+            //menuManager.PlaySound(); // Воспроизведение звука метронома через MenuManager
             frogJump.Jump(); // Лягушка прыгает на ритм с длительностью прыжка, равной интервалу ритма
         }
     }
@@ -69,7 +69,7 @@ public class RhythmController : MonoBehaviour
         isGameStarted = true; // Устанавливаем флаг начала игры
         nextBeatTime = Time.time + rhythmInterval; // Запускаем метроном сразу, но звук начнет позже
         frogJump.Jump(); // Лягушка сразу начинает прыгать
-        menuManager.PlaySound(); // Запуск звука метронома через MenuManager
+        //menuManager.PlaySound(); // Запуск звука метронома через MenuManager
     }
 
     // Проверка точности нажатия пробела
