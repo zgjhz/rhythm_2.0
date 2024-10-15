@@ -130,8 +130,8 @@ public class Ritmamida : MonoBehaviour
         // Проверяем совпадение с предыдущей шириной
         if (previousLineWidth > 0 && !isPaused)
         {
-            float lowerBound = previousLineWidth * 0.97f;
-            float upperBound = previousLineWidth * 1.03f;
+            float lowerBound = previousLineWidth * 0.90f;
+            float upperBound = previousLineWidth * 1.1f;
 
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {

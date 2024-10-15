@@ -19,7 +19,7 @@ public class MenuManager : MonoBehaviour
     private float timer;
     public bool canClick = true;
     private bool isSpacePressed = false;
-
+    private bool isPaused = false; // Добавляем состояние для проверки паузы
 
     private void Start()
     {
@@ -45,11 +45,14 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isSpacePressed && Input.GetKeyDown("space"))
+        // Проверяем, не нажата ли клавиша "пробел" и не пауза ли игра
+        if (!isSpacePressed && !isPaused && Input.GetKeyDown(KeyCode.Space))
         {
             timer = 0;
             isSpacePressed = true;
         }
+
+        // Если метроном активен
         if (isSpacePressed)
         {
             timer -= Time.deltaTime;
@@ -62,7 +65,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    void PlaySound()
+    public void PlaySound()
     {
         if (metronomSound != null)
         {
@@ -74,6 +77,7 @@ public class MenuManager : MonoBehaviour
     public void OpenMenu()
     {
         canClick = false;
+        isPaused = true; // Устанавливаем флаг паузы
         Time.timeScale = 0f;
         openMenuButton.gameObject.SetActive(false);
         closeButton.gameObject.SetActive(true);
@@ -84,10 +88,14 @@ public class MenuManager : MonoBehaviour
     public void CloseMenu()
     {
         canClick = true;
+        isPaused = false; // Сбрасываем флаг паузы
         Time.timeScale = 1f;
         openMenuButton.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
         menuPanel.SetActive(false); // Отключаем панель меню
+
+        // Ожидаем нажатия пробела для продолжения метронома
+        isSpacePressed = false; // Сбрасываем состояние нажатия пробела
     }
 
     // Метод установки скорости мяча
@@ -113,5 +121,13 @@ public class MenuManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void StopMetronomeSound()
+    {
+        if (metronomSound != null && metronomSound.isPlaying)
+        {
+            metronomSound.Stop();
+        }
     }
 }
