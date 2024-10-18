@@ -1,91 +1,115 @@
 using UnityEngine;
+using System.Collections;
 
 public class FrogJump : MonoBehaviour
 {
     public Transform startPosition;   // Позиция левого берега (стартовая)
     public Transform targetPosition;  // Позиция правого берега (целевая)
     public float jumpDuration = 1f;   // Время прыжка в секундах
-    private bool isJumping = false;   // Флаг, указывающий на выполнение прыжка
     private bool onStartPosition = true; // Флаг, указывающий на текущее положение (стартовое или целевое)
     private Vector3 jumpStart;        // Начальная позиция прыжка
     private Vector3 jumpEnd;          // Конечная позиция прыжка
     private float jumpTime;           // Текущее время прыжка
-    private bool isGamePaused = true; // Флаг, указывающий на состояние игры (на паузе или активна)
-    public MenuManager menuManager;
+    public MenuManager menuManager;   // Ссылка на MenuManager для интервала
+    public SpriteRenderer spriteRenderer; // Спрайтрендерер лягушки
+
+    public Sprite frogIdle;
+    public Sprite frogStart;
+    public Sprite frogJumping;
+    public Sprite frogFalling;
+    public Sprite frogLanding;
+
+    private bool isJumping = false; // Флаг, показывающий, идет ли прыжок
+
     void Start()
     {
-        jumpDuration = menuManager.interval;
-        // Устанавливаем начальную позицию лягушки
-        transform.position = startPosition.position;
-        
+        ResetToStart(); // Инициализация в стартовой позиции
     }
 
     void Update()
     {
-        jumpDuration = menuManager.interval;
-        // Если игра на паузе и игрок нажимает пробел, возобновляем игру
-        if (isGamePaused && Input.GetKeyDown(KeyCode.Space))
+        // Обновляем длительность прыжка в зависимости от значения слайдера
+        if (menuManager != null)
         {
-            isGamePaused = false; // Снимаем паузу
-            Jump(); // Начинаем прыжок
-            return; // Завершаем выполнение этого кадра
+            jumpDuration = menuManager.speedSlider.value;
         }
 
-        // Если игра не на паузе и лягушка в прыжке
-        if (!isGamePaused && isJumping)
+        // Если лягушка прыгает, выполняем анимацию прыжка
+        if (isJumping)
         {
-            // Инкрементируем время прыжка на каждом кадре
             jumpTime += Time.deltaTime;
 
-            // Расчет нормализованного времени от 0 до 1
-            float normalizedTime = jumpTime / jumpDuration;
+            float adjustedJumpDuration = jumpDuration * 0.85f; // Длительность анимации прыжка
+            float normalizedTime = jumpTime / adjustedJumpDuration;
 
-            // Рассчет положения по параболе
             if (normalizedTime <= 1f)
             {
-                // Движение по X и Z
+                // Двигаем лягушку по параболической траектории
                 Vector3 newPosition = Vector3.Lerp(jumpStart, jumpEnd, normalizedTime);
-
-                // Движение по Y по параболе
-                float parabolaHeight = Mathf.Sin(Mathf.PI * normalizedTime); // Высота параболы меняется от 0 до 1 до 0
+                float heightMultiplier = 2.0f;
+                float parabolaHeight = Mathf.Sin(Mathf.PI * normalizedTime) * heightMultiplier;
                 newPosition.y += parabolaHeight;
-
                 transform.position = newPosition;
+
+                // Обновляем спрайты в зависимости от фазы прыжка
+                if (normalizedTime < 0.2f)
+                    spriteRenderer.sprite = frogStart;
+                else if (normalizedTime < 0.5f)
+                    spriteRenderer.sprite = frogJumping;
+                else if (normalizedTime < 0.7f)
+                    spriteRenderer.sprite = frogFalling;
+                else
+                    spriteRenderer.sprite = frogLanding;
             }
             else
             {
-                // Прыжок завершен
                 isJumping = false;
-                isGamePaused = true; // Ставим игру на паузу после приземления
-                onStartPosition = !onStartPosition; // Меняем текущее положение лягушки
-                jumpTime = 0f; // Обнуляем время прыжка
-                Debug.Log("Лягушка приземлилась!");
+                StartCoroutine(LandingPause()); // Начинаем паузу перед следующим прыжком
             }
         }
+    }
+
+    private void StartNextJump()
+    {
+        if (!isJumping)
+        {
+            jumpStart = transform.position;
+            jumpEnd = onStartPosition ? targetPosition.position : startPosition.position;
+            onStartPosition = !onStartPosition;
+
+            // Инвертируем направление лягушки в зависимости от направления прыжка
+            transform.localScale = new Vector3(onStartPosition ? -Mathf.Abs(transform.localScale.x) : Mathf.Abs(transform.localScale.x),
+                                               transform.localScale.y,
+                                               transform.localScale.z);
+
+            jumpTime = 0f;
+            isJumping = true; // Лягушка начинает прыжок
+        }
+    }
+
+    private IEnumerator LandingPause()
+    {
+        spriteRenderer.sprite = frogIdle; // Меняем спрайт на состояние "ожидания"
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        yield return new WaitForSeconds(jumpDuration * 0.15f); // Пауза перед следующим прыжком
+        StartNextJump(); // Стартуем следующий прыжок
     }
 
     public void Jump()
     {
-        if (isJumping) return; // Игнорируем, если уже в прыжке
-
-        // Определяем начальную и конечную позиции прыжка
-        jumpStart = transform.position;
-        jumpEnd = onStartPosition ? targetPosition.position : startPosition.position;
-
-        // Сбрасываем время прыжка
-        jumpTime = 0f;
-
-        // Устанавливаем флаг прыжка в истину
-        isJumping = true;
+        if (!isJumping) // Лягушка не должна начинать новый прыжок, если уже прыгает
+        {
+            spriteRenderer.sprite = frogStart; // Меняем спрайт на старт
+            StartNextJump(); // Начинаем прыжок
+        }
     }
 
-    public void Fall()
+    public void ResetToStart()
     {
-        Debug.Log("Лягушка упала в воду!");
-        transform.position = startPosition.position; // Возрождаем лягушку на стартовой позиции
-        onStartPosition = true; // Устанавливаем флаг на начальную позицию
-        isJumping = false; // Останавливаем прыжок
-        isGamePaused = true; // Ставим игру на паузу после падения
-        jumpTime = 0f; // Сбрасываем время прыжка после падения
+        transform.position = startPosition.position; // Возвращаем лягушку в начальное положение
+        spriteRenderer.sprite = frogIdle; // Сбрасываем спрайт
+        onStartPosition = true; // Сбрасываем флаг позиции
+        isJumping = false; // Лягушка не прыгает
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z); // Восстанавливаем начальное направление
     }
 }

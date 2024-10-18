@@ -4,6 +4,7 @@ using TMPro;
 
 public class BallMovement : MonoBehaviour
 {
+    public MenuManager menuManager;
     public float speed = 5f; // Скорость движения мяча
     public float delayAfterHit = 0.07f; // Задержка после удара в секундах
     public AudioClip hitSound; // Звук удара
@@ -11,6 +12,8 @@ public class BallMovement : MonoBehaviour
     private Vector2 direction = Vector2.right;
     private bool canMove = true;
     private int score = 0;
+    private float interval = 0f;
+    private float timer = 0f;
     public TMP_Text scoreText;
     public float wallBoundary = 7.4f; // Позиция стен
     public WallHighlightController wallHighlightControllerLeft;
@@ -25,8 +28,10 @@ public class BallMovement : MonoBehaviour
 
     void Update()
     {
+        interval = menuManager.interval;
         if (canMove)
         {
+            speed = 2 * wallBoundary / interval;
             transform.Translate(direction * speed * Time.deltaTime);
 
             if (transform.position.x >= wallBoundary)
@@ -46,32 +51,35 @@ public class BallMovement : MonoBehaviour
         }
     }
 
-   private IEnumerator HandleWallHit(WallHighlightController wallHighlightController)
-{
-    canMove = false;
-    PlayHitSound();
-
-    // Запуск подсветки
-    if (wallHighlightController != null)
-    {
-        wallHighlightController.TriggerHighlight();
+    public void setToCenter(){
+        transform.position = new Vector2(0, 0);
     }
 
-    // Логика изменения направления мяча
-    if (transform.position.x <= -wallBoundary)
-    {
-        transform.position = new Vector2(-wallBoundary + 0.1f, transform.position.y);
-    }
-    else if (transform.position.x >= wallBoundary)
-    {
-        transform.position = new Vector2(wallBoundary - 0.1f, transform.position.y);
-    }
+    private IEnumerator HandleWallHit(WallHighlightController wallHighlightController){
+        canMove = false;
+        PlayHitSound();
 
-    yield return new WaitForSeconds(delayAfterHit);
+        // Запуск подсветки
+        if (wallHighlightController != null)
+        {
+            wallHighlightController.TriggerHighlight();
+        }
 
-    direction = -direction;
-    canMove = true;
-}
+        // Логика изменения направления мяча
+        if (transform.position.x <= -wallBoundary)
+        {
+            transform.position = new Vector2(-wallBoundary + 0.1f, transform.position.y);
+        }
+        else if (transform.position.x >= wallBoundary)
+        {
+            transform.position = new Vector2(wallBoundary - 0.1f, transform.position.y);
+        }
+
+        yield return new WaitForSeconds(delayAfterHit);
+
+        direction = -direction;
+        canMove = true;
+    }
 
 
     void PlayHitSound()
