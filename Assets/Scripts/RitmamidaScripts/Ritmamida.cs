@@ -5,50 +5,27 @@ using UnityEngine.UI;
 public class Ritmamida : MonoBehaviour
 {
     private float lastSoundTime = 0f;
-    public AudioClip hitSound;
-    public AudioClip SuccesHitSound;
-    private AudioSource audioSource;
     public GameObject linePrefab;
     public Transform lineContainer;
     public float lineWidthMultiplier = 20f;
     public float lineSpacing = 20f;
     private float lastPressTime;
     private float startTime;
-    private bool firstPress = true;
+    private bool firstPress = true;  // Для запуска после паузы
     public MenuManager menuManager;
-    private int consecutiveHits = 0;
     private float previousLineWidth = -1f;
     private int matchCounter = 0;
     public TMP_Text scoreText;
     private bool isCounting;
-    private bool isPaused = false;  // Игра начинается без паузы
     public GameObject menuPanel;  // Ссылка на панель меню
-    public Button openMenuUIButton;  // Кнопка открытия меню
-    public Button closeMenuUIButton;  // Кнопка закрытия меню
-
     private void Start()
     {
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.playOnAwake = false;
-        audioSource.volume = 1.0f;
         isCounting = false;
 
         // Убедимся, что панель меню выключена при старте
         if (menuPanel != null)
         {
             menuPanel.SetActive(false);
-        }
-
-        // Добавляем слушатель на кнопку для открытия меню
-        if (openMenuUIButton != null)
-        {
-            openMenuUIButton.onClick.AddListener(OpenMenu);
-        }
-
-        // Добавляем слушатель на кнопку для закрытия меню
-        if (closeMenuUIButton != null)
-        {
-            closeMenuUIButton.onClick.AddListener(CloseMenu);
         }
     }
 
@@ -60,7 +37,7 @@ public class Ritmamida : MonoBehaviour
         }
 
         // Игнорируем пробел, если игра на паузе
-        if (isPaused)
+        if (menuManager.isPaused)
         {
             return;
         }
@@ -70,34 +47,24 @@ public class Ritmamida : MonoBehaviour
         {
             OnButtonPress();
         }
-    }
-
-    void PlayHitSound()
-    {
-        audioSource.Stop();
-        audioSource.clip = hitSound;
-        audioSource.Play();
-    }
-
-    void PlaySuccesHitSound()
-    {
-        audioSource.Stop();
-        audioSource.clip = SuccesHitSound;
-        audioSource.Play();
+        if (menuManager.isPaused)
+        {
+            ResetAfterPause();
+        }
     }
 
     void OnButtonPress()
     {
-        isCounting = true;
-
+        // Перезапуск игры после паузы
         if (firstPress)
         {
-            startTime = Time.time;  // Используем Time.time для начала
+            startTime = Time.time;  // Запоминаем стартовое время
             lastPressTime = startTime;
             firstPress = false;
-            return;
+            return;  // После первого пробела не создаем линию
         }
 
+        // Если это не первый пробел после перезапуска
         float currentTime = Time.time;
         float duration = currentTime - lastPressTime;
         lastPressTime = currentTime;
@@ -128,31 +95,25 @@ public class Ritmamida : MonoBehaviour
         float lineWidth = (duration / 25f) * lineWidthMultiplier;
 
         // Проверяем совпадение с предыдущей шириной
-        if (previousLineWidth > 0 && !isPaused)
+        if (previousLineWidth > 0 && !menuManager.isPaused)
         {
             float lowerBound = previousLineWidth * 0.90f;
             float upperBound = previousLineWidth * 1.1f;
 
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {
-                consecutiveHits++;
-                matchCounter += consecutiveHits;
-                scoreText.text = "Счёт: " + matchCounter;
-                Debug.Log("Счёт обновлён: " + matchCounter);
-                PlaySuccesHitSound();
+                menuManager.UpdateScore();
+                //matchCounter += 1;
+                //scoreText.text = "Счёт: " + matchCounter;
+                //Debug.Log("Счёт обновлён: " + matchCounter);
 
                 // Устанавливаем ширину новой линии равной предыдущей при успешном попадании
                 lineWidth = previousLineWidth;
             }
-            else
-            {
-                PlayHitSound();
-                consecutiveHits = 0;
-            }
         }
         else
         {
-            PlayHitSound();
+            menuManager.ResetStreak();
         }
 
         // Устанавливаем ширину линии
@@ -162,52 +123,15 @@ public class Ritmamida : MonoBehaviour
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
-
-
-
-    // Метод открытия меню
-    void OpenMenu()
+    // Сброс состояния после паузы
+    void ResetAfterPause()
     {
-        if (menuManager != null)
-        {
-            isPaused = true;  // Ставим игру на паузу
-            menuManager.OpenMenu();
-        }
-    }
+        firstPress = true;  // Устанавливаем, что следующая линия будет создаваться после второго удара
+        isCounting = false; // Останавливаем счетчик
 
-    // Метод закрытия меню
-    void CloseMenu()
-    {
-        if (menuManager != null)
-        {
-            isPaused = false;  // Возобновляем игру
-            menuManager.CloseMenu();
-        }
-    }
-
-    // Метод для переключения паузы
-    public void TogglePause(bool paused)
-    {
-        isPaused = paused;
-
-        if (menuPanel != null)
-        {
-            if (paused)
-            {
-                menuPanel.SetActive(true);
-                CanvasGroup canvasGroup = menuPanel.GetComponent<CanvasGroup>();
-                if (canvasGroup != null)
-                {
-                    canvasGroup.alpha = 1f;
-                    canvasGroup.interactable = true;
-                    canvasGroup.blocksRaycasts = true;
-                }
-            }
-            else
-            {
-                menuPanel.SetActive(false);
-            }
-        }
+        // Сбрасываем временные значения, чтобы исключить создание линии на первый пробел после паузы
+        lastPressTime = 0f;
+        startTime = 0f;
     }
 
     public void ResetLines()
@@ -219,6 +143,7 @@ public class Ritmamida : MonoBehaviour
         firstPress = true;
         previousLineWidth = -1f;
         matchCounter = 0;
-        consecutiveHits = 0;
     }
 }
+
+

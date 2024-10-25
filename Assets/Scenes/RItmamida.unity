@@ -994,10 +994,12 @@ MonoBehaviour:
   volumeSlider: {fileID: 1315907922}
   mainMenuButton: {fileID: 241842105}
   closeButton: {fileID: 2145537818}
+  scoreText: {fileID: 1332154789}
   gameTag: Ritmamida
   metronomSound: {fileID: 2123117000}
   interval: 1
   canClick: 1
+  isPaused: 0
 --- !u!4 &840231720
 Transform:
   m_ObjectHideFlags: 0
@@ -1316,8 +1318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29c517665a7d43acab7b1f58c4cc066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitSound: {fileID: 0}
-  SuccesHitSound: {fileID: 0}
   linePrefab: {fileID: 7713269393738047397, guid: 1cdb45a284a5345d5a534c23986538c5, type: 3}
   lineContainer: {fileID: 1571684974}
   lineWidthMultiplier: 25
@@ -1325,8 +1325,6 @@ MonoBehaviour:
   menuManager: {fileID: 840231719}
   scoreText: {fileID: 1332154789}
   menuPanel: {fileID: 1841657242}
-  openMenuUIButton: {fileID: 275733400}
-  closeMenuUIButton: {fileID: 2145537818}
 --- !u!4 &1251916780
 Transform:
   m_ObjectHideFlags: 0
