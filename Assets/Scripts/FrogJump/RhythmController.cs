@@ -202,6 +202,7 @@ public class RhythmController : MonoBehaviour
         {
             menuManager.UpdateScore();  // Обновляем счёт через MenuManager
         }
+        else { menuManager.ResetStreak(); }
     }
 
     private void UpdateRhythmInterval()

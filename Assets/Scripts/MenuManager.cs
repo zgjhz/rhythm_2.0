@@ -197,7 +197,6 @@ public class MenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             CountSpacePress();
-            Debug.Log("максимальная серия" + GetMaxStreak());
 
             // Запускаем метроном, если меню открыто
             if (menuPanel.activeSelf)
