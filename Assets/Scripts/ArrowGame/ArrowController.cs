@@ -1,17 +1,17 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class ArrowController : MonoBehaviour
 {
     public GameObject arrowPrefab;
     public MenuManager menuManager;
     public GameObject newArrow;
-    public Transform spawnPoint;
     public float movementSpeed = 5f;
     public float movementRange = 12f;
     public float arrowSpeed = 10f;
     public TMP_Text scoreText;
-    private bool isFired = false; 
+    private bool isFired = false;
     private Vector3 direction;
     private float interval = 1f;
     private int isFirst = 0;
@@ -44,7 +44,7 @@ public class ArrowController : MonoBehaviour
             MoveBow();
             if (!isFired && !isInMenu)
             {
-                newArrow.transform.position = spawnPoint.position;
+                newArrow.transform.position = transform.position;
                 newArrow.transform.rotation = transform.rotation;
                 //if (testTimer <= 0.02 && testTimer >= -0.02) {
                 //    movementSpeed = (movementRange + transform.position.x) / interval;
@@ -52,22 +52,8 @@ public class ArrowController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Space) && isFirst == 2)
                 {
                     FireArrow(testTimer);
-                    scoreText.text = "Счёт: " + score;
                     oldTime = Time.time;
                     testTimer = interval;
-                    float x = Mathf.Abs(transform.position.x);
-                    if (x <= 2)
-                    {
-                        score += 2;
-                    }
-                    else if (x <= 4 && x >= 2)
-                    {
-                        score += 1;
-                    }
-                    else {
-                        score += 0;
-                    }
-                    scoreText.text = "Счёт: " + score;
                 }
                 isFirst = 2;
             }
@@ -92,12 +78,14 @@ public class ArrowController : MonoBehaviour
     //    shouldMove = true;
     //}
 
-    public void OnMenuOpened() {
+    public void OnMenuOpened()
+    {
         isInMenu = true;
         //shouldMove = false;
     }
 
-    public void OnIntervalChanged() {
+    public void OnIntervalChanged()
+    {
         interval = menuManager.interval;
         movementSpeed = movementRange / interval;
         transform.position = new Vector3(0, -3.5f, 0);
@@ -113,19 +101,43 @@ public class ArrowController : MonoBehaviour
         Rigidbody rb = newArrow.GetComponent<Rigidbody>();
         rb.velocity = transform.up * arrowSpeed;
         rb.freezeRotation = true;
-        //if (Mathf.Abs(deltaTime / interval) <= 0.05) {
-        //    newArrow.transform.position = new Vector3(0, -1.2f, 0);
-        //}
+        if (Mathf.Abs(transform.position.x) <= 1.5f)
+        {
+            score++;
+            scoreText.text = "Счёт: " + score;
+        }
+
+        StartCoroutine(ShrinkArrow(newArrow, 1f));
+
         SpawnNewArrow();
         // Создание новой стрелы через время
         //Invoke("SpawnNewArrow", 2f);
     }
 
+    private IEnumerator ShrinkArrow(GameObject arrow, float duration)
+    {
+        if (arrow != null) {
+            Vector3 initialScale = arrow.transform.localScale;
+            Vector3 targetScale = Vector3.zero; // Размер, к которому будем уменьшать стрелу
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                arrow.transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsed / duration);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            arrow.transform.localScale = targetScale;
+        }
+    }
+
+
     void SpawnNewArrow()
     {
-        newArrow = Instantiate(arrowPrefab, spawnPoint.position, transform.rotation); // Новая стрела
+        newArrow = Instantiate(arrowPrefab, transform.position, transform.rotation); // Новая стрела
         Rigidbody rb = newArrow.GetComponent<Rigidbody>();
-        rb.freezeRotation = false;
+        rb.freezeRotation = true;
         //Destroy(gameObject); // Удалить старую стрелу
     }
 }
