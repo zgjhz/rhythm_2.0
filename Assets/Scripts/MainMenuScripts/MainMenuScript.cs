@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     public GameObject yourRhythmPreview;
     public GameObject frogGamePreview;
     public GameObject arrowGamePreview;
+    public GameObject statsWindow;
 
     // Ссылка на затемняющий фон (Image)
     public Image darkenBackground; // Используем Image вместо GameObject
@@ -58,6 +59,7 @@ public class MainMenu : MonoBehaviour
         yourRhythmPreview.SetActive(false);
         frogGamePreview.SetActive(false);
         arrowGamePreview.SetActive(false);
+        statsWindow.SetActive(false);
     }
 
     // Показ затемняющего фона (делаем активным и меняем прозрачность)
@@ -108,6 +110,13 @@ public class MainMenu : MonoBehaviour
     {
         HideAllPreviews();
         arrowGamePreview.SetActive(true);
+        ShowDarkenBackground();
+    }
+
+    public void ShowStats()
+    {
+        HideAllPreviews();
+        statsWindow.SetActive(true);
         ShowDarkenBackground();
     }
 
