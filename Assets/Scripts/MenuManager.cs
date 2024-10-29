@@ -199,10 +199,11 @@ public class MenuManager : MonoBehaviour
             CountSpacePress();
 
             // Запускаем метроном, если меню открыто
-            if (menuPanel.activeSelf)
+            if (canClick)
             {
-                timer = 0; // Сбрасываем таймер
-                PlaySound(); // Воспроизводим звук
+                print("set isSpacePressed to true");
+                //timer = 0; // Сбрасываем таймер
+                //PlaySound(); // Воспроизводим звук
                 isSpacePressed = true; // Устанавливаем флаг нажатия пробела
             }
         }
@@ -222,6 +223,11 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
+        if (gameTag == "ArrowGame") {
+            GameObject arrowControllerObj = GameObject.Find("Arrow Controller");
+            arrowControllerObj.GetComponent<ArrowController>().MetronomTicked();
+        }
+        print("playSound");
         if (metronomSound != null)
         {
             metronomSound.Play();

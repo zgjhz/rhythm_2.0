@@ -1,10 +1,11 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ArrowController : MonoBehaviour
 {
-    public GameObject arrowPrefab;
+    public List<GameObject> arrowPrefabs;
     public MenuManager menuManager;
     public GameObject newArrow;
     public float movementSpeed = 5f;
@@ -21,6 +22,8 @@ public class ArrowController : MonoBehaviour
     private float oldTime = 0;
     private int score = 0;
     private float positionError = 0;
+    private bool canClick = true;
+    private int prefabsNum = 0;
 
     private void Start()
     {
@@ -30,19 +33,21 @@ public class ArrowController : MonoBehaviour
         testTimer = interval;
         direction = Vector3.right;
         scoreText.text = "Счёт: 0";
+        prefabsNum = arrowPrefabs.Count;
     }
 
     void Update()
     {
+        canClick = menuManager.canClick;
         if (Input.GetKeyDown(KeyCode.Space) && isFirst == 0)
         {
             isFirst = 1;
         }
-        if (isFirst == 1 || isFirst == 2 && !isInMenu)
+        if (isFirst == 1 || isFirst == 2 && canClick)
         {
             testTimer -= Time.deltaTime;
             MoveBow();
-            if (!isFired && !isInMenu)
+            if (!isFired && canClick)
             {
                 newArrow.transform.position = transform.position;
                 newArrow.transform.rotation = transform.rotation;
@@ -63,6 +68,10 @@ public class ArrowController : MonoBehaviour
     private void MoveBow()
     {
         transform.Translate(direction * movementSpeed * Time.deltaTime);
+    }
+
+    public void MetronomTicked() {
+        movementSpeed = (movementRange + Mathf.Abs(transform.position.x)) / interval;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -91,6 +100,7 @@ public class ArrowController : MonoBehaviour
         transform.position = new Vector3(0, -3.5f, 0);
         isInMenu = false;
         testTimer = interval;
+        isFirst = 0;
         //Invoke("Resume", 2f);
         Debug.Log("Intreval changed HUUUY" + transform.position);
     }
@@ -103,8 +113,10 @@ public class ArrowController : MonoBehaviour
         rb.freezeRotation = true;
         if (Mathf.Abs(transform.position.x) <= 1.5f)
         {
-            score++;
-            scoreText.text = "Счёт: " + score;
+            menuManager.UpdateScore();
+        }
+        else {
+            menuManager.ResetStreak();
         }
 
         StartCoroutine(ShrinkArrow(newArrow, 1f));
@@ -135,7 +147,8 @@ public class ArrowController : MonoBehaviour
 
     void SpawnNewArrow()
     {
-        newArrow = Instantiate(arrowPrefab, transform.position, transform.rotation); // Новая стрела
+        int index = Random.Range(0, prefabsNum);
+        newArrow = Instantiate(arrowPrefabs[index], transform.position, transform.rotation); // Новая стрела
         Rigidbody rb = newArrow.GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         //Destroy(gameObject); // Удалить старую стрелу
