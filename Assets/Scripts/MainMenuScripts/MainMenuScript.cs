@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; // Не забудьте подключить UI, если используется Image
+using UnityEngine.UI;
+using TMPro;
 
-public class MainMenu : MonoBehaviour
+public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
     public GameObject metronomPreview;
@@ -11,6 +12,17 @@ public class MainMenu : MonoBehaviour
     public GameObject frogGamePreview;
     public GameObject arrowGamePreview;
     public GameObject statsWindow;
+    public TMP_Text metronomAcc;
+    public TMP_Text yourRhythmAcc;
+    public TMP_Text frogGameAcc;
+    public TMP_Text ritmamidaAcc;
+    public TMP_Text ArrowGameAcc;
+    public TMP_Text metronomStreak;
+    public TMP_Text yourRhythmStreak;
+    public TMP_Text frogGameStreak;
+    public TMP_Text ritmamidaStreak;
+    public TMP_Text ArrowGameStreak;
+    public TMP_Text scoreText;
 
     // Ссылка на затемняющий фон (Image)
     public Image darkenBackground; // Используем Image вместо GameObject
@@ -18,6 +30,7 @@ public class MainMenu : MonoBehaviour
     // Метод для кнопки "Play"
     public void PlayMetronom()
     {
+        
         SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
     }
     public void PlayRitmamida()
@@ -118,6 +131,27 @@ public class MainMenu : MonoBehaviour
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
+        scoreText.text = "Счёт: " + LoadScore();
+        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt("Metronom_maxStreak");
+        yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt("YourRhythm_maxStreak");
+        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt("FrogGame_maxStreak");
+        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt("ritmamida_maxStreak");
+        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt("ArrowGame_maxStreak");
+
+        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt("Metronom_PersentHits");
+        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt("YourRhythm_PersentHits");
+        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt("FrogGame_PersentHits");
+        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt("ritmamida_PersentHits");
+        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt("ArrowGame_PersentHits");
+    }
+
+    private float LoadScore() {
+        float m = PlayerPrefs.GetFloat("Metronom_score");
+        float y = PlayerPrefs.GetFloat("YourRhythm_score");
+        float f = PlayerPrefs.GetFloat("FrogGame_score");
+        float a = PlayerPrefs.GetFloat("ArrowGame_score");
+        float r = PlayerPrefs.GetFloat("Ritmamida_score");
+        return m + y + f + a + r;
     }
 
     // Метод для закрытия превью и затемнения
