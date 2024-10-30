@@ -115,11 +115,13 @@ public class BallMovement : MonoBehaviour
         if (Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary)) < 0.1f)
         {
             Debug.Log("Удар успешен!");
-            score++;
-            scoreText.text = "Счёт: " + score;
+            menuManager.UpdateScore();
+            // score++;
+            // scoreText.text = "Счёт: " + score;
         }
         else
         {
+            menuManager.ResetStreak();
             Debug.Log("Промах!");
         }
     }

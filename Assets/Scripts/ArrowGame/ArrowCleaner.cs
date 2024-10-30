@@ -17,10 +17,8 @@ public class ArrowCleaner : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("HUY1");
         if (collision.collider.CompareTag("collector")) {
             Destroy(gameObject);
-            Debug.Log("HUY2");
         }
     }
 }

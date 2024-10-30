@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -64,9 +65,9 @@ public class MenuManager : MonoBehaviour
             CountSpacePress();
 
             // Запускаем метроном, если меню открыто
-            if (menuPanel.activeSelf)
+            if (canClick)
             {
-                timer = 0; // Сбрасываем таймер
+                //timer = 0; // Сбрасываем таймер
                 PlaySound(); // Воспроизводим звук
                 isSpacePressed = true; // Устанавливаем флаг нажатия пробела
             }
@@ -126,9 +127,7 @@ public class MenuManager : MonoBehaviour
         timer = speed;
         interval = speed;
         Debug.Log("Скорость мяча установлена на: " + speed);
-    }
-
-    // Метод установки громкости
+    }    // Метод установки громкости
     public void SetVolume(float volume)
     {
         AudioListener.volume = volume;
@@ -140,8 +139,19 @@ public class MenuManager : MonoBehaviour
     // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
+        //canClick = true;
+        //isPaused = false;
+        //score = 0; // Счёт
+        //currentStreak = 0; // Текущая серия попаданий
+        //maxStreak = 0;
+        //spacePressCount = 0; // Счётчик нажатий на пробел
+        //isSpacePressed = false;
+        //Debug.Log("HUY");
+        float oldScore = PlayerPrefs.GetFloat(gameTag + "_score");
+        PlayerPrefs.SetFloat(gameTag + "_score", score + oldScore);
+        PlayerPrefs.Save();
+        CloseMenu();
         SceneManager.LoadScene("MainMenu");
-
     }
 
     public void StopMetronomeSound()
@@ -157,8 +167,7 @@ public class MenuManager : MonoBehaviour
     {
         score++; // Увеличиваем счёт на 1
         GetPersentHits();
-        PlayerPrefs.SetFloat(gameTag + "_score", score);
-        PlayerPrefs.Save();
+        Debug.Log(gameTag + "_score");
         UpdateScoreText(); // Обновляем отображение счёта
         IncrementStreak();
     }
@@ -204,5 +213,5 @@ public class MenuManager : MonoBehaviour
         currentStreak = 0; // Сбрасываем текущую серию попаданий
     }
 
-   
+
 }
