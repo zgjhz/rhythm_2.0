@@ -18,6 +18,7 @@ public class Ritmamida : MonoBehaviour
     public TMP_Text scoreText;
     private bool isCounting;
     public GameObject menuPanel;  // Ссылка на панель меню
+
     private void Start()
     {
         isCounting = false;
@@ -36,10 +37,9 @@ public class Ritmamida : MonoBehaviour
             lastSoundTime = Time.time - startTime;
         }
 
-        // Игнорируем пробел, если игра на паузе
         if (menuManager.isPaused)
         {
-            return;
+            ResetAfterPause();
         }
 
         // Запуск по пробелу, если игра не на паузе
@@ -47,10 +47,8 @@ public class Ritmamida : MonoBehaviour
         {
             OnButtonPress();
         }
-        if (menuManager.isPaused)
-        {
-            ResetAfterPause();
-        }
+
+        
     }
 
     void OnButtonPress()
@@ -103,10 +101,6 @@ public class Ritmamida : MonoBehaviour
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {
                 menuManager.UpdateScore();
-                //matchCounter += 1;
-                //scoreText.text = "Счёт: " + matchCounter;
-                //Debug.Log("Счёт обновлён: " + matchCounter);
-
                 // Устанавливаем ширину новой линии равной предыдущей при успешном попадании
                 lineWidth = previousLineWidth;
             }
@@ -123,6 +117,7 @@ public class Ritmamida : MonoBehaviour
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
+
     // Сброс состояния после паузы
     void ResetAfterPause()
     {
@@ -132,6 +127,7 @@ public class Ritmamida : MonoBehaviour
         // Сбрасываем временные значения, чтобы исключить создание линии на первый пробел после паузы
         lastPressTime = 0f;
         startTime = 0f;
+        previousLineWidth = -1f;  // Обнуляем предыдущую ширину линии, чтобы сбросить последовательность
     }
 
     public void ResetLines()
@@ -145,5 +141,3 @@ public class Ritmamida : MonoBehaviour
         matchCounter = 0;
     }
 }
-
-

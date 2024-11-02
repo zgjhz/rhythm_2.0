@@ -68,7 +68,7 @@ public class MenuManager : MonoBehaviour
             if (canClick)
             {
                 //timer = 0; // Сбрасываем таймер
-                PlaySound(); // Воспроизводим звук
+                //PlaySound(); // Воспроизводим звук
                 isSpacePressed = true; // Устанавливаем флаг нажатия пробела
             }
         }
@@ -150,6 +150,28 @@ public class MenuManager : MonoBehaviour
         float oldScore = PlayerPrefs.GetFloat(gameTag + "_score");
         PlayerPrefs.SetFloat(gameTag + "_score", score + oldScore);
         PlayerPrefs.Save();
+        float oldStreak = PlayerPrefs.GetFloat(gameTag + "_score");
+        if (oldStreak > maxStreak)
+        {
+            PlayerPrefs.SetFloat(gameTag + "_score", oldStreak);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            PlayerPrefs.SetFloat(gameTag + "_score", maxStreak);
+            PlayerPrefs.Save();
+        }
+        float oldAcc = PlayerPrefs.GetFloat(gameTag + "_PersentHits");
+        if (oldAcc > (score / spacePressCount) * 100)
+        {
+            PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt(oldAcc));
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
+            PlayerPrefs.Save();
+        }
         CloseMenu();
         SceneManager.LoadScene("MainMenu");
     }
