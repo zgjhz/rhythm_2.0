@@ -62,6 +62,7 @@ public class MainMenuScript : MonoBehaviour
     {
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
+        scoreText.text = "Счёт: " + LoadScore();
     }
 
     // Метод для скрытия всех превью
@@ -131,18 +132,17 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
-        scoreText.text = "Счёт: " + LoadScore();
         metronomStreak.text = "метроном: " + PlayerPrefs.GetInt("Metronom_maxStreak");
         yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt("YourRhythm_maxStreak");
         frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt("FrogGame_maxStreak");
         ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt("ritmamida_maxStreak");
         ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt("ArrowGame_maxStreak");
 
-        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt("Metronom_PersentHits");
-        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt("YourRhythm_PersentHits");
-        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt("FrogGame_PersentHits");
-        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt("ritmamida_PersentHits");
-        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt("ArrowGame_PersentHits");
+        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt("Metronom_PersentHits") + "%";
+        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt("YourRhythm_PersentHits") + "%";
+        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt("FrogGame_PersentHits") + "%";
+        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt("ritmamida_PersentHits") + "%";
+        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt("ArrowGame_PersentHits") + "%";
     }
 
     private float LoadScore() {

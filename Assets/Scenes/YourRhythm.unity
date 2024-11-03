@@ -425,7 +425,7 @@ MonoBehaviour:
   volumeSlider: {fileID: 1012626625}
   mainMenuButton: {fileID: 1831790818}
   closeButton: {fileID: 1471382410}
-  scoreText: {fileID: 0}
+  scoreText: {fileID: 26366583}
   gameTag: YourRhythm
   metronomSound: {fileID: 1060326098}
   interval: 1
