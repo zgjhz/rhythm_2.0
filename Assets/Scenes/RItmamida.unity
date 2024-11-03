@@ -1096,6 +1096,9 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
+  score: 0
+  currentStreak: 0
+  maxStreak: 0
 --- !u!4 &840231720
 Transform:
   m_ObjectHideFlags: 0
@@ -1591,8 +1594,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288241710
-  m_fontColor: {r: 0.18039216, g: 0.3764706, b: 0.6, a: 1}
+    rgba: 4281538097
+  m_fontColor: {r: 0.19215688, g: 0.08627451, b: 0.20000002, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
