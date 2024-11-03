@@ -156,8 +156,7 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.SetFloat(gameTag + "_score", oldStreak);
             PlayerPrefs.Save();
         }
-        else
-        {
+        else {
             PlayerPrefs.SetFloat(gameTag + "_score", maxStreak);
             PlayerPrefs.Save();
         }
@@ -167,8 +166,7 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt(oldAcc));
             PlayerPrefs.Save();
         }
-        else
-        {
+        else {
             PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
             PlayerPrefs.Save();
         }
