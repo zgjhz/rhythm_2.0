@@ -43,11 +43,11 @@ public class MainMenuScript : MonoBehaviour
     }
     public void PlayFrogGame()
     {
-        SceneManager.LoadScene("FrogGame"); // Замени на название твоей игровой сцены
+        SceneManager.LoadScene("FrogJump"); // Замени на название твоей игровой сцены
     }
     public void PlayArrowGame()
     {
-        SceneManager.LoadScene("Arrowgame"); // Замени на название твоей игровой сцены
+        SceneManager.LoadScene("ArrowGame"); // Замени на название твоей игровой сцены
     }
 
     // Метод для кнопки "Exit"
