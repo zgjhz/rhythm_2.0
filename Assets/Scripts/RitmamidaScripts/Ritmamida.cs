@@ -6,6 +6,7 @@ public class Ritmamida : MonoBehaviour
 {
     private float lastSoundTime = 0f;
     public GameObject linePrefab;
+    public GameObject linePrefab_purple;
     public Transform lineContainer;
     public float lineWidthMultiplier = 20f;
     public float lineSpacing = 20f;
@@ -81,17 +82,20 @@ public class Ritmamida : MonoBehaviour
         // Перемещаем все существующие линии вниз
         foreach (Transform child in lineContainer)
         {
-            float yOffset = linePrefab.transform.localScale.y;  // Используем только высоту блока без дополнительного отступа
+            float yOffset = linePrefab.transform.localScale.y+0.35f;// Используем только высоту блока без дополнительного отступа
+            float yOffset_1 = linePrefab_purple.transform.localScale.y;
             child.position -= new Vector3(0, yOffset, 0);  // Смещаем только на высоту блока
+            //child.position -= new Vector3(0, yOffset_1, 0);
         }
 
         // Создаем новую линию
         GameObject newLine = Instantiate(linePrefab, lineContainer);
+        GameObject newLine_1 = Instantiate(linePrefab_purple, lineContainer);
         Transform lineTransform = newLine.transform;
+        Transform lineTransform_1 = newLine_1.transform;
 
         // Рассчитываем ширину линии
         float lineWidth = (duration / 25f) * lineWidthMultiplier;
-
         // Проверяем совпадение с предыдущей шириной
         if (previousLineWidth > 0 && !menuManager.isPaused)
         {
@@ -112,8 +116,9 @@ public class Ritmamida : MonoBehaviour
 
         // Устанавливаем ширину линии
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
+        lineTransform_1.localScale = new Vector3(lineWidth+0.05f, lineTransform_1.localScale.y+0.35f, lineTransform_1.localScale.z);
         newLine.transform.localPosition = Vector3.zero;
-
+        newLine_1.transform.localPosition = Vector3.zero;
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
