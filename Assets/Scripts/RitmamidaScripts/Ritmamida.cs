@@ -6,6 +6,7 @@ public class Ritmamida : MonoBehaviour
 {
     private float lastSoundTime = 0f;
     public GameObject linePrefab;
+    public GameObject linePrefab_purple;
     public Transform lineContainer;
     public float lineWidthMultiplier = 20f;
     public float lineSpacing = 20f;
@@ -18,6 +19,7 @@ public class Ritmamida : MonoBehaviour
     public TMP_Text scoreText;
     private bool isCounting;
     public GameObject menuPanel;  // Ссылка на панель меню
+
     private void Start()
     {
         isCounting = false;
@@ -36,10 +38,9 @@ public class Ritmamida : MonoBehaviour
             lastSoundTime = Time.time - startTime;
         }
 
-        // Игнорируем пробел, если игра на паузе
         if (menuManager.isPaused)
         {
-            return;
+            ResetAfterPause();
         }
 
         // Запуск по пробелу, если игра не на паузе
@@ -47,10 +48,8 @@ public class Ritmamida : MonoBehaviour
         {
             OnButtonPress();
         }
-        if (menuManager.isPaused)
-        {
-            ResetAfterPause();
-        }
+
+        
     }
 
     void OnButtonPress()
@@ -83,17 +82,20 @@ public class Ritmamida : MonoBehaviour
         // Перемещаем все существующие линии вниз
         foreach (Transform child in lineContainer)
         {
-            float yOffset = linePrefab.transform.localScale.y;  // Используем только высоту блока без дополнительного отступа
+            float yOffset = linePrefab.transform.localScale.y+0.35f;// Используем только высоту блока без дополнительного отступа
+            float yOffset_1 = linePrefab_purple.transform.localScale.y;
             child.position -= new Vector3(0, yOffset, 0);  // Смещаем только на высоту блока
+            //child.position -= new Vector3(0, yOffset_1, 0);
         }
 
         // Создаем новую линию
         GameObject newLine = Instantiate(linePrefab, lineContainer);
+        GameObject newLine_1 = Instantiate(linePrefab_purple, lineContainer);
         Transform lineTransform = newLine.transform;
+        Transform lineTransform_1 = newLine_1.transform;
 
         // Рассчитываем ширину линии
         float lineWidth = (duration / 25f) * lineWidthMultiplier;
-
         // Проверяем совпадение с предыдущей шириной
         if (previousLineWidth > 0 && !menuManager.isPaused)
         {
@@ -103,10 +105,6 @@ public class Ritmamida : MonoBehaviour
             if (lineWidth >= lowerBound && lineWidth <= upperBound)
             {
                 menuManager.UpdateScore();
-                //matchCounter += 1;
-                //scoreText.text = "Счёт: " + matchCounter;
-                //Debug.Log("Счёт обновлён: " + matchCounter);
-
                 // Устанавливаем ширину новой линии равной предыдущей при успешном попадании
                 lineWidth = previousLineWidth;
             }
@@ -118,11 +116,14 @@ public class Ritmamida : MonoBehaviour
 
         // Устанавливаем ширину линии
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
+        lineTransform_1.localScale = new Vector3(lineWidth+0.05f, lineTransform_1.localScale.y+0.35f, lineTransform_1.localScale.z);
         newLine.transform.localPosition = Vector3.zero;
-
+        newLine_1.transform.localPosition = Vector3.zero;
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
+
+
     // Сброс состояния после паузы
     void ResetAfterPause()
     {
@@ -132,6 +133,7 @@ public class Ritmamida : MonoBehaviour
         // Сбрасываем временные значения, чтобы исключить создание линии на первый пробел после паузы
         lastPressTime = 0f;
         startTime = 0f;
+        previousLineWidth = -1f;  // Обнуляем предыдущую ширину линии, чтобы сбросить последовательность
     }
 
     public void ResetLines()
@@ -145,5 +147,3 @@ public class Ritmamida : MonoBehaviour
         matchCounter = 0;
     }
 }
-
-
