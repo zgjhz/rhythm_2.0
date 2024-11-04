@@ -1418,9 +1418,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linePrefab: {fileID: 7713269393738047397, guid: 1cdb45a284a5345d5a534c23986538c5, type: 3}
+  linePrefab_purple: {fileID: 7713269393738047397, guid: c75e9c54d0d6a2948bb1116088a6069c, type: 3}
   lineContainer: {fileID: 1571684974}
   lineWidthMultiplier: 25
-  lineSpacing: 20
+  lineSpacing: 100
   menuManager: {fileID: 840231719}
   scoreText: {fileID: 1332154789}
   menuPanel: {fileID: 1841657242}
