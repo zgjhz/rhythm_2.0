@@ -196,7 +196,7 @@ public class MenuManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Очки: " + score.ToString(); // Обновляем текст с текущим счётом
+            scoreText.text = "Счёт: " + score.ToString(); // Обновляем текст с текущим счётом
         }
     }
 

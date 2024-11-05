@@ -1096,6 +1096,9 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
+  score: 0
+  currentStreak: 0
+  maxStreak: 0
 --- !u!4 &840231720
 Transform:
   m_ObjectHideFlags: 0
@@ -1415,9 +1418,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linePrefab: {fileID: 7713269393738047397, guid: 1cdb45a284a5345d5a534c23986538c5, type: 3}
+  linePrefab_purple: {fileID: 7713269393738047397, guid: c75e9c54d0d6a2948bb1116088a6069c, type: 3}
   lineContainer: {fileID: 1571684974}
   lineWidthMultiplier: 25
-  lineSpacing: 20
+  lineSpacing: 100
   menuManager: {fileID: 840231719}
   scoreText: {fileID: 1332154789}
   menuPanel: {fileID: 1841657242}
@@ -1591,8 +1595,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288241710
-  m_fontColor: {r: 0.18039216, g: 0.3764706, b: 0.6, a: 1}
+    rgba: 4281538097
+  m_fontColor: {r: 0.19215688, g: 0.08627451, b: 0.20000002, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
