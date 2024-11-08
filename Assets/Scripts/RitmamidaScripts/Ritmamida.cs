@@ -117,12 +117,12 @@ public class Ritmamida : MonoBehaviour
         // Устанавливаем ширину линии
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
         lineTransform_1.localScale = new Vector3(lineWidth+0.05f, lineTransform_1.localScale.y+0.35f, lineTransform_1.localScale.z);
+
         newLine.transform.localPosition = Vector3.zero;
         newLine_1.transform.localPosition = Vector3.zero;
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
-
     // Сброс состояния после паузы
     void ResetAfterPause()
     {
