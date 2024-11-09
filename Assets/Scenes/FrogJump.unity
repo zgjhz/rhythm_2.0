@@ -1048,6 +1048,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e9cbf8fdf5b44e0b96de5ebf346928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftLilyPad: {fileID: 991911436}
+  rightLilyPad: {fileID: 1571525853}
+  scaleFactor: 1.2
 --- !u!1 &936977211
 GameObject:
   m_ObjectHideFlags: 0
