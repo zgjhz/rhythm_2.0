@@ -31,6 +31,7 @@ public class MenuManager : MonoBehaviour
     // Для подсчёта нажатий на пробел
     private float spacePressCount = 0; // Счётчик нажатий на пробел
     private bool isSpacePressed = false;
+
     private void Start()
     {
         // Отключаем панель меню при старте
@@ -126,14 +127,14 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.Save();
         timer = speed;
         interval = speed;
-        Debug.Log("Скорость мяча установлена на: " + speed);
+       // Debug.Log("Скорость мяча установлена на: " + speed);
     }    // Метод установки громкости
     public void SetVolume(float volume)
     {
         AudioListener.volume = volume;
         PlayerPrefs.SetFloat(gameTag + "_volume", volume);
         PlayerPrefs.Save();
-        Debug.Log("Громкость установлена на: " + volume);
+       // Debug.Log("Громкость установлена на: " + volume);
     }
 
     // Метод выхода в главное меню
@@ -147,27 +148,29 @@ public class MenuManager : MonoBehaviour
         //spacePressCount = 0; // Счётчик нажатий на пробел
         //isSpacePressed = false;
         //Debug.Log("HUY");
-        float oldScore = PlayerPrefs.GetFloat(gameTag + "_score");
-        PlayerPrefs.SetFloat(gameTag + "_score", score + oldScore);
+        string username = PlayerPrefs.GetString("current_user");
+        Debug.Log("USERNAME SAVE" + username);
+        float oldScore = PlayerPrefs.GetFloat(username+gameTag + "_score");
+        PlayerPrefs.SetFloat(username + gameTag + "_score", score + oldScore);
         PlayerPrefs.Save();
-        float oldStreak = PlayerPrefs.GetFloat(gameTag + "_score");
+        float oldStreak = PlayerPrefs.GetFloat(username + gameTag + "_score");
         if (oldStreak > maxStreak)
         {
-            PlayerPrefs.SetFloat(gameTag + "_score", oldStreak);
+            PlayerPrefs.SetFloat(username + gameTag + "_score", oldStreak);
             PlayerPrefs.Save();
         }
         else {
-            PlayerPrefs.SetFloat(gameTag + "_score", maxStreak);
+            PlayerPrefs.SetFloat(username + gameTag + "_score", maxStreak);
             PlayerPrefs.Save();
         }
-        float oldAcc = PlayerPrefs.GetFloat(gameTag + "_PersentHits");
+        float oldAcc = PlayerPrefs.GetFloat(username + gameTag + "_PersentHits");
         if (oldAcc > (score / spacePressCount) * 100)
         {
-            PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt(oldAcc));
+            PlayerPrefs.SetInt(username + gameTag + "_PersentHits", Mathf.RoundToInt(oldAcc));
             PlayerPrefs.Save();
         }
         else {
-            PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
+            PlayerPrefs.SetInt(username + gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
             PlayerPrefs.Save();
         }
         CloseMenu();
@@ -187,7 +190,7 @@ public class MenuManager : MonoBehaviour
     {
         score++; // Увеличиваем счёт на 1
         GetPersentHits();
-        Debug.Log(gameTag + "_score");
+        //Debug.Log(gameTag + "_score");
         UpdateScoreText(); // Обновляем отображение счёта
         IncrementStreak();
     }
@@ -210,8 +213,8 @@ public class MenuManager : MonoBehaviour
     {
         PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
         PlayerPrefs.Save();
-        Debug.Log(spacePressCount);
-        Debug.Log(Mathf.RoundToInt((score / spacePressCount) * 100));
+        //Debug.Log(spacePressCount);
+       // Debug.Log(Mathf.RoundToInt((score / spacePressCount) * 100));
 
     }
     public void IncrementStreak()
@@ -223,7 +226,8 @@ public class MenuManager : MonoBehaviour
         {
             maxStreak = currentStreak;
         }
-        PlayerPrefs.SetInt(gameTag + "_maxStreak", maxStreak);
+        string username = PlayerPrefs.GetString("current_user");
+        PlayerPrefs.SetInt(username + gameTag + "_maxStreak", maxStreak);
         PlayerPrefs.Save();
     }
 
