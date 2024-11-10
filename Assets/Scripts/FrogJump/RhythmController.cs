@@ -14,7 +14,7 @@ public class RhythmController : MonoBehaviour
     private MenuManager menuManager; // Ссылка на MenuManager для управления звуком
 
     // Точность попадания в ритм в процентах (10%)
-    private const float allowedAccuracy = 0.1f;
+    private const float allowedAccuracy = 0.15f;
 
     // Ссылки на кувшинки
     public GameObject leftLilyPad;
@@ -47,14 +47,7 @@ public class RhythmController : MonoBehaviour
         // Проверяем нажатие пробела для начала игры или для проверки точности
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!isGameStarted)
-            {
-                StartGame(); // Запуск игры при нажатии пробела
-            }
-            else
-            {
-                CheckAccuracy(); // Проверяем точность нажатия пробела
-            }
+            OnSpacePressed(); // Вызов функции OnSpacePressed при нажатии пробела
         }
 
         // Обновляем интервал ритма на основе значения слайдера
@@ -82,7 +75,7 @@ public class RhythmController : MonoBehaviour
     private void CheckAccuracy()
     {
         float timeDifference = Mathf.Abs(Time.time - nextBeatTime); // Разница между текущим временем и ритмом
-        float allowedWindow = rhythmInterval * allowedAccuracy; // Вычисляем допустимое отклонение (10%)
+        float allowedWindow = rhythmInterval * allowedAccuracy; // Вычисляем допустимое отклонение (15%)
 
         if (timeDifference <= allowedWindow) // Если нажали точно в ритм
         {
@@ -160,6 +153,19 @@ public class RhythmController : MonoBehaviour
                     menuManager.StopMetronomeSound(); // Останавливаем метроном
                 }
             }
+        }
+    }
+
+    // Новая функция для обработки нажатия пробела
+    private void OnSpacePressed()
+    {
+        if (!isGameStarted)
+        {
+            StartGame(); // Запуск игры при нажатии пробела
+        }
+        else
+        {
+            CheckAccuracy(); // Проверяем точность нажатия пробела
         }
     }
 }
