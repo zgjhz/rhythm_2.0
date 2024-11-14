@@ -30,17 +30,10 @@ public class BallMovement : MonoBehaviour
     {
         interval = menuManager.interval;
 
-        // Проверка нажатия пробела для старта или возобновления игры
+        // Проверка нажатия пробела
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isPaused)
-            {
-                StartGame(); // Начинаем или возобновляем игру
-            }
-            else
-            {
-                CheckHit(); // Выполняем удар, если игра не на паузе
-            }
+            OnSpacePressed();
         }
 
         // Если мяч готов к движению и игра не на паузе
@@ -57,6 +50,19 @@ public class BallMovement : MonoBehaviour
             {
                 StartCoroutine(HandleWallHit(wallHighlightControllerLeft));
             }
+        }
+    }
+
+    // Обработка нажатия на пробел
+    public void OnSpacePressed()
+    {
+        if (isPaused)
+        {
+            StartGame(); // Начинаем или возобновляем игру
+        }
+        else
+        {
+            CheckHit(); // Выполняем удар, если игра не на паузе
         }
     }
 
