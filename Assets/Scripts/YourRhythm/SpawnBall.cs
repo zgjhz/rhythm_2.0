@@ -43,10 +43,6 @@ public class SpawnBall : MonoBehaviour
         {
             lastSoundTime = Time.time - startTime;
         }
-        if (canClick && Input.GetKeyDown(KeyCode.Space)) // Проверяем, нажата ли клавиша пробел
-        {
-            OnSpacePressed(); // Вызываем обработку нажатия пробела
-        }
     }
 
     bool PlaySound(float markerPosition)
@@ -70,38 +66,43 @@ public class SpawnBall : MonoBehaviour
         return flag;
     }
 
-    void OnSpacePressed()
+    public void OnSpacePressed()
     {
-        startTime = Time.time;
-        isCounting = true;
-        float screenWidth = spawnPoint.transform.lossyScale.x / 2;
-        float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
-        GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
-        SpriteRenderer sr = newMarker.GetComponent<SpriteRenderer>();
-        float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
-        float rndY = 0;
-        if (Mathf.Abs(deltaTime) >= 5 && Mathf.Abs(deltaTime) < 6) {
-            rndY = Random.Range(1, -1);
-        }
-        else if (Mathf.Abs(deltaTime) >= 3.5f && Mathf.Abs(deltaTime) < 5)
+        if (canClick)
         {
-            rndY = Random.Range(3.5f, -3.5f);
-        }
-        else if (Mathf.Abs(deltaTime) < 3.5f)
-        {
-            rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
-        }
-        newMarker.transform.position += new Vector3(deltaTime, rndY);
-        newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
-        hitStreakNum = 1;
-        if (PlaySound(newMarker.transform.position.x))
-        {
-            sr.sprite = hitSprite;
-            menuManager.UpdateScore();
-        }
-        else {
-            sr.sprite = missSprite;
-            menuManager.ResetStreak();
+            startTime = Time.time;
+            isCounting = true;
+            float screenWidth = spawnPoint.transform.lossyScale.x / 2;
+            float deltaTime = (lastSoundTime - interval) / interval * screenWidth;
+            GameObject newMarker = Instantiate(markerPrefab, spawnPoint.transform);
+            SpriteRenderer sr = newMarker.GetComponent<SpriteRenderer>();
+            float accuracyBarHeight = accuracyBar.localScale.y / 2 - 1;
+            float rndY = 0;
+            if (Mathf.Abs(deltaTime) >= 5 && Mathf.Abs(deltaTime) < 6)
+            {
+                rndY = Random.Range(1, -1);
+            }
+            else if (Mathf.Abs(deltaTime) >= 3.5f && Mathf.Abs(deltaTime) < 5)
+            {
+                rndY = Random.Range(3.5f, -3.5f);
+            }
+            else if (Mathf.Abs(deltaTime) < 3.5f)
+            {
+                rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
+            }
+            newMarker.transform.position += new Vector3(deltaTime, rndY);
+            newMarker.transform.localScale = new Vector3(0.05f, 0.05f);
+            hitStreakNum = 1;
+            if (PlaySound(newMarker.transform.position.x))
+            {
+                sr.sprite = hitSprite;
+                menuManager.UpdateScore();
+            }
+            else
+            {
+                sr.sprite = missSprite;
+                menuManager.ResetStreak();
+            }
         }
     }
 }
