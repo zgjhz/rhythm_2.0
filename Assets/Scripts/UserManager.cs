@@ -25,6 +25,9 @@ public class UserManager : MonoBehaviour
 
     public TMP_InputField inputField;
     public TMP_Text scoreText;
+    public GameObject loginErrorPanel;
+
+    public Image darkenBackground; // Используем Image вместо GameObject
 
     void Start()
     {
@@ -57,8 +60,26 @@ public class UserManager : MonoBehaviour
             SaveUsers();
         }
         else {
+            PlayerPrefs.SetString("current_user", "");
+            PlayerPrefs.Save();
             Debug.Log("Долбаёб не ввёл имя");
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
         }
+    }
+
+    private void ShowDarkenBackground()
+    {
+        darkenBackground.gameObject.SetActive(true); // Включаем Image
+        var color = darkenBackground.color;
+        color.a = 0.5f; // Устанавливаем полупрозрачный фон (от 0 до 1)
+        darkenBackground.color = color;
+    }
+
+    // Скрытие затемняющего фона (деактивируем объект)
+    private void HideDarkenBackground()
+    {
+        darkenBackground.gameObject.SetActive(false); // Отключаем Image
     }
 
     private float LoadScore()

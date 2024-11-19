@@ -1,11 +1,11 @@
-using System.IO.Ports;
+п»їusing System.IO.Ports;
 using UnityEngine;
 
 public class SerialPortReader : MonoBehaviour
 {
     private SerialPort serialPort;
-    public string portName = "COM3"; // Название COM-порта, например, "COM3"
-    public int baudRate = 9600; // Скорость передачи данных
+    public string portName = "COM3"; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ COM-пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, "COM3"
+    public int baudRate = 9600; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     public GameObject MainController;
     public string gameTag = "";
 
@@ -13,12 +13,27 @@ public class SerialPortReader : MonoBehaviour
 
     void Start()
     {
-        // Инициализация и открытие порта
-        serialPort = new SerialPort(portName, baudRate);
-        serialPort.Open();
-        serialPort.ReadTimeout = 1000; // Таймаут чтения в миллисекундах
+        // РџРѕРїС‹С‚РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє COM-РїРѕСЂС‚Сѓ СЃ РѕР±СЂР°Р±РѕС‚РєРѕР№ РѕС€РёР±РѕРє
+        try
+        {
+            serialPort = new SerialPort(portName, baudRate);
+            serialPort.Open();
+            serialPort.ReadTimeout = 1000; // РЈСЃС‚Р°РЅРѕРІРєР° С‚Р°Р№РјР°СѓС‚Р° С‡С‚РµРЅРёСЏ
+            Debug.Log("РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїРѕСЂС‚Сѓ: " + portName);
+        }
+        catch (System.IO.IOException e)
+        {
+            Debug.LogError($"РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє РїРѕСЂС‚Сѓ {portName}: {e.Message}");
+            serialPort = null; // РћСЃС‚Р°РІР»СЏРµРј РѕР±СЉРµРєС‚ null, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РІС‹Р·РѕРІРѕРІ РІ Update
+        }
+        catch (System.UnauthorizedAccessException e)
+        {
+            Debug.LogError($"Р”РѕСЃС‚СѓРї Рє РїРѕСЂС‚Сѓ {portName} Р·Р°РїСЂРµС‰С‘РЅ: {e.Message}");
+            serialPort = null;
+        }
 
-        switch (gameTag) {
+        switch (gameTag)
+        {
             case ("YourRhythm"):
                 script = MainController.GetComponent<SpawnBall>();
                 break;
@@ -39,19 +54,19 @@ public class SerialPortReader : MonoBehaviour
 
     void Update()
     {
-        // Проверка, открыт ли порт, и чтение данных, если они доступны
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (serialPort.IsOpen)
         {
             try
             {
-                // Чтение строки данных из порта
+                // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 string message = serialPort.ReadLine();
                 script.OnSpacePressed();
-                Debug.Log("Получено сообщение: " + message);
+                Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: " + message);
             }
             catch (System.TimeoutException)
             {
-                // Обработка таймаута, если данных нет
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
             }
         }
 
@@ -62,7 +77,7 @@ public class SerialPortReader : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        // Закрытие порта при выходе из приложения
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Close();

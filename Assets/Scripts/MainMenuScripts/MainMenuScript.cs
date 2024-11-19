@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.IO.Ports;
 
 public class MainMenuScript : MonoBehaviour
 {
@@ -23,6 +24,17 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text ritmamidaStreak;
     public TMP_Text ArrowGameStreak;
     public TMP_Text scoreText;
+    private SerialPort serialPort;
+    public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
+    public int baudRate = 9600; // �������� �������� ������
+    public GameObject loginErrorPanel;
+
+    public Image statusImage;
+    public Sprite disconnected;
+    public Sprite connected;
+    public Sprite connecting;
+
+    private bool isPortOpened = false;
 
     // Ссылка на затемняющий фон (Image)
     public Image darkenBackground; // Используем Image вместо GameObject
@@ -30,24 +42,87 @@ public class MainMenuScript : MonoBehaviour
     // Метод для кнопки "Play"
     public void PlayMetronom()
     {
-        
-        SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
+        }
+        else {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
     }
     public void PlayRitmamida()
     {
-        SceneManager.LoadScene("Ritmamida"); // Замени на название твоей игровой сцены
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("Ritmamida"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
     }
     public void PlayYourRhythm()
     {
-        SceneManager.LoadScene("YourRhythm"); // Замени на название твоей игровой сцены
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("YourRhythm"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
     }
     public void PlayFrogGame()
     {
-        SceneManager.LoadScene("FrogJump"); // Замени на название твоей игровой сцены
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("FrogJump"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
     }
     public void PlayArrowGame()
     {
-        SceneManager.LoadScene("ArrowGame"); // Замени на название твоей игровой сцены
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("ArrowGame"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
     }
 
     // Метод для кнопки "Exit"
@@ -57,12 +132,41 @@ public class MainMenuScript : MonoBehaviour
         Application.Quit(); // Работает только в билде игры, а не в редакторе
     }
 
+    public void onCloseButtonClicked() {
+        loginErrorPanel.SetActive(false);
+        HideDarkenBackground();
+    }
+
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
         scoreText.text = "Счёт: " + LoadScore();
+        statusImage.sprite = connecting;
+        loginErrorPanel.SetActive(false);
+        // Попытка подключения к COM-порту с обработкой ошибок
+        try
+        {
+            serialPort = new SerialPort(portName, baudRate);
+            serialPort.Open();
+            serialPort.ReadTimeout = 1000; // Установка таймаута чтения
+            Debug.Log("Успешное подключение к порту: " + portName);
+            statusImage.sprite = connected;
+            isPortOpened = true;
+        }
+        catch (System.IO.IOException e)
+        {
+            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+            serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
+            statusImage.sprite = disconnected;
+        }
+        catch (System.UnauthorizedAccessException e)
+        {
+            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+            serialPort = null;
+            statusImage.sprite = disconnected;
+        }
     }
 
     // Метод для скрытия всех превью
@@ -90,6 +194,7 @@ public class MainMenuScript : MonoBehaviour
     {
         darkenBackground.gameObject.SetActive(false); // Отключаем Image
     }
+
 
     // Методы для открытия превью по кнопке "Info" с затемнением
     public void ShowMetronomInfo()
@@ -134,7 +239,7 @@ public class MainMenuScript : MonoBehaviour
         statsWindow.SetActive(true);
         ShowDarkenBackground();
         Debug.Log("Metronom_maxStreak" + PlayerPrefs.GetInt(username + "Metronom_maxStreak"));
-        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username+"Metronom_maxStreak");
+        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak");
         yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
         frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
         ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
@@ -147,7 +252,8 @@ public class MainMenuScript : MonoBehaviour
         ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
     }
 
-    private float LoadScore() {
+    private float LoadScore()
+    {
         string username = PlayerPrefs.GetString("current_user");
         float m = PlayerPrefs.GetFloat(username + "Metronom_score");
         float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");

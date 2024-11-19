@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -118,23 +117,21 @@ public class MenuManager : MonoBehaviour
 
         // Сбрасываем состояние нажатия пробела
         isSpacePressed = false; // Сбрасываем состояние нажатия пробела
-    }
-
-    // Метод установки скорости мяча
+    }// Метод установки скорости мяча
     public void SetBallSpeed(float speed)
     {
         PlayerPrefs.SetFloat(gameTag + "_interval", speed);
         PlayerPrefs.Save();
         timer = speed;
         interval = speed;
-       // Debug.Log("Скорость мяча установлена на: " + speed);
+        // Debug.Log("Скорость мяча установлена на: " + speed);
     }    // Метод установки громкости
     public void SetVolume(float volume)
     {
         AudioListener.volume = volume;
         PlayerPrefs.SetFloat(gameTag + "_volume", volume);
         PlayerPrefs.Save();
-       // Debug.Log("Громкость установлена на: " + volume);
+        // Debug.Log("Громкость установлена на: " + volume);
     }
 
     // Метод выхода в главное меню
@@ -150,7 +147,7 @@ public class MenuManager : MonoBehaviour
         //Debug.Log("HUY");
         string username = PlayerPrefs.GetString("current_user");
         Debug.Log("USERNAME SAVE" + username);
-        float oldScore = PlayerPrefs.GetFloat(username+gameTag + "_score");
+        float oldScore = PlayerPrefs.GetFloat(username + gameTag + "_score");
         PlayerPrefs.SetFloat(username + gameTag + "_score", score + oldScore);
         PlayerPrefs.Save();
         float oldStreak = PlayerPrefs.GetFloat(username + gameTag + "_score");
@@ -159,7 +156,8 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.SetFloat(username + gameTag + "_score", oldStreak);
             PlayerPrefs.Save();
         }
-        else {
+        else
+        {
             PlayerPrefs.SetFloat(username + gameTag + "_score", maxStreak);
             PlayerPrefs.Save();
         }
@@ -169,7 +167,8 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.SetInt(username + gameTag + "_PersentHits", Mathf.RoundToInt(oldAcc));
             PlayerPrefs.Save();
         }
-        else {
+        else
+        {
             PlayerPrefs.SetInt(username + gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
             PlayerPrefs.Save();
         }
@@ -214,7 +213,7 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.SetInt(gameTag + "_PersentHits", Mathf.RoundToInt((score / spacePressCount) * 100));
         PlayerPrefs.Save();
         //Debug.Log(spacePressCount);
-       // Debug.Log(Mathf.RoundToInt((score / spacePressCount) * 100));
+        // Debug.Log(Mathf.RoundToInt((score / spacePressCount) * 100));
 
     }
     public void IncrementStreak()
