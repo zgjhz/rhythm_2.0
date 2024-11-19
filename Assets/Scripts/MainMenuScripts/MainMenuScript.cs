@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class MainMenuScript : MonoBehaviour
 {
@@ -24,117 +25,52 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text ArrowGameStreak;
     public TMP_Text scoreText;
 
-    // Ссылка на затемняющий фон (Image)
-    public Image darkenBackground; // Используем Image вместо GameObject
+    public Image darkenBackground;
 
-    // Метод для кнопки "Play"
-    public void PlayMetronom()
-    {
-        
-        SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
-    }
-    public void PlayRitmamida()
-    {
-        SceneManager.LoadScene("Ritmamida"); // Замени на название твоей игровой сцены
-    }
-    public void PlayYourRhythm()
-    {
-        SceneManager.LoadScene("YourRhythm"); // Замени на название твоей игровой сцены
-    }
-    public void PlayFrogGame()
-    {
-        SceneManager.LoadScene("FrogJump"); // Замени на название твоей игровой сцены
-    }
-    public void PlayArrowGame()
-    {
-        SceneManager.LoadScene("ArrowGame"); // Замени на название твоей игровой сцены
-    }
+    private string filePath;
 
-    // Метод для кнопки "Exit"
-    public void QuitGame()
-    {
-        Debug.Log("Игра завершена!"); // Сообщение для проверки в редакторе
-        Application.Quit(); // Работает только в билде игры, а не в редакторе
-    }
-
-    // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
-        HideAllPreviews(); // Скрываем все превью при старте
-        HideDarkenBackground(); // Скрываем затемняющий фон при старте
+        filePath = Path.Combine(Application.persistentDataPath, "UserStats.csv");
+        Debug.Log($"Путь к файлу: {filePath}");
+
+        if (!File.Exists(filePath))
+        {
+            // Создаем файл и добавляем заголовок
+            using (StreamWriter writer = new StreamWriter(filePath, false))
+            {
+                writer.WriteLine("Username,Metronom_maxStreak,YourRhythm_maxStreak,FrogGame_maxStreak,Ritmamida_maxStreak,ArrowGame_maxStreak,Metronom_PersentHits,YourRhythm_PersentHits,FrogGame_PersentHits,Ritmamida_PersentHits,ArrowGame_PersentHits,TotalScore");
+            }
+            Debug.Log("CSV файл создан и заголовок добавлен.");
+        }
+
+        HideAllPreviews();
+        HideDarkenBackground();
         scoreText.text = "Счёт: " + LoadScore();
     }
 
-    // Метод для скрытия всех превью
-    private void HideAllPreviews()
+    // Методы для запуска игровых сцен
+    public void PlayMetronom() { SceneManager.LoadScene("Metronom"); }
+    public void PlayRitmamida() { SceneManager.LoadScene("Ritmamida"); }
+    public void PlayYourRhythm() { SceneManager.LoadScene("YourRhythm"); }
+    public void PlayFrogGame() { SceneManager.LoadScene("FrogJump"); }
+    public void PlayArrowGame() { SceneManager.LoadScene("ArrowGame"); }
+
+    public void QuitGame()
     {
-        metronomPreview.SetActive(false);
-        ritmamidaPreview.SetActive(false);
-        yourRhythmPreview.SetActive(false);
-        frogGamePreview.SetActive(false);
-        arrowGamePreview.SetActive(false);
-        statsWindow.SetActive(false);
+        Debug.Log("Игра завершена!");
+        Application.Quit();
     }
 
-    // Показ затемняющего фона (делаем активным и меняем прозрачность)
-    private void ShowDarkenBackground()
-    {
-        darkenBackground.gameObject.SetActive(true); // Включаем Image
-        var color = darkenBackground.color;
-        color.a = 0.5f; // Устанавливаем полупрозрачный фон (от 0 до 1)
-        darkenBackground.color = color;
-    }
-
-    // Скрытие затемняющего фона (деактивируем объект)
-    private void HideDarkenBackground()
-    {
-        darkenBackground.gameObject.SetActive(false); // Отключаем Image
-    }
-
-    // Методы для открытия превью по кнопке "Info" с затемнением
-    public void ShowMetronomInfo()
-    {
-        HideAllPreviews(); // Скрываем другие панели
-        metronomPreview.SetActive(true); // Показываем нужную
-        ShowDarkenBackground(); // Включаем затемнение
-    }
-
-    public void ShowRitmamidaInfo()
-    {
-        HideAllPreviews();
-        ritmamidaPreview.SetActive(true);
-        ShowDarkenBackground();
-    }
-
-    public void ShowYourRhythmInfo()
-    {
-        HideAllPreviews();
-        yourRhythmPreview.SetActive(true);
-        ShowDarkenBackground();
-    }
-
-    public void ShowFrogGameInfo()
-    {
-        HideAllPreviews();
-        frogGamePreview.SetActive(true);
-        ShowDarkenBackground();
-    }
-
-    public void ShowArrowGameInfo()
-    {
-        HideAllPreviews();
-        arrowGamePreview.SetActive(true);
-        ShowDarkenBackground();
-    }
-
+    // Метод для отображения статистики и записи в CSV
     public void ShowStats()
     {
         string username = PlayerPrefs.GetString("current_user");
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
-        Debug.Log("Metronom_maxStreak" + PlayerPrefs.GetInt(username + "Metronom_maxStreak"));
-        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username+"Metronom_maxStreak");
+
+        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak");
         yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
         frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
         ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
@@ -145,10 +81,43 @@ public class MainMenuScript : MonoBehaviour
         frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
         ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_PersentHits") + "%";
         ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
+
+        SaveStatsToCSV(username);
     }
 
-    private float LoadScore() {
+ 
+      private void SaveStatsToCSV(string username)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                Debug.Log(username);
+                // Получаем данные из PlayerPrefs
+                int metronomMaxStreak = PlayerPrefs.GetInt(username + "Metronom_maxStreak");
+                int yourRhythmMaxStreak = PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
+                int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
+                int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
+                int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
+
+                int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits");
+                int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits");
+                int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits");
+                int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "ritmamida_PersentHits");
+                int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits");
+
+                float totalScore = LoadScore();
+
+                // Запись в CSV, включая имя пользователя
+                writer.WriteLine($"{username},{metronomMaxStreak},{yourRhythmMaxStreak},{frogGameMaxStreak},{ritmamidaMaxStreak},{arrowGameMaxStreak},{metronomPercentHits},{yourRhythmPercentHits},{frogGamePercentHits},{ritmamidaPercentHits},{arrowGamePercentHits},{totalScore}");
+                Debug.Log("Данные успешно записаны в CSV файл.");
+            }
+        
+
+    }
+
+    private float LoadScore()
+    {
         string username = PlayerPrefs.GetString("current_user");
+
         float m = PlayerPrefs.GetFloat(username + "Metronom_score");
         float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
         float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
@@ -157,10 +126,37 @@ public class MainMenuScript : MonoBehaviour
         return m + y + f + a + r;
     }
 
-    // Метод для закрытия превью и затемнения
-    public void ClosePreview()
+    // Методы для скрытия и показа превью и затемняющего фона
+    private void HideAllPreviews()
     {
-        HideAllPreviews(); // Скрываем все превью
-        HideDarkenBackground(); // Отключаем затемнение
+        metronomPreview.SetActive(false);
+        ritmamidaPreview.SetActive(false);
+        yourRhythmPreview.SetActive(false);
+        frogGamePreview.SetActive(false);
+        arrowGamePreview.SetActive(false);
+        statsWindow.SetActive(false);
     }
+
+    private void ShowDarkenBackground()
+    {
+        darkenBackground.gameObject.SetActive(true);
+        var color = darkenBackground.color;
+        color.a = 0.5f;
+        darkenBackground.color = color;
+    }
+
+    private void HideDarkenBackground()
+    {
+        darkenBackground.gameObject.SetActive(false);
+    }
+
+    // Методы для показа информации о каждой игре
+    public void ShowMetronomInfo() { HideAllPreviews(); metronomPreview.SetActive(true); ShowDarkenBackground(); }
+    public void ShowRitmamidaInfo() { HideAllPreviews(); ritmamidaPreview.SetActive(true); ShowDarkenBackground(); }
+    public void ShowYourRhythmInfo() { HideAllPreviews(); yourRhythmPreview.SetActive(true); ShowDarkenBackground(); }
+    public void ShowFrogGameInfo() { HideAllPreviews(); frogGamePreview.SetActive(true); ShowDarkenBackground(); }
+    public void ShowArrowGameInfo() { HideAllPreviews(); arrowGamePreview.SetActive(true); ShowDarkenBackground(); }
+
+    // Закрытие всех панелей и затемнения
+    public void ClosePreview() { HideAllPreviews(); HideDarkenBackground(); }
 }
