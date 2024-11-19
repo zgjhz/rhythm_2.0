@@ -63,6 +63,7 @@ public class MenuManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+
             CountSpacePress();
 
             // Запускаем метроном, если меню открыто
