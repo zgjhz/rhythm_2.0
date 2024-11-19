@@ -46,13 +46,13 @@ public class Ritmamida : MonoBehaviour
         // Запуск по пробелу, если игра не на паузе
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            OnButtonPress();
+            OnSpacePressed();
         }
 
 
     }
 
-    void OnButtonPress()
+    void OnSpacePressed()
     {
         // Перезапуск игры после паузы
         if (firstPress)
@@ -82,8 +82,8 @@ public class Ritmamida : MonoBehaviour
         // Перемещаем все существующие линии вниз
         foreach (Transform child in lineContainer)
         {
-            float yOffset = linePrefab.transform.localScale.y + 1.35f;// Используем только высоту блока без дополнительного отступа
-            float yOffset_1 = linePrefab_purple.transform.localScale.y + 1.35f;
+            float yOffset = linePrefab.transform.localScale.y+0.35f;// Используем только высоту блока без дополнительного отступа
+            float yOffset_1 = linePrefab_purple.transform.localScale.y;
             child.position -= new Vector3(0, yOffset, 0);  // Смещаем только на высоту блока
             //child.position -= new Vector3(0, yOffset_1, 0);
         }
@@ -116,14 +116,12 @@ public class Ritmamida : MonoBehaviour
 
         // Устанавливаем ширину линии
         lineTransform.localScale = new Vector3(lineWidth, lineTransform.localScale.y, lineTransform.localScale.z);
-        lineTransform_1.localScale = new Vector3(lineWidth + 0.02f, lineTransform_1.localScale.y + 0.35f, lineTransform_1.localScale.z);
+        lineTransform_1.localScale = new Vector3(lineWidth+0.05f, lineTransform_1.localScale.y+0.35f, lineTransform_1.localScale.z);
         newLine.transform.localPosition = Vector3.zero;
         newLine_1.transform.localPosition = Vector3.zero;
         // После всех проверок обновляем previousLineWidth текущей шириной линии
         previousLineWidth = lineWidth;
     }
-
-
     // Сброс состояния после паузы
     void ResetAfterPause()
     {
