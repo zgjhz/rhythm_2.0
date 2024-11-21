@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee44f8077ebc19488534d09f6f9d861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightDuration: 0.2
+  highlightDuration: 0.07
 --- !u!212 &30427975
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1582,7 +1582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee44f8077ebc19488534d09f6f9d861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightDuration: 0.2
+  highlightDuration: 0.07
 --- !u!212 &937780736
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2468,10 +2468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf9eafc6ed15b5478fd67dac9185f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portName: COM3
-  baudRate: 9600
-  MainController: {fileID: 1787591102}
-  gameTag: Metronom
 --- !u!1 &1915911911
 GameObject:
   m_ObjectHideFlags: 0

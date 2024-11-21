@@ -12,12 +12,11 @@ public class BallMovement : MonoBehaviour
     private Vector2 direction = Vector2.right;
     private bool canMove = false; // Игра начинается в состоянии паузы
     private bool isPaused = true; // Флаг для паузы
-    private int score = 0;
-    private float interval = 0f;
     public TMP_Text scoreText;
     public float wallBoundary = 7.4f; // Позиция стен
     public WallHighlightController wallHighlightControllerLeft;
     public WallHighlightController wallHighlightControllerRight;
+    private float interval = 0f;
 
     void Start()
     {
@@ -30,10 +29,10 @@ public class BallMovement : MonoBehaviour
     {
         interval = menuManager.interval;
 
-        // Проверка нажатия пробела
+        // Обработка нажатий на пробел вынесена в отдельную функцию
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            OnSpacePressed();
+            onSpacePressed();
         }
 
         // Если мяч готов к движению и игра не на паузе
@@ -53,8 +52,7 @@ public class BallMovement : MonoBehaviour
         }
     }
 
-    // Обработка нажатия на пробел
-    public void OnSpacePressed()
+    void onSpacePressed()
     {
         if (isPaused)
         {
@@ -111,27 +109,28 @@ public class BallMovement : MonoBehaviour
     }
 
     void CheckHit()
-    {
-        // Проверяем попадание в ритм
-        if (Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary)) < 0.1f)
-        {
-            Debug.Log("Удар успешен!");
-            menuManager.UpdateScore();
+{
+    float distance = Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary));
+    WallHighlightController activeWallHighlightController = direction == Vector2.right ? wallHighlightControllerRight : wallHighlightControllerLeft;
 
-            // Запуск подсветки только при успешном попадании
-            if (direction == Vector2.right && wallHighlightControllerRight != null)
-            {
-                wallHighlightControllerRight.TriggerHighlight();
-            }
-            else if (direction == Vector2.left && wallHighlightControllerLeft != null)
-            {
-                wallHighlightControllerLeft.TriggerHighlight();
-            }
-        }
-        else
-        {
-            menuManager.ResetStreak();
-            Debug.Log("Промах!");
-        }
+    if (distance < 0.2f) // Точное попадание
+    {
+        Debug.Log("Удар успешен!");
+        activeWallHighlightController.TriggerHighlight(Color.green);
+        menuManager.UpdateScore();
     }
+    else if (distance < 1f) // Небольшой промах
+    {
+        Debug.Log("Небольшой промах!");
+        activeWallHighlightController.TriggerHighlight(Color.yellow);
+        menuManager.ResetStreak();
+    }
+    else // Большой промах
+    {
+        Debug.Log("Большой промах!");
+        activeWallHighlightController.TriggerHighlight(Color.red);
+        menuManager.ResetStreak();
+    }
+}
+
 }
