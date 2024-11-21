@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class UserData
 {
     public string username;
-    // Добавьте другие параметры пользователя, если нужно
+    // Дополнительные поля для пользователя, если нужно
 }
 
 [System.Serializable]
@@ -29,9 +29,14 @@ public class UserManager : MonoBehaviour
 
     public Image darkenBackground; // Используем Image вместо GameObject
 
+    private string csvPath; // Путь к CSV-файлу
+
     void Start()
     {
-        filePath = Path.Combine(Application.persistentDataPath, "users.json");
+        filePath = Path.Combine(Application.dataPath, "stats.json");
+        csvPath = Path.Combine(Application.dataPath, "stats.csv");
+        Debug.Log("Path to JSON file: " + filePath);
+        Debug.Log("Path to CSV file: " + csvPath);
         string name = PlayerPrefs.GetString("current_user");
         inputField.text = name;
         scoreText.text = "Счёт: " + LoadScore();
@@ -46,26 +51,69 @@ public class UserManager : MonoBehaviour
             PlayerPrefs.SetString("current_user", username);
             PlayerPrefs.Save();
             scoreText.text = "Счёт: " + LoadScore();
-            // Проверяем, существует ли пользователь с таким именем
-            if (userList.users.Exists(user => user.username == username))
-            {
-                return;
-            }
 
-            // Создаём нового пользователя и добавляем его в список
+
+            // Добавляем нового пользователя в список
             UserData newUser = new UserData { username = username };
             userList.users.Add(newUser);
 
-            // Сохраняем обновлённый список пользователей в файл
+            // Сохраняем обновленный список пользователей в JSON
             SaveUsers();
+
+
+            // Добавляем пользователя в CSV, если его там ещё нет
+            AddUserToCSV(username);
         }
-        else {
+        else
+        {
             PlayerPrefs.SetString("current_user", "");
             PlayerPrefs.Save();
-            Debug.Log("Долбаёб не ввёл имя");
+            Debug.Log("Имя пользователя не введено");
             loginErrorPanel.SetActive(true);
             ShowDarkenBackground();
         }
+    }
+
+    private void AddUserToCSV(string username)
+    {
+        // Если CSV-файл не существует, создаём его с заголовками
+        if (!File.Exists(csvPath))
+        {
+            File.WriteAllText(csvPath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+        }
+
+        // Читаем все строки из CSV
+        List<string> csvLines = new List<string>(File.ReadAllLines(csvPath));
+
+        // Проверяем, существует ли пользователь в CSV
+        bool userExists = csvLines.Exists(line => line.StartsWith(username + ","));
+        Debug.Log(0);
+
+        // Формируем новую строку с данными пользователя
+        int metronomMaxStreak = PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
+        int yourRhythmMaxStreak = PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
+        int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
+        int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
+        int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+
+        int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
+        int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
+        int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
+        int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
+        int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
+        float totalScore = metronomMaxStreak + yourRhythmMaxStreak + frogGameMaxStreak + ritmamidaMaxStreak + arrowGameMaxStreak;
+
+
+        // Получаем текущую дату
+        string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{totalScore};{sessionDate}";
+        csvLines.Add(userStats); // Добавляем строку в список
+
+        // Записываем обновленные данные обратно в CSV
+        File.WriteAllLines(csvPath, csvLines.ToArray());
+        Debug.Log($"Добавлен пользователь {username} в CSV.");
+
+
     }
 
     private void ShowDarkenBackground()
@@ -97,25 +145,25 @@ public class UserManager : MonoBehaviour
     {
         if (File.Exists(filePath))
         {
-            // Загружаем существующих пользователей из файла JSON
+            // Загружаем список пользователей из JSON
             string json = File.ReadAllText(filePath);
             userList = JsonUtility.FromJson<UserList>(json);
-            Debug.Log("Пользователи загружены");
+            Debug.Log("Пользователи загружены.");
         }
         else
         {
-            // Если файл не существует, создаём пустой список пользователей
+            // Если файла нет, создаём новый список пользователей
             userList = new UserList();
-            Debug.Log("Пользователей не найдено, создаём новый список");
+            Debug.Log("Файл пользователей не найден, создаём новый.");
         }
     }
 
     private void SaveUsers()
     {
-        // Преобразуем обновлённый список пользователей в JSON и сохраняем
+        // Сохраняем список пользователей в JSON
         string json = JsonUtility.ToJson(userList);
         File.WriteAllText(filePath, json);
-        Debug.Log("Пользователи сохранены");
+        Debug.Log("Пользователи сохранены.");
     }
 
     public List<UserData> GetAllUsers()

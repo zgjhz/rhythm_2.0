@@ -3,7 +3,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.IO.Ports;
-
+using System.IO;
+using System.Collections.Generic;
 public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
@@ -28,16 +29,30 @@ public class MainMenuScript : MonoBehaviour
     public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
     public int baudRate = 9600; // �������� �������� ������
     public GameObject loginErrorPanel;
+    public GameObject soundSettingsPanel;
 
     public Image statusImage;
     public Sprite disconnected;
     public Sprite connected;
     public Sprite connecting;
 
-    private bool isPortOpened = false;
+    public List<Toggle> audioToggles;
 
+    private bool isPortOpened = false;
+    private string filePath = "stats.csv";
     // Ссылка на затемняющий фон (Image)
     public Image darkenBackground; // Используем Image вместо GameObject
+
+    public void OnSettingsButtonClick() {
+        soundSettingsPanel.SetActive(true);
+        int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        audioToggles[toggleIndex].isOn = true;
+    }
+
+    public void onToggleValueChanged(int soundNumber) {
+        PlayerPrefs.SetInt("chosen_sound", soundNumber);
+        PlayerPrefs.Save();
+    }
 
     // Метод для кнопки "Play"
     public void PlayMetronom()
@@ -51,7 +66,8 @@ public class MainMenuScript : MonoBehaviour
         {
             SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
         }
-        else {
+        else
+        {
             loginErrorPanel.SetActive(true);
             ShowDarkenBackground();
         }
@@ -129,44 +145,54 @@ public class MainMenuScript : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Игра завершена!"); // Сообщение для проверки в редакторе
-        Application.Quit(); // Работает только в билде игры, а не в редакторе
+
+
+
+        Application.Quit(); // Работает только в билде игры
     }
 
-    public void onCloseButtonClicked() {
+    public void onCloseButtonClicked()
+    {
         loginErrorPanel.SetActive(false);
         HideDarkenBackground();
+    }
+
+    public void closeSoundSettingsPanel() {
+        soundSettingsPanel.SetActive(false);
     }
 
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
+        Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
         scoreText.text = "Счёт: " + LoadScore();
         statusImage.sprite = connecting;
         loginErrorPanel.SetActive(false);
+        soundSettingsPanel.SetActive(false);
         // Попытка подключения к COM-порту с обработкой ошибок
-        try
-        {
-            serialPort = new SerialPort(portName, baudRate);
-            serialPort.Open();
-            serialPort.ReadTimeout = 1000; // Установка таймаута чтения
-            Debug.Log("Успешное подключение к порту: " + portName);
-            statusImage.sprite = connected;
-            isPortOpened = true;
-        }
-        catch (System.IO.IOException e)
-        {
-            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
-            serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
-            statusImage.sprite = disconnected;
-        }
-        catch (System.UnauthorizedAccessException e)
-        {
-            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
-            serialPort = null;
-            statusImage.sprite = disconnected;
-        }
+        //try
+        //{
+        //    serialPort = new SerialPort(portName, baudRate);
+        //    serialPort.Open();
+        //    serialPort.ReadTimeout = 1000; // Установка таймаута чтения
+        //    Debug.Log("Успешное подключение к порту: " + portName);
+        //    statusImage.sprite = connected;
+        //    isPortOpened = true;
+        //}
+        //catch (System.IO.IOException e)
+        //{
+        //    Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+        //    serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
+        //    statusImage.sprite = disconnected;
+        //}
+        //catch (System.UnauthorizedAccessException e)
+        //{
+        //    Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+        //    serialPort = null;
+        //    statusImage.sprite = disconnected;
+        //}
     }
 
     // Метод для скрытия всех превью
@@ -245,12 +271,16 @@ public class MainMenuScript : MonoBehaviour
         ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
         ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
 
+
         metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits") + "%";
         yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits") + "%";
         frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
         ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_PersentHits") + "%";
         ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
     }
+
+
+
 
     private float LoadScore()
     {
@@ -269,4 +299,7 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews(); // Скрываем все превью
         HideDarkenBackground(); // Отключаем затемнение
     }
+
 }
+
+
