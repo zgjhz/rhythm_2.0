@@ -3,58 +3,48 @@ using UnityEngine;
 public class WallHighlightController : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
-    public float highlightDuration = 0.2f;  // Длительность подсветки
-    private float currentBrightness = 0f;
+    public float highlightDuration = 0.07f;  // Длительность подсветки
+    private Color targetColor = Color.clear; // Цвет подсветки
+    private Color currentColor = Color.clear;
     private bool isHighlighting = false;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        SetBrightness(0f);  // Начальное значение яркости
+        SetColor(Color.clear);  // Начальное значение цвета
     }
 
     void Update()
     {
-        // Обработка увеличения яркости
         if (isHighlighting)
         {
-            float increment = (1f / highlightDuration) * Time.deltaTime;
-            currentBrightness += increment;
+            // Плавное увеличение яркости
+            currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime / highlightDuration);
+            SetColor(currentColor);
 
-            if (currentBrightness >= 1f)
+            if (currentColor == targetColor)
             {
-                currentBrightness = 1f;
                 isHighlighting = false;
             }
-
-            SetBrightness(currentBrightness);
         }
-        // Обработка уменьшения яркости
-        else if (currentBrightness > 0f)
+        else
         {
-            float decrement = (1f / highlightDuration) * Time.deltaTime;
-            currentBrightness -= decrement;
-
-            if (currentBrightness <= 0f)
-            {
-                currentBrightness = 0f;
-            }
-
-            SetBrightness(currentBrightness);
+            // Плавное уменьшение яркости
+            currentColor = Color.Lerp(currentColor, Color.clear, Time.deltaTime / highlightDuration);
+            SetColor(currentColor);
         }
     }
 
-    public void TriggerHighlight()
+    public void TriggerHighlight(Color highlightColor)
     {
+        targetColor = highlightColor;
         isHighlighting = true;
     }
 
-    private void SetBrightness(float brightness)
+    private void SetColor(Color color)
     {
         if (spriteRenderer != null)
         {
-            Color color = spriteRenderer.color;
-            color.a = brightness;
             spriteRenderer.color = color;
         }
     }
