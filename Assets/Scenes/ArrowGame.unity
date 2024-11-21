@@ -1111,6 +1111,7 @@ GameObject:
   m_Component:
   - component: {fileID: 869090703}
   - component: {fileID: 869090702}
+  - component: {fileID: 869090704}
   m_Layer: 0
   m_Name: Menu Manager
   m_TagString: Untagged
@@ -1139,6 +1140,7 @@ MonoBehaviour:
   scoreText: {fileID: 98819091}
   gameTag: ArrowGame
   metronomSound: {fileID: 245351610}
+  MainMenu: {fileID: 869090704}
   interval: 1
   canClick: 1
   isPaused: 0
@@ -1160,6 +1162,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &869090704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869090701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 558aa1ab24a253a45a84162b5a5a8e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  metronomPreview: {fileID: 0}
+  ritmamidaPreview: {fileID: 0}
+  yourRhythmPreview: {fileID: 0}
+  frogGamePreview: {fileID: 0}
+  arrowGamePreview: {fileID: 0}
+  statsWindow: {fileID: 0}
+  metronomAcc: {fileID: 0}
+  yourRhythmAcc: {fileID: 0}
+  frogGameAcc: {fileID: 0}
+  ritmamidaAcc: {fileID: 0}
+  ArrowGameAcc: {fileID: 0}
+  metronomStreak: {fileID: 0}
+  yourRhythmStreak: {fileID: 0}
+  frogGameStreak: {fileID: 0}
+  ritmamidaStreak: {fileID: 0}
+  ArrowGameStreak: {fileID: 0}
+  scoreText: {fileID: 0}
+  portName: COM3
+  baudRate: 9600
+  loginErrorPanel: {fileID: 0}
+  statusImage: {fileID: 0}
+  disconnected: {fileID: 0}
+  connected: {fileID: 0}
+  connecting: {fileID: 0}
+  darkenBackground: {fileID: 0}
 --- !u!1 &884436122
 GameObject:
   m_ObjectHideFlags: 0
@@ -2009,7 +2048,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1314899353}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 891143011}
+        m_TargetAssemblyTypeName: ArrowController, Assembly-CSharp
+        m_MethodName: OnMenuClosed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1314899353
 MonoBehaviour:
   m_ObjectHideFlags: 0

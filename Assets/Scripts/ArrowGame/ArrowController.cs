@@ -93,6 +93,12 @@ public class ArrowController : MonoBehaviour
         //shouldMove = false;
     }
 
+    public void OnMenuClosed() {
+        transform.position = new Vector3(0, -3.5f, 0);
+        interval = menuManager.interval;
+        testTimer = interval;
+    }
+
     public void OnIntervalChanged()
     {
         interval = menuManager.interval;

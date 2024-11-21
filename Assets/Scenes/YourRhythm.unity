@@ -406,7 +406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &93825150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 127016527}
   - component: {fileID: 127016526}
+  - component: {fileID: 127016528}
   m_Layer: 0
   m_Name: Menu Manager
   m_TagString: Untagged
@@ -476,6 +477,7 @@ MonoBehaviour:
   scoreText: {fileID: 26366583}
   gameTag: YourRhythm
   metronomSound: {fileID: 1060326098}
+  MainMenu: {fileID: 127016528}
   interval: 1
   canClick: 1
   isPaused: 0
@@ -497,6 +499,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &127016528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127016525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 558aa1ab24a253a45a84162b5a5a8e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  metronomPreview: {fileID: 0}
+  ritmamidaPreview: {fileID: 0}
+  yourRhythmPreview: {fileID: 0}
+  frogGamePreview: {fileID: 0}
+  arrowGamePreview: {fileID: 0}
+  statsWindow: {fileID: 0}
+  metronomAcc: {fileID: 0}
+  yourRhythmAcc: {fileID: 0}
+  frogGameAcc: {fileID: 0}
+  ritmamidaAcc: {fileID: 0}
+  ArrowGameAcc: {fileID: 0}
+  metronomStreak: {fileID: 0}
+  yourRhythmStreak: {fileID: 0}
+  frogGameStreak: {fileID: 0}
+  ritmamidaStreak: {fileID: 0}
+  ArrowGameStreak: {fileID: 0}
+  scoreText: {fileID: 0}
+  portName: COM3
+  baudRate: 9600
+  loginErrorPanel: {fileID: 0}
+  statusImage: {fileID: 0}
+  disconnected: {fileID: 0}
+  connected: {fileID: 0}
+  connecting: {fileID: 0}
+  darkenBackground: {fileID: 0}
 --- !u!1 &322885098
 GameObject:
   m_ObjectHideFlags: 0

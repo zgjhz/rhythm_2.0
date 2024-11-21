@@ -3,7 +3,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.IO.Ports;
-
+using System.IO;
+using System.Collections.Generic;
 public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
@@ -35,7 +36,7 @@ public class MainMenuScript : MonoBehaviour
     public Sprite connecting;
 
     private bool isPortOpened = false;
-
+    private string filePath = "stats.csv";
     // Ссылка на затемняющий фон (Image)
     public Image darkenBackground; // Используем Image вместо GameObject
 
@@ -51,7 +52,8 @@ public class MainMenuScript : MonoBehaviour
         {
             SceneManager.LoadScene("Metronom"); // Замени на название твоей игровой сцены
         }
-        else {
+        else
+        {
             loginErrorPanel.SetActive(true);
             ShowDarkenBackground();
         }
@@ -129,10 +131,14 @@ public class MainMenuScript : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Игра завершена!"); // Сообщение для проверки в редакторе
-        Application.Quit(); // Работает только в билде игры, а не в редакторе
+
+
+
+        Application.Quit(); // Работает только в билде игры
     }
 
-    public void onCloseButtonClicked() {
+    public void onCloseButtonClicked()
+    {
         loginErrorPanel.SetActive(false);
         HideDarkenBackground();
     }
@@ -140,33 +146,34 @@ public class MainMenuScript : MonoBehaviour
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
+        Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
         scoreText.text = "Счёт: " + LoadScore();
         statusImage.sprite = connecting;
         loginErrorPanel.SetActive(false);
         // Попытка подключения к COM-порту с обработкой ошибок
-        try
-        {
-            serialPort = new SerialPort(portName, baudRate);
-            serialPort.Open();
-            serialPort.ReadTimeout = 1000; // Установка таймаута чтения
-            Debug.Log("Успешное подключение к порту: " + portName);
-            statusImage.sprite = connected;
-            isPortOpened = true;
-        }
-        catch (System.IO.IOException e)
-        {
-            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
-            serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
-            statusImage.sprite = disconnected;
-        }
-        catch (System.UnauthorizedAccessException e)
-        {
-            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
-            serialPort = null;
-            statusImage.sprite = disconnected;
-        }
+        //try
+        //{
+        //    serialPort = new SerialPort(portName, baudRate);
+        //    serialPort.Open();
+        //    serialPort.ReadTimeout = 1000; // Установка таймаута чтения
+        //    Debug.Log("Успешное подключение к порту: " + portName);
+        //    statusImage.sprite = connected;
+        //    isPortOpened = true;
+        //}
+        //catch (System.IO.IOException e)
+        //{
+        //    Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+        //    serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
+        //    statusImage.sprite = disconnected;
+        //}
+        //catch (System.UnauthorizedAccessException e)
+        //{
+        //    Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+        //    serialPort = null;
+        //    statusImage.sprite = disconnected;
+        //}
     }
 
     // Метод для скрытия всех превью
@@ -245,12 +252,84 @@ public class MainMenuScript : MonoBehaviour
         ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
         ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
 
+
         metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits") + "%";
         yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits") + "%";
         frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
         ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_PersentHits") + "%";
         ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
     }
+    public void SaveStatsToCSV(string username, bool start)
+    {
+        // Путь к файлу stats.csv
+        string filePath = Path.Combine(Application.dataPath, "stats.csv");
+
+        // Создаем файл, если он не существует
+        if (!File.Exists(filePath))
+        {
+            File.WriteAllText(filePath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            Debug.Log("Файл stats.csv создан с заголовками.");
+        }
+
+        // Читаем строки из файла
+        List<string> lines = new List<string>(File.ReadAllLines(filePath));
+
+        // Проверяем, если файл пуст или содержит только пустую строку
+        if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
+        {
+            lines.Add("Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+        }
+
+        // Собираем данные для текущего пользователя
+        int metronomMaxStreak = PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
+        int yourRhythmMaxStreak = PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
+        int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
+        int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
+        int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+
+        int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
+        int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
+        int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
+        int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
+        int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
+
+        float totalScore = metronomMaxStreak + yourRhythmMaxStreak + frogGameMaxStreak + ritmamidaMaxStreak + arrowGameMaxStreak;
+
+        // Получаем текущую дату
+        string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Формат строки для записи
+        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{totalScore};{sessionDate}";
+
+        // Проверяем, есть ли пользователь уже в файле
+        bool userExists = false;
+
+        for (int i = 1; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
+        {
+            if (lines[i].StartsWith(username + ","))
+            {
+                // Если пользователь найден, обновляем его строку
+                lines[i] = userStats;
+                userExists = true;
+                Debug.Log($"Обновлены данные для пользователя: {username}");
+                break;
+            }
+        }
+        if (start) userExists = false;
+
+        // Если пользователь не найден, добавляем новую строку
+        if (!userExists)
+        {
+            lines.Add(userStats);
+            Debug.Log($"Добавлены данные для нового пользователя: {username}");
+        }
+
+        // Записываем обновленные данные обратно в файл
+        File.WriteAllLines(filePath, lines.ToArray());
+        Debug.Log("Данные сохранены в stats.csv");
+    }
+
+
 
     private float LoadScore()
     {
@@ -269,4 +348,7 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews(); // Скрываем все превью
         HideDarkenBackground(); // Отключаем затемнение
     }
+
 }
+
+

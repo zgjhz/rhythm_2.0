@@ -15,7 +15,7 @@ public class MenuManager : MonoBehaviour
     public TMP_Text scoreText;           // Поле для отображения счёта
     public string gameTag = "";
     public AudioSource metronomSound;
-
+    public MainMenuScript MainMenu;
     public float interval = 1f;
     private float timer;
     public bool canClick = true;
@@ -115,6 +115,7 @@ public class MenuManager : MonoBehaviour
         closeButton.gameObject.SetActive(false);
         menuPanel.SetActive(false); // Отключаем панель меню
 
+
         // Сбрасываем состояние нажатия пробела
         isSpacePressed = false; // Сбрасываем состояние нажатия пробела
     }// Метод установки скорости мяча
@@ -146,7 +147,7 @@ public class MenuManager : MonoBehaviour
         //isSpacePressed = false;
         //Debug.Log("HUY");
         string username = PlayerPrefs.GetString("current_user");
-        Debug.Log("USERNAME SAVE" + username);
+        Debug.Log("USERNAME SAVE " + username);
         float oldScore = PlayerPrefs.GetFloat(username + gameTag + "_score");
         PlayerPrefs.SetFloat(username + gameTag + "_score", score + oldScore);
         PlayerPrefs.Save();
@@ -173,6 +174,7 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         CloseMenu();
+        MainMenu.SaveStatsToCSV(username, false);
         SceneManager.LoadScene("MainMenu");
     }
 
