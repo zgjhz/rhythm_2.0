@@ -103,7 +103,8 @@ public class BallMovement : MonoBehaviour
     {
         if (!audioSource.isPlaying)
         {
-            audioSource.clip = hitSound;
+            int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+            audioSource.clip = menuManager.metronomAudioClips[audioIndex];
             audioSource.Play();
         }
     }
@@ -113,13 +114,13 @@ public class BallMovement : MonoBehaviour
     float distance = Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary));
     WallHighlightController activeWallHighlightController = direction == Vector2.right ? wallHighlightControllerRight : wallHighlightControllerLeft;
 
-    if (distance < 0.2f) // Точное попадание
+    if (distance < 2.1f) // Точное попадание
     {
         Debug.Log("Удар успешен!");
         activeWallHighlightController.TriggerHighlight(Color.green);
         menuManager.UpdateScore();
     }
-    else if (distance < 1f) // Небольшой промах
+    else if (distance < 4.9f ) // Небольшой промах
     {
         Debug.Log("Небольшой промах!");
         activeWallHighlightController.TriggerHighlight(Color.yellow);
