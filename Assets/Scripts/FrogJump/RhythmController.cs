@@ -1,117 +1,126 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class RhythmController : MonoBehaviour
 {
-    private float rhythmInterval = 1.0f; // Интервал ритма в секундах (значение по умолчанию)
-    private float nextBeatTime; // Время следующего удара ритма
-    private FrogJump frogJump; // Ссылка на компонент FrogJump
-    private bool isGameStarted = false; // Флаг для проверки, началась ли игра
-    private Slider speedSlider; // Ссылка на слайдер скорости
-    private float lastRhythmInterval; // Последний интервал ритма, для отслеживания изменений
-    private MenuManager menuManager; // Ссылка на MenuManager для управления звуком
+    private float rhythmInterval = 1.0f;
+    private float nextBeatTime;
+    private FrogJump frogJump;
+    private bool isGameStarted = false;
+    private Slider speedSlider;
+    private float lastRhythmInterval;
+    private MenuManager menuManager;
 
-    // Точность попадания в ритм в процентах (10%)
-    private const float allowedAccuracy = 0.15f;
+    private const float allowedAccuracy = 0.3f; // 15% от интервала ритма
+    private const float moderateMissAccuracy = 0.7f; // 30% от интервала ритма
 
-    // Ссылки на кувшинки
     public GameObject leftLilyPad;
     public GameObject rightLilyPad;
 
-    private Vector3 originalScaleLeft;
-    private Vector3 originalScaleRight;
-    public float scaleFactor = 1.2f; // Во сколько раз увеличиваем спрайт
+    public Sprite defaultSprite;
+    public Sprite yellowSprite;
+    public Sprite redSprite;
+
+    private SpriteRenderer leftRenderer;
+    private SpriteRenderer rightRenderer;
+
+    private bool isLeftLilyPadScaling = false; // Флаг для масштабирования левой кувшинки
+    private bool isRightLilyPadScaling = false; // Флаг для масштабирования правой кувшинки
 
     void Start()
     {
-        frogJump = FindObjectOfType<FrogJump>(); // Находим компонент FrogJump в сцене
-
-        // Находим MenuManager и слайдер в сцене
+        frogJump = FindObjectOfType<FrogJump>();
         menuManager = FindObjectOfType<MenuManager>();
         if (menuManager != null)
         {
             speedSlider = menuManager.speedSlider;
-            rhythmInterval = speedSlider.value; // Устанавливаем начальное значение интервала ритма
-            lastRhythmInterval = rhythmInterval; // Сохраняем значение интервала
+            rhythmInterval = speedSlider.value;
+            lastRhythmInterval = rhythmInterval;
         }
 
-        // Сохраняем оригинальный размер кувшинок
-        if (leftLilyPad != null) originalScaleLeft = leftLilyPad.transform.localScale;
-        if (rightLilyPad != null) originalScaleRight = rightLilyPad.transform.localScale;
+        if (leftLilyPad != null) leftRenderer = leftLilyPad.GetComponent<SpriteRenderer>();
+        if (rightLilyPad != null) rightRenderer = rightLilyPad.GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
-        // Проверяем нажатие пробела для начала игры или для проверки точности
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            OnSpacePressed(); // Вызов функции OnSpacePressed при нажатии пробела
+            OnSpacePressed();
         }
 
-        // Обновляем интервал ритма на основе значения слайдера
         UpdateRhythmInterval();
 
-        // Проверка на паузу
-        if (Time.timeScale == 0 || !isGameStarted) return; // Если игра на паузе или не началась, не выполняем действия
+        if (Time.timeScale == 0 || !isGameStarted) return;
 
-        // Автоматический прыжок лягушки на каждый удар ритма
-        if (isGameStarted && Time.time >= nextBeatTime) // Изменено, чтобы проверить, началась ли игра
+        if (isGameStarted && Time.time >= nextBeatTime)
         {
-            nextBeatTime += rhythmInterval; // Обновить время следующего удара
-            frogJump.Jump(); // Лягушка прыгает на ритм с длительностью прыжка, равной интервалу ритма
+            nextBeatTime += rhythmInterval;
+            frogJump.Jump();
         }
     }
 
-    private void StartGame()
-    {
-        isGameStarted = true; // Устанавливаем флаг начала игры
-        nextBeatTime = Time.time + rhythmInterval; // Запускаем метроном сразу, но звук начнет позже
-        frogJump.Jump(); // Лягушка сразу начинает прыгать
-    }
-
-    // Проверка точности нажатия пробела
     private void CheckAccuracy()
     {
-        float timeDifference = Mathf.Abs(Time.time - nextBeatTime); // Разница между текущим временем и ритмом
-        float allowedWindow = rhythmInterval * allowedAccuracy; // Вычисляем допустимое отклонение (15%)
+        float timeDifference = Mathf.Abs(Time.time - nextBeatTime);
+        float allowedWindow = rhythmInterval * allowedAccuracy;
+        float moderateMissWindow = rhythmInterval * moderateMissAccuracy;
 
-        if (timeDifference <= allowedWindow) // Если нажали точно в ритм
+        if (timeDifference <= allowedWindow) // Попадание в ритм
         {
-            menuManager.UpdateScore();  // Обновляем счёт через MenuManager
-            ScaleLilyPads(); // Увеличиваем кувшинки
+            menuManager.UpdateScore();
+            ChangeLilyPadColor(defaultSprite); // Вернуть стандартный цвет
+            ScaleLilyPads(); // Анимация кувшинок
         }
-        else
+        else if (timeDifference <= moderateMissWindow) // Небольшой промах
         {
-            menuManager.ResetStreak();
+            ChangeLilyPadColor(yellowSprite);
+            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f)); // Возвращение цвета через 0.5 секунды
+        }
+        else // Большой промах
+        {
+            ChangeLilyPadColor(redSprite);
+            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f));
         }
     }
 
-    // Метод для увеличения кувшинок
+    private void ChangeLilyPadColor(Sprite newSprite)
+    {
+        if (leftRenderer != null) leftRenderer.sprite = newSprite;
+        if (rightRenderer != null) rightRenderer.sprite = newSprite;
+    }
+
+    private IEnumerator ResetLilyPadColorAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ChangeLilyPadColor(defaultSprite);
+    }
+
     private void ScaleLilyPads()
     {
-        // Увеличиваем спрайт левой кувшинки
-        if (leftLilyPad != null)
+        if (leftLilyPad != null && !isLeftLilyPadScaling)
         {
-            StartCoroutine(ScaleLilyPad(leftLilyPad, scaleFactor));
+            StartCoroutine(ScaleLilyPad(leftLilyPad, 1.2f, isLeft: true));
         }
-
-        // Увеличиваем спрайт правой кувшинки
-        if (rightLilyPad != null)
+        if (rightLilyPad != null && !isRightLilyPadScaling)
         {
-            StartCoroutine(ScaleLilyPad(rightLilyPad, scaleFactor));
+            StartCoroutine(ScaleLilyPad(rightLilyPad, 1.2f, isLeft: false));
         }
     }
 
-    // Метод для плавного изменения масштаба кувшинки
-    private IEnumerator ScaleLilyPad(GameObject lilyPad, float scaleFactor)
+    private IEnumerator ScaleLilyPad(GameObject lilyPad, float scaleFactor, bool isLeft)
     {
+        if (isLeft)
+            isLeftLilyPadScaling = true;
+        else
+            isRightLilyPadScaling = true;
+
         Vector3 targetScale = lilyPad.transform.localScale * scaleFactor;
         Vector3 originalScale = lilyPad.transform.localScale;
 
         float timeElapsed = 0f;
-        float scaleDuration = 0.2f; // Длительность увеличения
+        float scaleDuration = 0.2f;
 
         while (timeElapsed < scaleDuration)
         {
@@ -120,9 +129,8 @@ public class RhythmController : MonoBehaviour
             yield return null;
         }
 
-        lilyPad.transform.localScale = targetScale; // Убедимся, что конечный размер установлен
+        lilyPad.transform.localScale = targetScale;
 
-        // Возвращаем кувшинку обратно в исходный размер
         timeElapsed = 0f;
         while (timeElapsed < scaleDuration)
         {
@@ -131,7 +139,12 @@ public class RhythmController : MonoBehaviour
             yield return null;
         }
 
-        lilyPad.transform.localScale = originalScale; // Устанавливаем исходный размер
+        lilyPad.transform.localScale = originalScale;
+
+        if (isLeft)
+            isLeftLilyPadScaling = false;
+        else
+            isRightLilyPadScaling = false;
     }
 
     private void UpdateRhythmInterval()
@@ -140,32 +153,37 @@ public class RhythmController : MonoBehaviour
         {
             float newRhythmInterval = speedSlider.value;
 
-            // Если интервал ритма изменился, сбросить лягушку в начальное состояние и ждать пробела
             if (Mathf.Abs(newRhythmInterval - lastRhythmInterval) > Mathf.Epsilon)
             {
-                rhythmInterval = newRhythmInterval; // Обновляем интервал ритма
-                lastRhythmInterval = newRhythmInterval; // Сохраняем новое значение интервала
-                isGameStarted = false; // Игра останавливается, ждет нового пробела
-                frogJump.ResetToStart(); // Возвращаем лягушку в начальное положение
+                rhythmInterval = newRhythmInterval;
+                lastRhythmInterval = newRhythmInterval;
+                isGameStarted = false;
+                frogJump.ResetToStart();
 
                 if (menuManager != null)
                 {
-                    menuManager.StopMetronomeSound(); // Останавливаем метроном
+                    menuManager.StopMetronomeSound();
                 }
             }
         }
     }
 
-    // Новая функция для обработки нажатия пробела
     private void OnSpacePressed()
     {
         if (!isGameStarted)
         {
-            StartGame(); // Запуск игры при нажатии пробела
+            StartGame();
         }
         else
         {
-            CheckAccuracy(); // Проверяем точность нажатия пробела
+            CheckAccuracy();
         }
+    }
+
+    private void StartGame()
+    {
+        isGameStarted = true;
+        nextBeatTime = Time.time + rhythmInterval;
+        frogJump.Jump();
     }
 }
