@@ -8,18 +8,16 @@ public class Svetoforscript : MonoBehaviour
     public GameObject rightRedSprite;
     public GameObject leftYellowSprite;
     public GameObject rightYellowSprite;
-
+    
     public AudioClip metronomeSound; // Звук метронома
     private AudioSource audioSource;
-    private MenuManager arseniiprivetenuManager;
     public float metronomeInterval = 1f; // Интервал между ударами метронома
     private float lastMetronomeTime;
     private float lastKeyPressTime;
 
     private bool isGameStarted = false;
-
+    public MenuManager menuManager;
     void Start()
-
     {
         lastMetronomeTime = Time.time;
         lastKeyPressTime = Time.time;
@@ -39,7 +37,7 @@ public class Svetoforscript : MonoBehaviour
 
     void Update()
     {
-        // Старт игры по нажатию пробела
+        // Старт игры и метронома по нажатию пробела
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (!isGameStarted)
@@ -47,18 +45,20 @@ public class Svetoforscript : MonoBehaviour
                 isGameStarted = true;
                 lastMetronomeTime = Time.time;
                 lastKeyPressTime = Time.time;
-                StartCoroutine(Metronome());
             }
-            else
+        }
+
+        if (isGameStarted)
+        {
+            float currentTime = Time.time;
+            float keyPressDelta = currentTime - lastKeyPressTime;
+            metronomeInterval = menuManager.interval;
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                metronomeInterval = arseniiprivetenuManager.interval;
-                float currentTime = Time.time;
-                float keyPressDelta = currentTime - lastKeyPressTime;
-                float metronomeDelta = (currentTime - lastMetronomeTime) % metronomeInterval;
 
                 // Рассчитываем разницу между временем удара метронома и временем нажатия
-                float difference = keyPressDelta - metronomeDelta;
-
+                float difference = keyPressDelta - metronomeInterval;
                 // Определяем, какой спрайт зажечь
                 if (difference > 0 && difference > 0.7f * metronomeInterval)
                 {
@@ -79,27 +79,11 @@ public class Svetoforscript : MonoBehaviour
                 else
                 {
                     ActivateSprite(greenSprite, 0f);
+                    menuManager.UpdateScore();
                 }
 
                 lastKeyPressTime = currentTime;
             }
-        }
-    }
-
-    IEnumerator Metronome()
-    {
-        while (isGameStarted)
-        {
-            // Проигрываем звук метронома
-            if (audioSource != null && metronomeSound != null)
-            {
-                audioSource.Play();
-            }
-
-            Debug.Log("Metronome Beat");
-            lastMetronomeTime = Time.time;
-
-            yield return new WaitForSeconds(metronomeInterval);
         }
     }
 
