@@ -19,14 +19,16 @@ public class RhythmController : MonoBehaviour
     public GameObject rightLilyPad;
 
     public Sprite defaultSprite;
+    public Sprite greenSprite;
     public Sprite yellowSprite;
     public Sprite redSprite;
 
     private SpriteRenderer leftRenderer;
     private SpriteRenderer rightRenderer;
 
-    private bool isLeftLilyPadScaling = false; // Флаг для масштабирования левой кувшинки
-    private bool isRightLilyPadScaling = false; // Флаг для масштабирования правой кувшинки
+    private Coroutine leftResetCoroutine = null;
+    private Coroutine rightResetCoroutine = null;
+    private bool isToLeft;
 
     void Start()
     {
@@ -58,6 +60,7 @@ public class RhythmController : MonoBehaviour
         {
             nextBeatTime += rhythmInterval;
             frogJump.Jump();
+            isToLeft = !isToLeft;
         }
     }
 
@@ -70,81 +73,47 @@ public class RhythmController : MonoBehaviour
         if (timeDifference <= allowedWindow) // Попадание в ритм
         {
             menuManager.UpdateScore();
-            ChangeLilyPadColor(defaultSprite); // Вернуть стандартный цвет
-            ScaleLilyPads(); // Анимация кувшинок
+            ChangeLilyPadColor(greenSprite);
         }
         else if (timeDifference <= moderateMissWindow) // Небольшой промах
         {
             ChangeLilyPadColor(yellowSprite);
-            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f)); // Возвращение цвета через 0.5 секунды
         }
         else // Большой промах
         {
             ChangeLilyPadColor(redSprite);
-            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f));
         }
     }
 
     private void ChangeLilyPadColor(Sprite newSprite)
     {
-        if (leftRenderer != null) leftRenderer.sprite = newSprite;
-        if (rightRenderer != null) rightRenderer.sprite = newSprite;
+        if (isToLeft)
+        {
+            if (leftRenderer != null)
+            {
+                if (leftResetCoroutine != null) StopCoroutine(leftResetCoroutine);
+                leftRenderer.sprite = newSprite;
+                leftResetCoroutine = StartCoroutine(ResetLilyPadColorAfterDelay(0.3f, leftRenderer));
+            }
+        }
+        else
+        {
+            if (rightRenderer != null)
+            {
+                if (rightResetCoroutine != null) StopCoroutine(rightResetCoroutine);
+                rightRenderer.sprite = newSprite;
+                rightResetCoroutine = StartCoroutine(ResetLilyPadColorAfterDelay(0.3f, rightRenderer));
+            }
+        }
     }
 
-    private IEnumerator ResetLilyPadColorAfterDelay(float delay)
+    private IEnumerator ResetLilyPadColorAfterDelay(float delay, SpriteRenderer renderer)
     {
         yield return new WaitForSeconds(delay);
-        ChangeLilyPadColor(defaultSprite);
-    }
-
-    private void ScaleLilyPads()
-    {
-        if (leftLilyPad != null && !isLeftLilyPadScaling)
+        if (isGameStarted && renderer != null)
         {
-            StartCoroutine(ScaleLilyPad(leftLilyPad, 1.2f, isLeft: true));
+            renderer.sprite = defaultSprite;
         }
-        if (rightLilyPad != null && !isRightLilyPadScaling)
-        {
-            StartCoroutine(ScaleLilyPad(rightLilyPad, 1.2f, isLeft: false));
-        }
-    }
-
-    private IEnumerator ScaleLilyPad(GameObject lilyPad, float scaleFactor, bool isLeft)
-    {
-        if (isLeft)
-            isLeftLilyPadScaling = true;
-        else
-            isRightLilyPadScaling = true;
-
-        Vector3 targetScale = lilyPad.transform.localScale * scaleFactor;
-        Vector3 originalScale = lilyPad.transform.localScale;
-
-        float timeElapsed = 0f;
-        float scaleDuration = 0.2f;
-
-        while (timeElapsed < scaleDuration)
-        {
-            lilyPad.transform.localScale = Vector3.Lerp(originalScale, targetScale, timeElapsed / scaleDuration);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        lilyPad.transform.localScale = targetScale;
-
-        timeElapsed = 0f;
-        while (timeElapsed < scaleDuration)
-        {
-            lilyPad.transform.localScale = Vector3.Lerp(targetScale, originalScale, timeElapsed / scaleDuration);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        lilyPad.transform.localScale = originalScale;
-
-        if (isLeft)
-            isLeftLilyPadScaling = false;
-        else
-            isRightLilyPadScaling = false;
     }
 
     private void UpdateRhythmInterval()
@@ -185,5 +154,6 @@ public class RhythmController : MonoBehaviour
         isGameStarted = true;
         nextBeatTime = Time.time + rhythmInterval;
         frogJump.Jump();
+        isToLeft = false;
     }
 }
