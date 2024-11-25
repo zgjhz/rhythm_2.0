@@ -30,6 +30,7 @@ public class MainMenuScript : MonoBehaviour
     public int baudRate = 9600; // �������� �������� ������
     public GameObject loginErrorPanel;
     public GameObject soundSettingsPanel;
+    public GameObject chartPanel;
 
     public Image statusImage;
     public Sprite disconnected;
@@ -171,6 +172,7 @@ public class MainMenuScript : MonoBehaviour
         statusImage.sprite = connecting;
         loginErrorPanel.SetActive(false);
         soundSettingsPanel.SetActive(false);
+        chartPanel.SetActive(false);
         // Попытка подключения к COM-порту с обработкой ошибок
         //try
         //{
