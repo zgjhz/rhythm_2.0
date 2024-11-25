@@ -34,8 +34,8 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
-        int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
-        metronomSound.clip = metronomAudioClips[audioIndex];
+        //int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        //metronomSound.clip = metronomAudioClips[audioIndex];
         // Отключаем панель меню при старте
         menuPanel.SetActive(false);
         closeButton.gameObject.SetActive(false);
