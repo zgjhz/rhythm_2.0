@@ -1127,7 +1127,7 @@ MonoBehaviour:
   mainMenuButton: {fileID: 1608078784}
   closeButton: {fileID: 956595713}
   scoreText: {fileID: 1222463193}
-  gameTag: YourRhythm
+  gameTag: Svetofor
   metronomSound: {fileID: 914490270}
   interval: 1
   canClick: 1
