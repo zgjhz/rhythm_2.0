@@ -40,6 +40,7 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             chartIndex = 0;
         }
+        Debug.Log("chartIndex: " + chartIndex);
         if (chartIndex == 0)
         {
             OpenChartPanel();
@@ -48,7 +49,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             PlotGraph();
         }
-        Debug.Log("chartIndex: " + chartIndex);
     }
 
     public void OnPreviousButtonClicked()

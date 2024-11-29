@@ -1096,6 +1096,7 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
+  isLeft: 1
   score: 0
   currentStreak: 0
   maxStreak: 0
@@ -1423,7 +1424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linePrefab: {fileID: 7713269393738047397, guid: 1cdb45a284a5345d5a534c23986538c5, type: 3}
-  linePrefab_purple: {fileID: 7713269393738047397, guid: c75e9c54d0d6a2948bb1116088a6069c, type: 3}
+  linePrefab_purple: {fileID: 7713269393738047397, guid: 0b85bfe6e89f9624fb7a5fc96e7e6e04, type: 3}
   lineContainer: {fileID: 1571684974}
   lineWidthMultiplier: 25
   lineSpacing: 100

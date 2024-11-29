@@ -21,6 +21,7 @@ public class MenuManager : MonoBehaviour
     private float timer;
     public bool canClick = true;
     public bool isPaused = false; // Добавляем состояние для проверки паузы
+    public bool isLeft = true;
 
     // Для управления счётом
     public float score = 0; // Счёт
@@ -83,8 +84,16 @@ public class MenuManager : MonoBehaviour
 
             if (timer <= 0f)
             {
-                PlaySound();
-                timer = interval;
+                if(gameTag == "FrogJump"){
+                    PlayDirectionalSound(isLeft);
+                    isLeft = !isLeft;
+                    timer = interval;
+                }
+                else{
+                    PlaySound();
+                    timer = interval;
+                }
+                
             }
         }
     }
@@ -93,6 +102,15 @@ public class MenuManager : MonoBehaviour
     {
         if (metronomSound != null)
         {
+            metronomSound.Play();
+        }
+    }
+
+     public void PlayDirectionalSound(bool isLeft)
+    {
+        if (metronomSound != null)
+        {
+            metronomSound.panStereo = isLeft ? 1.0f : -1.0f; // -1 для левого, 1 для правого уха
             metronomSound.Play();
         }
     }
