@@ -12,7 +12,7 @@ public class FrogJump : MonoBehaviour
     private float jumpTime;           // Текущее время прыжка
     public MenuManager menuManager;   // Ссылка на MenuManager для интервала
     public SpriteRenderer spriteRenderer; // Спрайтрендерер лягушки
-
+    
     public Sprite frogIdle;
     public Sprite frogStart;
     public Sprite frogJumping;
@@ -93,6 +93,7 @@ public class FrogJump : MonoBehaviour
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         yield return new WaitForSeconds(jumpDuration * 0.15f); // Пауза перед следующим прыжком
         StartNextJump(); // Стартуем следующий прыжок
+
     }
 
     public void Jump()
@@ -110,6 +111,7 @@ public class FrogJump : MonoBehaviour
         spriteRenderer.sprite = frogIdle; // Сбрасываем спрайт
         onStartPosition = true; // Сбрасываем флаг позиции
         isJumping = false; // Лягушка не прыгает
-        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z); // Восстанавливаем начальное направление
+        // Восстанавливаем начальное направление
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 }

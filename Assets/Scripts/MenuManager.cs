@@ -13,7 +13,7 @@ public class MenuManager : MonoBehaviour
     public Slider speedSlider;           // Ползунок для скорости мяча
     public Slider volumeSlider;          // Ползунок для громкости
     public Button mainMenuButton;        // Кнопка выхода в главное меню
-    public Button closeButton;           // Кнопка закрытия меню
+    public Button closeButton;           // Кнопка закрытия менюф
     public TMP_Text scoreText;           // Поле для отображения счёта
     public string gameTag = "";
     public AudioSource metronomSound;
@@ -32,6 +32,8 @@ public class MenuManager : MonoBehaviour
     // Для подсчёта нажатий на пробел
     private float spacePressCount = 0; // Счётчик нажатий на пробел
     private bool isSpacePressed = false;
+    private float firstSpacePressTime = -1f; // Время первого нажатия пробела
+    private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
 
     private void Start()
     {
@@ -64,49 +66,70 @@ public class MenuManager : MonoBehaviour
     {
         if (isPaused) return;
 
+        // Если ожидаем первого нажатия после паузы
+        if (waitingForFirstPress && Input.GetKeyDown(KeyCode.Space))
+        {
+            firstSpacePressTime = Time.time; // Фиксируем время первого нажатия
+            waitingForFirstPress = false; // Сбрасываем ожидание
+            timer = interval; // Сбрасываем таймер на интервал
+            isSpacePressed = true; // Активируем метроном
+            return; // Прерываем дальнейшую обработку
+        }
+
+        // Если игрок нажал пробел (обычная логика)
         if (Input.GetKeyDown(KeyCode.Space))
         {
             CountSpacePress();
 
-            // Запускаем метроном, если меню открыто
             if (canClick)
             {
-                //timer = 0; // Сбрасываем таймер
-                //PlaySound(); // Воспроизводим звук
-                isSpacePressed = true; // Устанавливаем флаг нажатия пробела
+                isSpacePressed = true; // Активируем метроном
             }
         }
 
-        // Если метроном активен
+        // Логика метронома
         if (isSpacePressed)
         {
             timer -= Time.deltaTime;
 
             if (timer <= 0f)
             {
-                if(gameTag == "FrogJump"){
+                if (gameTag == "FrogJump")
+                {
                     PlayDirectionalSound(isLeft);
                     isLeft = !isLeft;
                     timer = interval;
                 }
-                else{
+                else
+                {
                     PlaySound();
                     timer = interval;
                 }
-                
             }
         }
     }
+
 
     public void PlaySound()
     {
         if (metronomSound != null)
         {
-            metronomSound.Play();
+            // Синхронизация метронома после паузы
+            if (firstSpacePressTime > 0)
+            {
+                float elapsed = Time.time - firstSpacePressTime;
+                float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
+                metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
+            }
+            else
+            {
+                metronomSound.Play();
+            }
         }
     }
 
-     public void PlayDirectionalSound(bool isLeft)
+
+    public void PlayDirectionalSound(bool isLeft)
     {
         if (metronomSound != null)
         {
@@ -136,10 +159,11 @@ public class MenuManager : MonoBehaviour
         closeButton.gameObject.SetActive(false);
         menuPanel.SetActive(false); // Отключаем панель меню
 
-
-        // Сбрасываем состояние нажатия пробела
+        // Устанавливаем ожидание первого нажатия
+        waitingForFirstPress = true;
+        firstSpacePressTime = -1f; // Сбрасываем время первого нажатия
         isSpacePressed = false; // Сбрасываем состояние нажатия пробела
-    }// Метод установки скорости мяча
+    }
     public void SetBallSpeed(float speed)
     {
         PlayerPrefs.SetFloat(gameTag + "_interval", speed);
@@ -153,7 +177,7 @@ public class MenuManager : MonoBehaviour
         AudioListener.volume = volume;
         PlayerPrefs.SetFloat(gameTag + "_volume", volume);
         PlayerPrefs.Save();
-        // Debug.Log("Громкость установлена на: " + volume);
+        Debug.Log("Громкость установлена на: " + volume);
     }
 
     // Метод выхода в главное меню
