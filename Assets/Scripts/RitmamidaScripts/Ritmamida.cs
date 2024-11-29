@@ -8,7 +8,7 @@ public class Ritmamida : MonoBehaviour
     public GameObject linePrefab;
     public GameObject linePrefab_purple;
     public Transform lineContainer;
-    public float lineWidthMultiplier = 20f;
+    private float lineWidthMultiplier = 15f;
     public float lineSpacing = 20f;
     private float lastPressTime;
     private float startTime;
