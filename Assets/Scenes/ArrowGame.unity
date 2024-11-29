@@ -1142,6 +1142,7 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
+  isLeft: 1
   score: 0
   currentStreak: 0
   maxStreak: 0
@@ -2014,7 +2015,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1314899353}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 891143011}
+        m_TargetAssemblyTypeName: ArrowController, Assembly-CSharp
+        m_MethodName: OnMenuClosed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1314899353
 MonoBehaviour:
   m_ObjectHideFlags: 0

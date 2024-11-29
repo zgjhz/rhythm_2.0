@@ -34,11 +34,10 @@ public class MenuManager : MonoBehaviour
     private bool isSpacePressed = false;
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
-
     private void Start()
     {
-        //int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
-        //metronomSound.clip = metronomAudioClips[audioIndex];
+        int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        metronomSound.clip = metronomAudioClips[audioIndex];
         // Отключаем панель меню при старте
         menuPanel.SetActive(false);
         closeButton.gameObject.SetActive(false);
@@ -91,7 +90,6 @@ public class MenuManager : MonoBehaviour
         if (isSpacePressed)
         {
             timer -= Time.deltaTime;
-
             if (timer <= 0f)
             {
                 if (gameTag == "FrogJump")
@@ -112,20 +110,22 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
-        if (metronomSound != null)
-        {
+        Debug.Log("HUY");
+        //if (metronomSound != null)
+        //{
             // Синхронизация метронома после паузы
-            if (firstSpacePressTime > 0)
+            if (firstSpacePressTime < 0)
             {
                 float elapsed = Time.time - firstSpacePressTime;
                 float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
                 metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
+                Debug.Log("sosi");
             }
             else
             {
                 metronomSound.Play();
             }
-        }
+        //}
     }
 
 
@@ -142,6 +142,7 @@ public class MenuManager : MonoBehaviour
     public void OpenMenu()
     {
         canClick = false;
+        isLeft = true;
         isPaused = true; // Устанавливаем флаг паузы
         Time.timeScale = 0f;
         openMenuButton.gameObject.SetActive(false);
