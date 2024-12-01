@@ -230,7 +230,7 @@ public class MenuManager : MonoBehaviour
         // Создаем файл, если он не существует
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            File.WriteAllText(filePath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
             Debug.Log("Файл stats.csv создан с заголовками.");
         }
 
@@ -240,7 +240,7 @@ public class MenuManager : MonoBehaviour
         // Проверяем, если файл пуст или содержит только пустую строку
         if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
         {
-            lines.Add("Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            lines.Add("Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
         }
 
         // Собираем данные для текущего пользователя
@@ -249,20 +249,22 @@ public class MenuManager : MonoBehaviour
         int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
         int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
         int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        int svetoforMaxStreak = PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
 
         int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
         int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
         int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
         int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
         int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
+        int svetoforPercentHits = PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0);
 
-        float totalScore = metronomMaxStreak + yourRhythmMaxStreak + frogGameMaxStreak + ritmamidaMaxStreak + arrowGameMaxStreak;
+        float totalScore = LoadScore();
 
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Формат строки для записи
-        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{totalScore};{sessionDate}";
+        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
 
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
@@ -290,6 +292,18 @@ public class MenuManager : MonoBehaviour
         // Записываем обновленные данные обратно в файл
         File.WriteAllLines(filePath, lines.ToArray());
         Debug.Log("Данные сохранены в stats.csv");
+    }
+
+    private float LoadScore()
+    {
+        string username = PlayerPrefs.GetString("current_user");
+        float m = PlayerPrefs.GetFloat(username + "Metronom_score");
+        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
+        float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
+        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
+        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
+        float s = PlayerPrefs.GetFloat(username + "Svetofor_score");
+        return m + y + f + a + r + s;
     }
 
     public void StopMetronomeSound()

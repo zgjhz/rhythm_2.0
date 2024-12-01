@@ -8,7 +8,7 @@ public class Svetoforscript : MonoBehaviour
     public GameObject rightRedSprite;
     public GameObject leftYellowSprite;
     public GameObject rightYellowSprite;
-    
+
     public AudioClip metronomeSound; // Звук метронома
     private AudioSource audioSource;
     public float metronomeInterval = 1f; // Интервал между ударами метронома
@@ -17,17 +17,16 @@ public class Svetoforscript : MonoBehaviour
 
     private bool isGameStarted = false;
     public MenuManager menuManager;
+
+    public float spriteActiveDuration = 0.1f; // Время, через которое спрайт гаснет
+
     void Start()
     {
         lastMetronomeTime = Time.time;
         lastKeyPressTime = Time.time;
 
         // Делаем все спрайты неактивными в начале
-        greenSprite.SetActive(false);
-        leftRedSprite.SetActive(false);
-        rightRedSprite.SetActive(false);
-        leftYellowSprite.SetActive(false);
-        rightYellowSprite.SetActive(false);
+        DeactivateAllSprites();
 
         // Инициализация AudioSource
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -56,25 +55,29 @@ public class Svetoforscript : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-
                 // Рассчитываем разницу между временем удара метронома и временем нажатия
                 float difference = keyPressDelta - metronomeInterval;
+
                 // Определяем, какой спрайт зажечь
                 if (difference > 0 && difference > 0.7f * metronomeInterval)
                 {
                     ActivateSprite(leftRedSprite, -5.5f);
+                    menuManager.ResetStreak();
                 }
                 else if (difference < 0 && Mathf.Abs(difference) > 0.7f * metronomeInterval)
                 {
                     ActivateSprite(rightRedSprite, 5.5f);
+                    menuManager.ResetStreak();
                 }
                 else if (difference > 0 && difference >= 0.3f * metronomeInterval && difference <= 0.7f * metronomeInterval)
                 {
                     ActivateSprite(leftYellowSprite, -2.75f);
+                    menuManager.ResetStreak();
                 }
                 else if (difference < 0 && Mathf.Abs(difference) >= 0.3f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
                 {
                     ActivateSprite(rightYellowSprite, 2.75f);
+                    menuManager.ResetStreak();
                 }
                 else
                 {
@@ -90,14 +93,28 @@ public class Svetoforscript : MonoBehaviour
     void ActivateSprite(GameObject sprite, float xPosition)
     {
         // Отключаем все спрайты
+        DeactivateAllSprites();
+
+        // Активируем нужный спрайт
+        sprite.SetActive(true);
+        sprite.transform.position = new Vector3(xPosition, 0f, 0f);
+
+        // Запускаем корутину для автоматического отключения
+        StartCoroutine(DeactivateSpriteAfterDelay(sprite));
+    }
+
+    IEnumerator DeactivateSpriteAfterDelay(GameObject sprite)
+    {
+        yield return new WaitForSeconds(spriteActiveDuration);
+        sprite.SetActive(false);
+    }
+
+    void DeactivateAllSprites()
+    {
         greenSprite.SetActive(false);
         leftRedSprite.SetActive(false);
         rightRedSprite.SetActive(false);
         leftYellowSprite.SetActive(false);
         rightYellowSprite.SetActive(false);
-
-        // Активируем нужный спрайт
-        sprite.SetActive(true);
-        sprite.transform.position = new Vector3(xPosition, 0f, 0f);
     }
 }

@@ -12,7 +12,7 @@ public class FrogJump : MonoBehaviour
     private float jumpTime;           // Текущее время прыжка
     public MenuManager menuManager;   // Ссылка на MenuManager для интервала
     public SpriteRenderer spriteRenderer; // Спрайтрендерер лягушки
-    
+    public RhythmController rhythmController;
     public Sprite frogIdle;
     public Sprite frogStart;
     public Sprite frogJumping;
@@ -87,14 +87,21 @@ public class FrogJump : MonoBehaviour
         }
     }
 
+
     private IEnumerator LandingPause()
     {
         spriteRenderer.sprite = frogIdle; // Меняем спрайт на состояние "ожидания"
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        yield return new WaitForSeconds(jumpDuration * 0.15f); // Пауза перед следующим прыжком
-        StartNextJump(); // Стартуем следующий прыжок
 
+        // Проверяем паузу
+        while (rhythmController.isWaitingForFirstInput)
+        {
+            yield return null; // Ждем, пока пауза не закончится
+        }
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        yield return new WaitForSeconds(jumpDuration * 0.05f); // Уменьшенное время паузы
+        StartNextJump(); // Стартуем следующий прыжок
     }
+
 
     public void Jump()
     {

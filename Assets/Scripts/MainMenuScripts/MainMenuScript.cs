@@ -19,11 +19,13 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text frogGameAcc;
     public TMP_Text ritmamidaAcc;
     public TMP_Text ArrowGameAcc;
+    public TMP_Text SvetoforAcc;
     public TMP_Text metronomStreak;
     public TMP_Text yourRhythmStreak;
     public TMP_Text frogGameStreak;
     public TMP_Text ritmamidaStreak;
     public TMP_Text ArrowGameStreak;
+    public TMP_Text SvetoforStreak;
     public TMP_Text scoreText;
     private SerialPort serialPort;
     public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
@@ -100,6 +102,23 @@ public class MainMenuScript : MonoBehaviour
         if (username != "")
         {
             SceneManager.LoadScene("YourRhythm"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
+    }
+    public void PlaySvetofor()
+    {
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("Svetofor"); // Замени на название твоей игровой сцены
         }
         else
         {
@@ -274,19 +293,20 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
-        Debug.Log("Metronom_maxStreak" + PlayerPrefs.GetInt(username + "Metronom_maxStreak"));
-        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak");
-        yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
-        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
-        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak");
-        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
+        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
+        yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
+        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
+        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
+        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        SvetoforStreak.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
 
 
-        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits") + "%";
-        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits") + "%";
-        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
-        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits") + "%";
-        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
+        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) + "%";
+        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) + "%";
+        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) + "%";
+        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) + "%";
+        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) + "%";
+        SvetoforAcc.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) + "%";
     }
 
 
@@ -295,12 +315,13 @@ public class MainMenuScript : MonoBehaviour
     private float LoadScore()
     {
         string username = PlayerPrefs.GetString("current_user");
-        float m = PlayerPrefs.GetFloat(username + "Metronom_score");
-        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
-        float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
-        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
-        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
-        return m + y + f + a + r;
+        float m = PlayerPrefs.GetFloat(username + "Metronom_score", 0);
+        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score", 0);
+        float f = PlayerPrefs.GetFloat(username + "FrogGame_score", 0);
+        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score", 0);
+        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score", 0);
+        float s = PlayerPrefs.GetFloat(username + "Svetofor_score", 0);
+        return m + y + f + a + r + s;
     }
 
     // Метод для закрытия превью и затемнения

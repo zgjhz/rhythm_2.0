@@ -2599,9 +2599,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1894467349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf9eafc6ed15b5478fd67dac9185f41, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a4b90d46d96bca47b9b63ca4ef8f0e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  portName: COM3
+  baudRate: 9600
+  MainController: {fileID: 1787591102}
+  gameTag: Metronom
 --- !u!1 &1915911911
 GameObject:
   m_ObjectHideFlags: 0

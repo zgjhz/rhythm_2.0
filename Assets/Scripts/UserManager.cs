@@ -81,7 +81,7 @@ public class UserManager : MonoBehaviour
         // ???? CSV-???? ?? ??????????, ??????? ??? ? ???????????
         if (!File.Exists(csvPath))
         {
-            File.WriteAllText(csvPath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            File.WriteAllText(csvPath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
         }
         
         // ?????? ??? ?????? ?? CSV
@@ -97,18 +97,20 @@ public class UserManager : MonoBehaviour
         int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
         int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
         int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        int svetoforMaxStreak = PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
 
         int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
         int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
         int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
         int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
         int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
-        float totalScore = metronomMaxStreak + yourRhythmMaxStreak + frogGameMaxStreak + ritmamidaMaxStreak + arrowGameMaxStreak;
+        int svetoforPercentHits = PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0);
+        float totalScore = LoadScore();
 
 
         // ???????? ??????? ????
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{totalScore};{sessionDate}";
+        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
         csvLines.Add(userStats); // ????????? ?????? ? ??????
 
         // ?????????? ??????????? ?????? ??????? ? CSV
@@ -140,7 +142,8 @@ public class UserManager : MonoBehaviour
         float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
         float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
         float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
-        return m + y + f + a + r;
+        float s = PlayerPrefs.GetFloat(username + "Svetofor_score");
+        return m + y + f + a + r + s;
     }
 
     private void LoadUsers()
