@@ -41,6 +41,8 @@ public class UserManager : MonoBehaviour
         inputField.text = name;
         scoreText.text = "—чЄт: " + LoadScore();
         LoadUsers();
+        username = "пользователь";
+        RegisterUser();
     }
 
     public void RegisterUser()

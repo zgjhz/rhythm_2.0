@@ -173,6 +173,9 @@ public class MainMenuScript : MonoBehaviour
         loginErrorPanel.SetActive(false);
         soundSettingsPanel.SetActive(false);
         chartPanel.SetActive(false);
+        PlayerPrefs.SetInt("chosen_sound", 1);
+        PlayerPrefs.SetString("current_user", "пользователь");
+        PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
         //try
         //{

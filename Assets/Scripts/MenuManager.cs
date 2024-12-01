@@ -110,7 +110,6 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
-        Debug.Log("HUY");
         //if (metronomSound != null)
         //{
             // Синхронизация метронома после паузы
@@ -119,7 +118,6 @@ public class MenuManager : MonoBehaviour
                 float elapsed = Time.time - firstSpacePressTime;
                 float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
                 metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
-                Debug.Log("sosi");
             }
             else
             {
