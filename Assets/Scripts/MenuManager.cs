@@ -92,7 +92,7 @@ public class MenuManager : MonoBehaviour
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                if (gameTag == "FrogJump")
+                if (gameTag == "FrogGame")
                 {
                     PlayDirectionalSound(isLeft);
                     isLeft = !isLeft;

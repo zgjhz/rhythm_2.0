@@ -12109,7 +12109,7 @@ MonoBehaviour:
   gameTagList:
   - Metronom
   - YourRhythm
-  - FrogJump
+  - FrogGame
   - Ritmamida
   - ArrowGame
   chartPanel: {fileID: 10101222}

@@ -46,7 +46,7 @@ public class SerialPortReader : MonoBehaviour
             case ("Ritmamida"):
                 script = MainController.GetComponent<Ritmamida>();
                 break;
-            case ("FrogJump"):
+            case ("FrogGame"):
                 script = MainController.GetComponent<FrogJump>();
                 break;
         }

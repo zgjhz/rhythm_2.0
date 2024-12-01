@@ -173,7 +173,12 @@ public class MainMenuScript : MonoBehaviour
         loginErrorPanel.SetActive(false);
         soundSettingsPanel.SetActive(false);
         chartPanel.SetActive(false);
-        PlayerPrefs.SetInt("chosen_sound", 1);
+        if (!PlayerPrefs.HasKey("chosen_sound"))
+        {
+            PlayerPrefs.SetInt("chosen_sound", 1);
+        }
+        int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        audioToggles[toggleIndex].isOn = true;
         PlayerPrefs.SetString("current_user", "пользователь");
         PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
@@ -273,14 +278,14 @@ public class MainMenuScript : MonoBehaviour
         metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak");
         yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
         frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
-        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
+        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak");
         ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
 
 
         metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits") + "%";
         yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits") + "%";
         frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
-        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_PersentHits") + "%";
+        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits") + "%";
         ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
     }
 
