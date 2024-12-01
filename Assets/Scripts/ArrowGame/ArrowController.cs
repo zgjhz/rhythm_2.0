@@ -42,6 +42,7 @@ public class ArrowController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isFirst == 0)
         {
             isFirst = 1;
+            menuManager.PlaySound();
         }
         if (isFirst == 1 || isFirst == 2 && canClick)
         {
