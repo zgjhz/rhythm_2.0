@@ -24,7 +24,7 @@ public class Svetoforscript : MonoBehaviour
     {
         lastMetronomeTime = Time.time;
         lastKeyPressTime = Time.time;
-
+        spriteActiveDuration = menuManager.interval * 0.5f;
         // Делаем все спрайты неактивными в начале
         DeactivateAllSprites();
 
@@ -36,6 +36,7 @@ public class Svetoforscript : MonoBehaviour
 
     void Update()
     {
+        spriteActiveDuration = menuManager.interval * 0.45f;
         // Старт игры и метронома по нажатию пробела
         if (Input.GetKeyDown(KeyCode.Space))
         {

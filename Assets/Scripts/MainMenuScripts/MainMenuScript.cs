@@ -30,10 +30,13 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text scoreText;
     private SerialPort serialPort;
     public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
-    public int baudRate = 9600; // �������� �������� ������
+    public int baudRate = 38400; // �������� �������� ������
     public GameObject loginErrorPanel;
     public GameObject soundSettingsPanel;
     public GameObject chartPanel;
+
+    public List<AudioClip> metronomAudioClips;
+    public AudioSource metronomAudio;
 
     public Image statusImage;
     public Sprite disconnected;
@@ -44,6 +47,10 @@ public class MainMenuScript : MonoBehaviour
     private const string TotalTimeKey = "total_time";
     public TMP_Text totalTimeText;
     public TMP_Text sessionTimeText;
+
+    public TMP_Dropdown comportDropdown;
+
+    string[] ports = SerialPort.GetPortNames();
 
     public List<Toggle> audioToggles;
 
@@ -56,6 +63,66 @@ public class MainMenuScript : MonoBehaviour
         soundSettingsPanel.SetActive(true);
         int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         audioToggles[toggleIndex].isOn = true;
+    }
+
+    void UpdateDropdownOptions()
+    {
+        // Получаем доступные порты
+        string[] ports = SerialPort.GetPortNames();
+
+        // Очищаем текущие опции Dropdown
+        comportDropdown.ClearOptions();
+
+        // Добавляем найденные порты в Dropdown
+        if (ports.Length > 0)
+        {
+            comportDropdown.AddOptions(new System.Collections.Generic.List<string>(ports));
+            Debug.Log("Порты добавлены в Dropdown.");
+        }
+        else
+        {
+            comportDropdown.AddOptions(new System.Collections.Generic.List<string> { "Нет доступных портов" });
+            Debug.Log("Доступных портов не найдено.");
+        }
+    }
+
+    void ConnectToSelectedPort()
+    {
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Close();
+            Debug.Log("Соединение с предыдущим портом закрыто.");
+        }
+
+        string selectedPort = comportDropdown.options[comportDropdown.value].text;
+
+        if (selectedPort == "Нет доступных портов")
+        {
+            Debug.LogWarning("Выбран невалидный порт.");
+            return;
+        }
+
+        try
+        {
+            serialPort = new SerialPort(portName, baudRate);
+            serialPort.Open();
+            serialPort.ReadTimeout = 10000; // Установка таймаута чтения
+            Debug.Log("Успешное подключение к порту: " + portName);
+            statusImage.sprite = connected;
+            isPortOpened = true;
+        }
+        catch (System.IO.IOException e)
+        {
+            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+            serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
+            statusImage.sprite = disconnected;
+        }
+        catch (System.UnauthorizedAccessException e)
+        {
+            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+            serialPort = null;
+            statusImage.sprite = disconnected;
+        }
     }
 
     public void onToggleValueChanged(int soundNumber) {
@@ -192,6 +259,8 @@ public class MainMenuScript : MonoBehaviour
     {
         // Обновляем текст общего времени
         UpdateTimeTexts();
+        UpdateDropdownOptions();
+        comportDropdown.onValueChanged.AddListener(delegate { ConnectToSelectedPort(); });
         Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
@@ -209,27 +278,11 @@ public class MainMenuScript : MonoBehaviour
         PlayerPrefs.SetString("current_user", "пользователь");
         PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
-        //try
-        //{
-        //    serialPort = new SerialPort(portName, baudRate);
-        //    serialPort.Open();
-        //    serialPort.ReadTimeout = 1000; // Установка таймаута чтения
-        //    Debug.Log("Успешное подключение к порту: " + portName);
-        //    statusImage.sprite = connected;
-        //    isPortOpened = true;
-        //}
-        //catch (System.IO.IOException e)
-        //{
-        //    Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
-        //    serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
-        //    statusImage.sprite = disconnected;
-        //}
-        //catch (System.UnauthorizedAccessException e)
-        //{
-        //    Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
-        //    serialPort = null;
-        //    statusImage.sprite = disconnected;
-        //}
+    }
+
+    public void ListenSound(int index) {
+        metronomAudio.clip = metronomAudioClips[index];
+        metronomAudio.Play();
     }
 
     private void Update()
@@ -256,6 +309,11 @@ public class MainMenuScript : MonoBehaviour
     {
         // Сохраняем время сессии при выходе
         TimeTracker.Instance.SaveSessionTime();
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Close();
+            Debug.Log("Порт закрыт при выходе из приложения.");
+        }
     }
 
     // Метод для скрытия всех превью

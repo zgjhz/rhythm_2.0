@@ -13,7 +13,7 @@ public class SerialPortReader : MonoBehaviour
 {
     private SerialPort serialPort; // Работа с COM-портом
     public string portName = "COM3"; // Имя порта (например, "COM3")
-    public int baudRate = 9600; // Скорость передачи данных (бит/с)
+    public int baudRate = 38400; // Скорость передачи данных (бит/с)
     public GameObject MainController; // Главный объект для управления
     public string gameTag = ""; // Тег для определения типа игры
 
