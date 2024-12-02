@@ -37,8 +37,9 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
-        //int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
-        //metronomSound.clip = metronomAudioClips[audioIndex];
+        int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        PlayerPrefs.Save();
+        metronomSound.clip = metronomAudioClips[audioIndex];
         // Отключаем панель меню при старте
         menuPanel.SetActive(false);
         closeButton.gameObject.SetActive(false);
@@ -115,7 +116,7 @@ public class MenuManager : MonoBehaviour
         if (metronomSound != null)
         {
             // Синхронизация метронома после паузы
-            if (firstSpacePressTime > 0)
+            if (firstSpacePressTime < 0)
             {
                 float elapsed = Time.time - firstSpacePressTime;
                 float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
@@ -142,6 +143,7 @@ public class MenuManager : MonoBehaviour
     public void OpenMenu()
     {
         canClick = false;
+        isLeft = true;
         isPaused = true; // Устанавливаем флаг паузы
         Time.timeScale = 0f;
         openMenuButton.gameObject.SetActive(false);

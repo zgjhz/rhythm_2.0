@@ -14,7 +14,7 @@ public class RhythmController : MonoBehaviour
 
     private const float allowedAccuracy = 0.3f; // 30% от интервала ритма
     private const float moderateMissAccuracy = 0.7f; // 70% от интервала ритма
-    private bool isWaitingForFirstInput = false; // Флаг ожидания первого пробела после паузы
+    public bool isWaitingForFirstInput = false; // Флаг ожидания первого пробела после паузы
 
     public GameObject leftLilyPad;
     public GameObject rightLilyPad;

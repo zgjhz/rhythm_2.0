@@ -466,7 +466,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
   - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
-  - {fileID: 8300000, guid: d9608be57484b2447a610d3c1ba8e0c0, type: 3}
+  - {fileID: 8300000, guid: 29417752567174e4c88659b3d82363b0, type: 3}
 --- !u!4 &161708136
 Transform:
   m_ObjectHideFlags: 0
@@ -1060,6 +1060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e9cbf8fdf5b44e0b96de5ebf346928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWaitingForFirstInput: 0
   leftLilyPad: {fileID: 991911436}
   rightLilyPad: {fileID: 1571525853}
   defaultSprite: {fileID: 21300000, guid: 877f339d2751a4e89b0995d6ea4699af, type: 3}

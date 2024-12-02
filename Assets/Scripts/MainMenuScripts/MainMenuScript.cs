@@ -57,6 +57,7 @@ public class MainMenuScript : MonoBehaviour
     // Метод для кнопки "Play"
     public void PlayMetronom()
     {
+        
         if (isPortOpened)
         {
             serialPort.Close();
@@ -164,6 +165,7 @@ public class MainMenuScript : MonoBehaviour
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
+        PlayerPrefs.SetInt("chosen_sound",1);
         Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
@@ -287,7 +289,7 @@ public class MainMenuScript : MonoBehaviour
         string username = PlayerPrefs.GetString("current_user");
         float m = PlayerPrefs.GetFloat(username + "Metronom_score");
         float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
-        float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
+        float f = PlayerPrefs.GetFloat(username + "FrogJump_score");
         float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
         float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
         return m + y + f + a + r;
