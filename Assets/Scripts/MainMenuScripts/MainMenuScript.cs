@@ -5,6 +5,7 @@ using TMPro;
 using System.IO.Ports;
 using System.IO;
 using System.Collections.Generic;
+using System;
 public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
@@ -38,6 +39,11 @@ public class MainMenuScript : MonoBehaviour
     public Sprite disconnected;
     public Sprite connected;
     public Sprite connecting;
+
+    private float sessionStartTime;
+    private const string TotalTimeKey = "total_time";
+    public TMP_Text totalTimeText;
+    public TMP_Text sessionTimeText;
 
     public List<Toggle> audioToggles;
 
@@ -184,6 +190,8 @@ public class MainMenuScript : MonoBehaviour
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
+        // Обновляем текст общего времени
+        UpdateTimeTexts();
         Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
@@ -222,6 +230,32 @@ public class MainMenuScript : MonoBehaviour
         //    serialPort = null;
         //    statusImage.sprite = disconnected;
         //}
+    }
+
+    private void Update()
+    {
+        // Обновляем текст времени текущей сессии
+        float sessionTime = TimeTracker.Instance.GetCurrentSessionTime();
+        sessionTimeText.text = "Время сессии: " + FormatTime(sessionTime);
+    }
+
+    private void UpdateTimeTexts()
+    {
+        // Обновляем общее время
+        float totalTime = TimeTracker.Instance.GetTotalGameTime();
+        totalTimeText.text = "Общее время: " + FormatTime(totalTime);
+    }
+
+    private string FormatTime(float timeInSeconds)
+    {
+        TimeSpan time = TimeSpan.FromSeconds(timeInSeconds);
+        return string.Format("{0:D2}:{1:D2}:{2:D2}", time.Hours, time.Minutes, time.Seconds);
+    }
+
+    private void OnApplicationQuit()
+    {
+        // Сохраняем время сессии при выходе
+        TimeTracker.Instance.SaveSessionTime();
     }
 
     // Метод для скрытия всех превью
