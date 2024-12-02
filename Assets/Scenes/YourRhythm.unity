@@ -188,8 +188,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288241710
-  m_fontColor: {r: 0.18039216, g: 0.3764706, b: 0.6, a: 1}
+    rgba: 4281669142
+  m_fontColor: {r: 0.08627451, g: 0.08627451, b: 0.20784315, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -425,7 +425,7 @@ MonoBehaviour:
   volumeSlider: {fileID: 1012626625}
   mainMenuButton: {fileID: 1831790818}
   closeButton: {fileID: 1471382410}
-  scoreText: {fileID: 0}
+  scoreText: {fileID: 26366583}
   gameTag: YourRhythm
   metronomSound: {fileID: 1060326098}
   interval: 1

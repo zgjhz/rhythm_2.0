@@ -66,7 +66,7 @@ public class SpawnBall : MonoBehaviour
         }
         audioSource.Play();
         score += hitStreakNum;
-        scoreText.text = "Счёт: " + score;
+        //scoreText.text = "Счёт: " + score;
         return flag;
     }
 
@@ -83,11 +83,11 @@ public class SpawnBall : MonoBehaviour
         if (Mathf.Abs(deltaTime) >= 5 && Mathf.Abs(deltaTime) < 6) {
             rndY = Random.Range(1, -1);
         }
-        else if (Mathf.Abs(deltaTime) >= 4 && Mathf.Abs(deltaTime) < 5)
+        else if (Mathf.Abs(deltaTime) >= 3.5f && Mathf.Abs(deltaTime) < 5)
         {
             rndY = Random.Range(3.5f, -3.5f);
         }
-        else if (Mathf.Abs(deltaTime) < 4)
+        else if (Mathf.Abs(deltaTime) < 3.5f)
         {
             rndY = Random.Range(accuracyBarHeight, -accuracyBarHeight);
         }
@@ -97,9 +97,11 @@ public class SpawnBall : MonoBehaviour
         if (PlaySound(newMarker.transform.position.x))
         {
             sr.sprite = hitSprite;
+            menuManager.UpdateScore();
         }
         else {
             sr.sprite = missSprite;
+            menuManager.ResetStreak();
         }
     }
 }

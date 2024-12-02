@@ -79,12 +79,6 @@ public class BallMovement : MonoBehaviour
         canMove = false;
         PlayHitSound();
 
-        // Запуск подсветки
-        if (wallHighlightController != null)
-        {
-            wallHighlightController.TriggerHighlight();
-        }
-
         // Логика изменения направления мяча
         if (transform.position.x <= -wallBoundary)
         {
@@ -112,12 +106,21 @@ public class BallMovement : MonoBehaviour
 
     void CheckHit()
     {
+        // Проверяем попадание в ритм
         if (Mathf.Abs(transform.position.x - (direction == Vector2.right ? wallBoundary : -wallBoundary)) < 0.1f)
         {
             Debug.Log("Удар успешен!");
             menuManager.UpdateScore();
-            // score++;
-            // scoreText.text = "Счёт: " + score;
+
+            // Запуск подсветки только при успешном попадании
+            if (direction == Vector2.right && wallHighlightControllerRight != null)
+            {
+                wallHighlightControllerRight.TriggerHighlight();
+            }
+            else if (direction == Vector2.left && wallHighlightControllerLeft != null)
+            {
+                wallHighlightControllerLeft.TriggerHighlight();
+            }
         }
         else
         {
