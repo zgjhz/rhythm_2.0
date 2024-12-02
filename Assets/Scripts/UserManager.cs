@@ -41,7 +41,7 @@ public class UserManager : MonoBehaviour
         inputField.text = name;
         scoreText.text = "????: " + LoadScore();
         LoadUsers();
-        username = "������������";
+        username = "������������";
         RegisterUser();
     }
 
@@ -81,7 +81,7 @@ public class UserManager : MonoBehaviour
         // ???? CSV-???? ?? ??????????, ??????? ??? ? ???????????
         if (!File.Exists(csvPath))
         {
-            File.WriteAllText(csvPath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
+            File.WriteAllText(csvPath, "Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
         }
         
         // ?????? ??? ?????? ?? CSV

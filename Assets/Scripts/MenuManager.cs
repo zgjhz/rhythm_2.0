@@ -230,7 +230,7 @@ public class MenuManager : MonoBehaviour
         // Создаем файл, если он не существует
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
+            File.WriteAllText(filePath, "Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
             Debug.Log("Файл stats.csv создан с заголовками.");
         }
 
@@ -240,7 +240,7 @@ public class MenuManager : MonoBehaviour
         // Проверяем, если файл пуст или содержит только пустую строку
         if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
         {
-            lines.Add("Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;SvetoforMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;SvetoforPercentHits;TotalScore;SessionDate\n");
+            lines.Add("Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
         }
 
         // Собираем данные для текущего пользователя
