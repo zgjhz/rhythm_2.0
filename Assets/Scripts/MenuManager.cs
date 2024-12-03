@@ -35,6 +35,7 @@ public class MenuManager : MonoBehaviour
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
     public SerialPortReader serialPortReader;
+
     private void Start()
     {
         int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
@@ -117,17 +118,18 @@ public class MenuManager : MonoBehaviour
     {
         //if (metronomSound != null)
         //{
-        // Синхронизация метронома после паузы
-        if (firstSpacePressTime < 0)
-        {
-            float elapsed = Time.time - firstSpacePressTime;
-            float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
-            metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
-        }
-        else
-        {
-            metronomSound.Play();
-        }
+
+            // Синхронизация метронома после паузы
+            if (firstSpacePressTime < 0)
+            {
+                float elapsed = Time.time - firstSpacePressTime;
+                float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
+                metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
+            }
+            else
+            {
+                metronomSound.Play();
+            }
         //}
     }
 
@@ -260,6 +262,7 @@ public class MenuManager : MonoBehaviour
             ? LoadScore()
             : 0;
 
+
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -279,6 +282,7 @@ public class MenuManager : MonoBehaviour
             $"{(gameTag == "Svetofor" ? svetoforPercentHits.ToString() : "-")};" +
             $"{(gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor" ? totalScore.ToString() : "-")};" +
             $"{sessionDate}";
+
 
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
@@ -307,7 +311,6 @@ public class MenuManager : MonoBehaviour
         File.WriteAllLines(filePath, lines.ToArray());
         Debug.Log("Данные сохранены в stats.csv");
     }
-
 
     private float LoadScore()
     {

@@ -88,6 +88,7 @@ public class FrogJump : MonoBehaviour
     }
     
 
+
     private IEnumerator LandingPause()
     {
         spriteRenderer.sprite = frogIdle; // Меняем спрайт на состояние "ожидания"

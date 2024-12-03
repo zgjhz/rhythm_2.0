@@ -5,6 +5,7 @@ using TMPro;
 using System.IO.Ports;
 using System.IO;
 using System.Collections.Generic;
+using System;
 public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
@@ -19,22 +20,37 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text frogGameAcc;
     public TMP_Text ritmamidaAcc;
     public TMP_Text ArrowGameAcc;
+    public TMP_Text SvetoforAcc;
     public TMP_Text metronomStreak;
     public TMP_Text yourRhythmStreak;
     public TMP_Text frogGameStreak;
     public TMP_Text ritmamidaStreak;
     public TMP_Text ArrowGameStreak;
+    public TMP_Text SvetoforStreak;
     public TMP_Text scoreText;
     private SerialPort serialPort;
     public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
-    public int baudRate = 9600; // �������� �������� ������
+    public int baudRate = 38400; // �������� �������� ������
     public GameObject loginErrorPanel;
     public GameObject soundSettingsPanel;
+    public GameObject chartPanel;
+
+    public List<AudioClip> metronomAudioClips;
+    public AudioSource metronomAudio;
 
     public Image statusImage;
     public Sprite disconnected;
     public Sprite connected;
     public Sprite connecting;
+
+    private float sessionStartTime;
+    private const string TotalTimeKey = "total_time";
+    public TMP_Text totalTimeText;
+    public TMP_Text sessionTimeText;
+
+    public TMP_Dropdown comportDropdown;
+
+    string[] ports = SerialPort.GetPortNames();
 
     public List<Toggle> audioToggles;
 
@@ -47,6 +63,66 @@ public class MainMenuScript : MonoBehaviour
         soundSettingsPanel.SetActive(true);
         int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         audioToggles[toggleIndex].isOn = true;
+    }
+
+    void UpdateDropdownOptions()
+    {
+        // Получаем доступные порты
+        string[] ports = SerialPort.GetPortNames();
+
+        // Очищаем текущие опции Dropdown
+        comportDropdown.ClearOptions();
+
+        // Добавляем найденные порты в Dropdown
+        if (ports.Length > 0)
+        {
+            comportDropdown.AddOptions(new System.Collections.Generic.List<string>(ports));
+            Debug.Log("Порты добавлены в Dropdown.");
+        }
+        else
+        {
+            comportDropdown.AddOptions(new System.Collections.Generic.List<string> { "Нет доступных портов" });
+            Debug.Log("Доступных портов не найдено.");
+        }
+    }
+
+    void ConnectToSelectedPort()
+    {
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Close();
+            Debug.Log("Соединение с предыдущим портом закрыто.");
+        }
+
+        string selectedPort = comportDropdown.options[comportDropdown.value].text;
+
+        if (selectedPort == "Нет доступных портов")
+        {
+            Debug.LogWarning("Выбран невалидный порт.");
+            return;
+        }
+
+        try
+        {
+            serialPort = new SerialPort(portName, baudRate);
+            serialPort.Open();
+            serialPort.ReadTimeout = 10000; // Установка таймаута чтения
+            Debug.Log("Успешное подключение к порту: " + portName);
+            statusImage.sprite = connected;
+            isPortOpened = true;
+        }
+        catch (System.IO.IOException e)
+        {
+            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+            serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
+            statusImage.sprite = disconnected;
+        }
+        catch (System.UnauthorizedAccessException e)
+        {
+            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+            serialPort = null;
+            statusImage.sprite = disconnected;
+        }
     }
 
     public void onToggleValueChanged(int soundNumber) {
@@ -100,6 +176,23 @@ public class MainMenuScript : MonoBehaviour
         if (username != "")
         {
             SceneManager.LoadScene("YourRhythm"); // Замени на название твоей игровой сцены
+        }
+        else
+        {
+            loginErrorPanel.SetActive(true);
+            ShowDarkenBackground();
+        }
+    }
+    public void PlaySvetofor()
+    {
+        if (isPortOpened)
+        {
+            serialPort.Close();
+        }
+        string username = PlayerPrefs.GetString("current_user");
+        if (username != "")
+        {
+            SceneManager.LoadScene("Svetofor"); // Замени на название твоей игровой сцены
         }
         else
         {
@@ -165,7 +258,10 @@ public class MainMenuScript : MonoBehaviour
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     private void Start()
     {
-        PlayerPrefs.SetInt("chosen_sound",1);
+        // Обновляем текст общего времени
+        UpdateTimeTexts();
+        UpdateDropdownOptions();
+        comportDropdown.onValueChanged.AddListener(delegate { ConnectToSelectedPort(); });
         Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
@@ -173,28 +269,52 @@ public class MainMenuScript : MonoBehaviour
         statusImage.sprite = connecting;
         loginErrorPanel.SetActive(false);
         soundSettingsPanel.SetActive(false);
+        chartPanel.SetActive(false);
+        if (!PlayerPrefs.HasKey("chosen_sound"))
+        {
+            PlayerPrefs.SetInt("chosen_sound", 1);
+        }
+        int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
+        audioToggles[toggleIndex].isOn = true;
+        PlayerPrefs.SetString("current_user", "пользователь");
+        PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
-        //try
-        //{
-        //    serialPort = new SerialPort(portName, baudRate);
-        //    serialPort.Open();
-        //    serialPort.ReadTimeout = 1000; // Установка таймаута чтения
-        //    Debug.Log("Успешное подключение к порту: " + portName);
-        //    statusImage.sprite = connected;
-        //    isPortOpened = true;
-        //}
-        //catch (System.IO.IOException e)
-        //{
-        //    Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
-        //    serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
-        //    statusImage.sprite = disconnected;
-        //}
-        //catch (System.UnauthorizedAccessException e)
-        //{
-        //    Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
-        //    serialPort = null;
-        //    statusImage.sprite = disconnected;
-        //}
+    }
+
+    public void ListenSound(int index) {
+        metronomAudio.clip = metronomAudioClips[index];
+        metronomAudio.Play();
+    }
+
+    private void Update()
+    {
+        // Обновляем текст времени текущей сессии
+        float sessionTime = TimeTracker.Instance.GetCurrentSessionTime();
+        sessionTimeText.text = "Время сессии: " + FormatTime(sessionTime);
+    }
+
+    private void UpdateTimeTexts()
+    {
+        // Обновляем общее время
+        float totalTime = TimeTracker.Instance.GetTotalGameTime();
+        totalTimeText.text = "Общее время: " + FormatTime(totalTime);
+    }
+
+    private string FormatTime(float timeInSeconds)
+    {
+        TimeSpan time = TimeSpan.FromSeconds(timeInSeconds);
+        return string.Format("{0:D2}:{1:D2}:{2:D2}", time.Hours, time.Minutes, time.Seconds);
+    }
+
+    private void OnApplicationQuit()
+    {
+        // Сохраняем время сессии при выходе
+        TimeTracker.Instance.SaveSessionTime();
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Close();
+            Debug.Log("Порт закрыт при выходе из приложения.");
+        }
     }
 
     // Метод для скрытия всех превью
@@ -266,19 +386,20 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
-        Debug.Log("Metronom_maxStreak" + PlayerPrefs.GetInt(username + "Metronom_maxStreak"));
-        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak");
-        yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak");
-        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak");
-        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_maxStreak");
-        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak");
+        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
+        yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
+        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
+        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
+        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        SvetoforStreak.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
 
 
-        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits") + "%";
-        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits") + "%";
-        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits") + "%";
-        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "ritmamida_PersentHits") + "%";
-        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits") + "%";
+        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) + "%";
+        yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) + "%";
+        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) + "%";
+        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) + "%";
+        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) + "%";
+        SvetoforAcc.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) + "%";
     }
 
 
@@ -287,12 +408,14 @@ public class MainMenuScript : MonoBehaviour
     private float LoadScore()
     {
         string username = PlayerPrefs.GetString("current_user");
-        float m = PlayerPrefs.GetFloat(username + "Metronom_score");
-        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
-        float f = PlayerPrefs.GetFloat(username + "FrogJump_score");
-        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
-        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
-        return m + y + f + a + r;
+
+        float m = PlayerPrefs.GetFloat(username + "Metronom_score", 0);
+        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score", 0);
+        float f = PlayerPrefs.GetFloat(username + "FrogGame_score", 0);
+        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score", 0);
+        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score", 0);
+        float s = PlayerPrefs.GetFloat(username + "Svetofor_score", 0);
+        return m + y + f + a + r + s;
     }
 
     // Метод для закрытия превью и затемнения
