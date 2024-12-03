@@ -37,6 +37,7 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
+        
         int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         PlayerPrefs.Save();
         metronomSound.clip = metronomAudioClips[audioIndex];
@@ -113,6 +114,7 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
+        Debug.Log(0);
         if (metronomSound != null)
         {
             // Синхронизация метронома после паузы
