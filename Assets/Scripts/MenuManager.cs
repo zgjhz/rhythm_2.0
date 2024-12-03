@@ -34,12 +34,10 @@ public class MenuManager : MonoBehaviour
     private bool isSpacePressed = false;
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
-
+    public SerialPortReader serialPortReader;
     private void Start()
     {
-        
         int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
-        PlayerPrefs.Save();
         metronomSound.clip = metronomAudioClips[audioIndex];
         // Отключаем панель меню при старте
         menuPanel.SetActive(false);
@@ -68,35 +66,19 @@ public class MenuManager : MonoBehaviour
     {
         if (isPaused) return;
 
-        // Если ожидаем первого нажатия после паузы
-        if (waitingForFirstPress && Input.GetKeyDown(KeyCode.Space))
-        {
-            firstSpacePressTime = Time.time; // Фиксируем время первого нажатия
-            waitingForFirstPress = false; // Сбрасываем ожидание
-            timer = interval; // Сбрасываем таймер на интервал
-            isSpacePressed = true; // Активируем метроном
-            return; // Прерываем дальнейшую обработку
-        }
-
-        // Если игрок нажал пробел (обычная логика)
+        // Если игрок нажал пробел
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CountSpacePress();
-
-            if (canClick)
-            {
-                isSpacePressed = true; // Активируем метроном
-            }
+            OnSpacePressed(); // Вызов нового метода
         }
 
         // Логика метронома
         if (isSpacePressed)
         {
             timer -= Time.deltaTime;
-
             if (timer <= 0f)
             {
-                if (gameTag == "FrogJump")
+                if (gameTag == "FrogGame")
                 {
                     PlayDirectionalSound(isLeft);
                     isLeft = !isLeft;
@@ -111,24 +93,42 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void OnSpacePressed()
+    {
+        if (waitingForFirstPress)
+        {
+            firstSpacePressTime = Time.time; // Фиксируем время первого нажатия
+            waitingForFirstPress = false;   // Сбрасываем ожидание
+            timer = interval;               // Сбрасываем таймер на интервал
+            isSpacePressed = true;          // Активируем метроном
+            return;
+        }
+
+        CountSpacePress();
+
+        if (canClick)
+        {
+            isSpacePressed = true; // Активируем метроном
+        }
+    }
+
 
     public void PlaySound()
     {
-        Debug.Log(0);
-        if (metronomSound != null)
+        //if (metronomSound != null)
+        //{
+        // Синхронизация метронома после паузы
+        if (firstSpacePressTime < 0)
         {
-            // Синхронизация метронома после паузы
-            if (firstSpacePressTime < 0)
-            {
-                float elapsed = Time.time - firstSpacePressTime;
-                float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
-                metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
-            }
-            else
-            {
-                metronomSound.Play();
-            }
+            float elapsed = Time.time - firstSpacePressTime;
+            float offset = elapsed % interval; // Рассчитываем сдвиг относительно интервала
+            metronomSound.PlayDelayed(interval - offset); // Синхронизируем звук
         }
+        else
+        {
+            metronomSound.Play();
+        }
+        //}
     }
 
 
@@ -187,14 +187,7 @@ public class MenuManager : MonoBehaviour
     // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
-        //canClick = true;
-        //isPaused = false;
-        //score = 0; // Счёт
-        //currentStreak = 0; // Текущая серия попаданий
-        //maxStreak = 0;
-        //spacePressCount = 0; // Счётчик нажатий на пробел
-        //isSpacePressed = false;
-        //Debug.Log("HUY");
+        //serialPortReader.OnApplicationQuitSuka();
         string username = PlayerPrefs.GetString("current_user");
         Debug.Log("USERNAME SAVE " + username);
         float oldScore = PlayerPrefs.GetFloat(username + gameTag + "_score");
@@ -235,7 +228,7 @@ public class MenuManager : MonoBehaviour
         // Создаем файл, если он не существует
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            File.WriteAllText(filePath, "Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
             Debug.Log("Файл stats.csv создан с заголовками.");
         }
 
@@ -245,36 +238,54 @@ public class MenuManager : MonoBehaviour
         // Проверяем, если файл пуст или содержит только пустую строку
         if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
         {
-            lines.Add("Username;MetronomMaxStreak;YourRhythmMaxStreak;FrogGameMaxStreak;RitmamidaMaxStreak;ArrowGameMaxStreak;MetronomPercentHits;YourRhythmPercentHits;FrogGamePercentHits;RitmamidaPercentHits;ArrowGamePercentHits;TotalScore;SessionDate\n");
+            lines.Add("Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
         }
 
         // Собираем данные для текущего пользователя
-        int metronomMaxStreak = PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
-        int yourRhythmMaxStreak = PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
-        int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
-        int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
-        int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        int metronomMaxStreak = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0) : 0;
+        int yourRhythmMaxStreak = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0) : 0;
+        int frogGameMaxStreak = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0) : 0;
+        int ritmamidaMaxStreak = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0) : 0;
+        int arrowGameMaxStreak = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0) : 0;
+        int svetoforMaxStreak = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0) : 0;
 
-        int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
-        int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
-        int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
-        int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
-        int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
+        int metronomPercentHits = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) : 0;
+        int yourRhythmPercentHits = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) : 0;
+        int frogGamePercentHits = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) : 0;
+        int ritmamidaPercentHits = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) : 0;
+        int arrowGamePercentHits = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) : 0;
+        int svetoforPercentHits = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) : 0;
 
-        float totalScore = metronomMaxStreak + yourRhythmMaxStreak + frogGameMaxStreak + ritmamidaMaxStreak + arrowGameMaxStreak;
+        float totalScore = (gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor")
+            ? LoadScore()
+            : 0;
 
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         // Формат строки для записи
-        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{totalScore};{sessionDate}";
+        string userStats = $"{username};" +
+            $"{(gameTag == "Metronom" ? metronomMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "YourRhythm" ? yourRhythmMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "FrogJump" ? frogGameMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "Ritmamida" ? ritmamidaMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "ArrowGame" ? arrowGameMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "Svetofor" ? svetoforMaxStreak.ToString() : "-")};" +
+            $"{(gameTag == "Metronom" ? metronomPercentHits.ToString() : "-")};" +
+            $"{(gameTag == "YourRhythm" ? yourRhythmPercentHits.ToString() : "-")};" +
+            $"{(gameTag == "FrogJump" ? frogGamePercentHits.ToString() : "-")};" +
+            $"{(gameTag == "Ritmamida" ? ritmamidaPercentHits.ToString() : "-")};" +
+            $"{(gameTag == "ArrowGame" ? arrowGamePercentHits.ToString() : "-")};" +
+            $"{(gameTag == "Svetofor" ? svetoforPercentHits.ToString() : "-")};" +
+            $"{(gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor" ? totalScore.ToString() : "-")};" +
+            $"{sessionDate}";
 
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
 
         for (int i = 1; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
         {
-            if (lines[i].StartsWith(username + ","))
+            if (lines[i].StartsWith(username + ";"))
             {
                 // Если пользователь найден, обновляем его строку
                 lines[i] = userStats;
@@ -295,6 +306,19 @@ public class MenuManager : MonoBehaviour
         // Записываем обновленные данные обратно в файл
         File.WriteAllLines(filePath, lines.ToArray());
         Debug.Log("Данные сохранены в stats.csv");
+    }
+
+
+    private float LoadScore()
+    {
+        string username = PlayerPrefs.GetString("current_user");
+        float m = PlayerPrefs.GetFloat(username + "Metronom_score");
+        float y = PlayerPrefs.GetFloat(username + "YourRhythm_score");
+        float f = PlayerPrefs.GetFloat(username + "FrogGame_score");
+        float a = PlayerPrefs.GetFloat(username + "ArrowGame_score");
+        float r = PlayerPrefs.GetFloat(username + "Ritmamida_score");
+        float s = PlayerPrefs.GetFloat(username + "Svetofor_score");
+        return m + y + f + a + r + s;
     }
 
     public void StopMetronomeSound()
