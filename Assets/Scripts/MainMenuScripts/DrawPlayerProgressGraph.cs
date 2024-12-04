@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using XCharts.Runtime;
-using UnityEngine.UI; // ��� ������������� UI ���������
+using UnityEngine.UI; // ??? ????????????? UI ?????????
 using TMPro;
 
 public class DrawGraphWithXCharts : MonoBehaviour
 {
-    private string filePath = "path_to_your_csv_file.csv"; // ���� � �����
-    public BaseChart chart; // ������ �� ������ ������� �� �����
+    private string filePath = "path_to_your_csv_file.csv"; // ???? ? ?????
+    public BaseChart chart; // ?????? ?? ?????? ??????? ?? ?????
     public MainMenuScript mainMenuScript;
     public List<string> gameTagList;
     private int chartIndex = -1;
@@ -76,37 +76,36 @@ public class DrawGraphWithXCharts : MonoBehaviour
         chartPanel.SetActive(false);
     }
 
-    // ����� ��� �������� ������ �� CSV
+    // ????? ??? ???????? ?????? ?? CSV
     private Dictionary<string, List<float>> LoadPlayerData(string path)
     {
         Dictionary<string, List<float>> data = new Dictionary<string, List<float>>();
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // ���������� ���������
+            // ?????????? ?????????
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
                 string[] line = sr.ReadLine().Split(';');
-                string playerName = line[0]; // ������ ������� - ��� ������
-                float score = float.Parse(line[6+chartIndex]); // ������� YourRhythmPercentHits
+                string playerName = line[0]; // ?????? ??????? - ??? ??????
+                float score = float.Parse(line[6 + chartIndex]); // ??????? YourRhythmPercentHits
 
                 if (!data.ContainsKey(playerName))
                     data[playerName] = new List<float>();
-                data[playerName].Add(score);
             }
         }
         return data;
     }
-    
-    // ����� ��� ���������� �������
+
+    // ????? ??? ?????????? ???????
     private void PlotGraph()
     {
         playerData = LoadPlayerData(filePath);
         string playerName = PlayerPrefs.GetString("current_user");
         List<float> scores = playerData[playerName];
-        chart.ClearData(); // �������� ������ ������ (���� ����������)
+        chart.ClearData(); // ???????? ?????? ?????? (???? ??????????)
 
         var yAxis = chart.GetChartComponent<YAxis>();
         yAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -117,13 +116,13 @@ public class DrawGraphWithXCharts : MonoBehaviour
         Debug.Log(chartIndex);
         title.text = gameTagList[chartIndex];
 
-        // �������� ����� (Series) ��� ������
+        // ???????? ????? (Series) ??? ??????
         chart.AddSerie<Line>(playerName);
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("������" + (i + 1));
-            chart.AddData(playerName, i, scores[i]); // �������� ����� � ������
+            chart.AddXAxisData("??????" + (i + 1));
+            chart.AddData(playerName, i, scores[i]); // ???????? ????? ? ??????
         }
     }
 }
