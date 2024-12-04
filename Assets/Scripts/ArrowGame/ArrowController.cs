@@ -3,7 +3,7 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ArrowController : MonoBehaviour
+public class ArrowController : MonoBehaviour, ISpacePressHandler
 {
     public List<GameObject> arrowPrefabs;
     public MenuManager menuManager;
@@ -66,9 +66,14 @@ public class ArrowController : MonoBehaviour
 
     public void OnSpacePressed()
     {
-        FireArrow(testTimer);
-        oldTime = Time.time;
-        testTimer = interval;
+        if(isFirst == 0){
+            isFirst = 1;
+        }
+        if(isFirst == 2){
+            FireArrow(testTimer);
+             oldTime = Time.time;
+            testTimer = interval;
+        }
     }
 
     private void MoveBow()

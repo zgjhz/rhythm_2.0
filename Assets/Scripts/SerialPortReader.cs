@@ -12,7 +12,7 @@ public interface ISpacePressHandler
 public class SerialPortReader : MonoBehaviour
 {
     private SerialPort serialPort; // Работа с COM-портом
-    public string portName = "COM3"; // Имя порта (например, "COM3")
+    public string portName; // Имя порта (например, "COM3")
     public int baudRate = 38400; // Скорость передачи данных (бит/с)
     public GameObject MainController; // Главный объект для управления
     public string gameTag = ""; // Тег для определения типа игры
@@ -21,10 +21,12 @@ public class SerialPortReader : MonoBehaviour
     private Thread serialThread; // Поток для работы с COM-портом
     private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>(); // Очередь сообщений
     private bool isRunning = true; // Флаг для работы потока
+    public MenuManager menuManager;
 
     void Start()
     {
         // Попытка подключения к COM-порту
+        portName = PlayerPrefs.GetString("Comport");
         try
         {
             serialPort = new SerialPort(portName, baudRate)
@@ -47,21 +49,7 @@ public class SerialPortReader : MonoBehaviour
             serialPort = null; // Оставляем null, чтобы избежать вызовов
         }
 
-        // Определение обработчика события по тегу
-        switch (gameTag)
-        {
-            case "YourRhythm":
-            case "ArrowGame":
-            case "Metronom":
-            case "Ritmamida":
-            case "FrogGame":
-            case "Svetofor":
-                script = MainController.GetComponent<ISpacePressHandler>();
-                break;
-            default:
-                Debug.LogError("Неизвестный gameTag: " + gameTag);
-                break;
-        }
+        script = MainController.GetComponent<ISpacePressHandler>();
 
         if (script == null)
         {
@@ -76,6 +64,7 @@ public class SerialPortReader : MonoBehaviour
         {
             Debug.Log("Получено сообщение: " + message);
             script?.OnSpacePressed(); // Вызов метода через интерфейс
+            menuManager.OnSpacePressed();
         }
     }
 
@@ -103,7 +92,7 @@ public class SerialPortReader : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
+    public void OnApplicationQuitSuka()
     {
         // Остановка потока
         isRunning = false;

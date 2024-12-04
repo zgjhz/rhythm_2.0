@@ -14,6 +14,7 @@ public class MainMenuScript : MonoBehaviour
     public GameObject yourRhythmPreview;
     public GameObject frogGamePreview;
     public GameObject arrowGamePreview;
+    public GameObject svetoforPreview;
     public GameObject statsWindow;
     public TMP_Text metronomAcc;
     public TMP_Text yourRhythmAcc;
@@ -95,7 +96,8 @@ public class MainMenuScript : MonoBehaviour
         }
 
         string selectedPort = comportDropdown.options[comportDropdown.value].text;
-
+        PlayerPrefs.SetString("Comport", selectedPort);
+        PlayerPrefs.Save();
         if (selectedPort == "Нет доступных портов")
         {
             Debug.LogWarning("Выбран невалидный порт.");
@@ -324,6 +326,7 @@ public class MainMenuScript : MonoBehaviour
         yourRhythmPreview.SetActive(false);
         frogGamePreview.SetActive(false);
         arrowGamePreview.SetActive(false);
+        svetoforPreview.SetActive(false);
         statsWindow.SetActive(false);
     }
 
@@ -379,6 +382,13 @@ public class MainMenuScript : MonoBehaviour
         ShowDarkenBackground();
     }
 
+    public void ShowSvetoforInfo()
+    {
+        HideAllPreviews();
+        svetoforPreview.SetActive(true);
+        ShowDarkenBackground();
+    }
+
     public void ShowStats()
     {
         string username = PlayerPrefs.GetString("current_user");
@@ -424,5 +434,3 @@ public class MainMenuScript : MonoBehaviour
     }
 
 }
-
-

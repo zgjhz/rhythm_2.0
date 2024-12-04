@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using XCharts.Runtime;
-using UnityEngine.UI; // Для использования UI элементов
+using UnityEngine.UI; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 using TMPro;
 
 public class DrawGraphWithXCharts : MonoBehaviour
 {
-    private string filePath = "path_to_your_csv_file.csv"; // Путь к файлу
-    public BaseChart chart; // Ссылка на объект графика из сцены
+    private string filePath = "path_to_your_csv_file.csv"; // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+    public BaseChart chart; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     public MainMenuScript mainMenuScript;
     public List<string> gameTagList;
     private int chartIndex = -1;
@@ -20,8 +20,8 @@ public class DrawGraphWithXCharts : MonoBehaviour
     void Start()
     {
         numGames = gameTagList.Count;
-        filePath = @"Z:\Unity\rhythm_2.0\Assets\stats.csv";
-        // Загружаем данные из CSV
+        filePath = Path.Combine(Application.dataPath, "stats.csv");
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ CSV
         playerData = LoadPlayerData(filePath);
     }
 
@@ -76,21 +76,21 @@ public class DrawGraphWithXCharts : MonoBehaviour
         chartPanel.SetActive(false);
     }
 
-    // Метод для загрузки данных из CSV
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ CSV
     private Dictionary<string, List<float>> LoadPlayerData(string path)
     {
         Dictionary<string, List<float>> data = new Dictionary<string, List<float>>();
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // Пропускаем заголовок
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
                 string[] line = sr.ReadLine().Split(';');
-                string playerName = line[0]; // Первый столбец - имя игрока
-                float score = float.Parse(line[6+chartIndex]); // Столбец YourRhythmPercentHits
+                string playerName = line[0]; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                float score = float.Parse(line[6+chartIndex]); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ YourRhythmPercentHits
 
                 if (!data.ContainsKey(playerName))
                     data[playerName] = new List<float>();
@@ -100,13 +100,13 @@ public class DrawGraphWithXCharts : MonoBehaviour
         return data;
     }
     
-    // Метод для построения графика
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     private void PlotGraph()
     {
         playerData = LoadPlayerData(filePath);
         string playerName = PlayerPrefs.GetString("current_user");
         List<float> scores = playerData[playerName];
-        chart.ClearData(); // Очистить старые данные (если необходимо)
+        chart.ClearData(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 
         var yAxis = chart.GetChartComponent<YAxis>();
         yAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -117,13 +117,13 @@ public class DrawGraphWithXCharts : MonoBehaviour
         Debug.Log(chartIndex);
         title.text = gameTagList[chartIndex];
 
-        // Добавить серию (Series) для игрока
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (Series) пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         chart.AddSerie<Line>(playerName);
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("Сессия" + (i + 1));
-            chart.AddData(playerName, i, scores[i]); // Добавить точки в график
+            chart.AddXAxisData("пїЅпїЅпїЅпїЅпїЅпїЅ" + (i + 1));
+            chart.AddData(playerName, i, scores[i]); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         }
     }
 }

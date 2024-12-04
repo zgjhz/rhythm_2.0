@@ -38,7 +38,6 @@ public class UserManager : MonoBehaviour
         Debug.Log("Path to JSON file: " + filePath);
         Debug.Log("Path to CSV file: " + csvPath);
         string name = PlayerPrefs.GetString("current_user");
-        inputField.text = name;
         scoreText.text = "????: " + LoadScore();
         LoadUsers();
         username = "������������";
@@ -47,7 +46,7 @@ public class UserManager : MonoBehaviour
 
     public void RegisterUser()
     {
-        username = inputField.text;
+        username = "������������";
         if (username != "")
         {
             PlayerPrefs.SetString("current_user", username);

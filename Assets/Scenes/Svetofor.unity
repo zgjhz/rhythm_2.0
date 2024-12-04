@@ -1135,6 +1135,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
   - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
+  serialPortReader: {fileID: 1330627231}
 --- !u!4 &914490269
 Transform:
   m_ObjectHideFlags: 0
@@ -1631,7 +1632,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 3
   m_WholeNumbers: 0
-  m_Value: 1.5
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1982,6 +1983,55 @@ Transform:
   m_LocalPosition: {x: 2.75, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.375}
   m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1330627230
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1330627232}
+  - component: {fileID: 1330627231}
+  m_Layer: 0
+  m_Name: SerialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1330627231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330627230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a4b90d46d96bca47b9b63ca4ef8f0e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portName: COM3
+  baudRate: 38400
+  MainController: {fileID: 267773985}
+  gameTag: Svetofor
+  menuManager: {fileID: 914490268}
+--- !u!4 &1330627232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330627230}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 269.14603, y: -1.0100578, z: -10.564843}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2916,3 +2966,4 @@ SceneRoots:
   - {fileID: 914490269}
   - {fileID: 1234856607}
   - {fileID: 884558891}
+  - {fileID: 1330627232}

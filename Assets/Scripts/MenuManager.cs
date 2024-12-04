@@ -34,6 +34,7 @@ public class MenuManager : MonoBehaviour
     private bool isSpacePressed = false;
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
+    public SerialPortReader serialPortReader;
     private void Start()
     {
         int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
@@ -65,25 +66,10 @@ public class MenuManager : MonoBehaviour
     {
         if (isPaused) return;
 
-        // Если ожидаем первого нажатия после паузы
-        if (waitingForFirstPress && Input.GetKeyDown(KeyCode.Space))
-        {
-            firstSpacePressTime = Time.time; // Фиксируем время первого нажатия
-            waitingForFirstPress = false; // Сбрасываем ожидание
-            timer = interval; // Сбрасываем таймер на интервал
-            isSpacePressed = true; // Активируем метроном
-            return; // Прерываем дальнейшую обработку
-        }
-
-        // Если игрок нажал пробел (обычная логика)
+        // Если игрок нажал пробел
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CountSpacePress();
-
-            if (canClick)
-            {
-                isSpacePressed = true; // Активируем метроном
-            }
+            OnSpacePressed(); // Вызов нового метода
         }
 
         // Логика метронома
@@ -104,6 +90,25 @@ public class MenuManager : MonoBehaviour
                     timer = interval;
                 }
             }
+        }
+    }
+
+    public void OnSpacePressed()
+    {
+        if (waitingForFirstPress)
+        {
+            firstSpacePressTime = Time.time; // Фиксируем время первого нажатия
+            waitingForFirstPress = false;   // Сбрасываем ожидание
+            timer = interval;               // Сбрасываем таймер на интервал
+            isSpacePressed = true;          // Активируем метроном
+            return;
+        }
+
+        CountSpacePress();
+
+        if (canClick)
+        {
+            isSpacePressed = true; // Активируем метроном
         }
     }
 
@@ -153,6 +158,7 @@ public class MenuManager : MonoBehaviour
     {
         canClick = true;
         isPaused = false; // Сбрасываем флаг паузы
+        isLeft = true;
         Time.timeScale = 1f;
         openMenuButton.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
@@ -182,14 +188,7 @@ public class MenuManager : MonoBehaviour
     // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
-        //canClick = true;
-        //isPaused = false;
-        //score = 0; // Счёт
-        //currentStreak = 0; // Текущая серия попаданий
-        //maxStreak = 0;
-        //spacePressCount = 0; // Счётчик нажатий на пробел
-        //isSpacePressed = false;
-        //Debug.Log("HUY");
+        serialPortReader.OnApplicationQuitSuka();
         string username = PlayerPrefs.GetString("current_user");
         Debug.Log("USERNAME SAVE " + username);
         float oldScore = PlayerPrefs.GetFloat(username + gameTag + "_score");
