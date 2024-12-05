@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class RhythmController : MonoBehaviour, ISpacePressHandler
 {
-    private float rhythmInterval;
+    private float rhythmInterval = 1.0f;
     private float nextBeatTime;
     private FrogJump frogJump;
     private bool isGameStarted = false;
@@ -29,13 +29,14 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
 
     private Coroutine leftResetCoroutine = null;
     private Coroutine rightResetCoroutine = null;
-    private bool isToLeft;
+    public bool isToLeft;
+    private bool isLeftLilyPadScaling = false; // Флаг для масштабирования левой кувшинки
+    private bool isRightLilyPadScaling = false;
 
     void Start()
     {
         frogJump = FindObjectOfType<FrogJump>();
         menuManager = FindObjectOfType<MenuManager>();
-
         if (menuManager != null)
         {
             speedSlider = menuManager.speedSlider;
@@ -45,8 +46,8 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
 
         if (leftLilyPad != null) leftRenderer = leftLilyPad.GetComponent<SpriteRenderer>();
         if (rightLilyPad != null) rightRenderer = rightLilyPad.GetComponent<SpriteRenderer>();
-        isToLeft = false;
     }
+
 
     void Update()
     {
@@ -55,19 +56,11 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
             isGameStarted = false; // Игра приостановлена
             isWaitingForFirstInput = true; // После паузы ждем первого пробела
             frogJump.ResetToStart();
-            return;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isWaitingForFirstInput) // Если ждем первого пробела
-            {
-                StartGameAfterPause();
-            }
-            else
-            {
-                OnSpacePressed(); // Обычная проверка попадания в ритм
-            }
+            OnSpacePressed();
         }
 
         UpdateRhythmInterval();
@@ -82,70 +75,113 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
         }
     }
 
+
     private void StartGameAfterPause()
     {
         isWaitingForFirstInput = false; // Сбрасываем флаг ожидания
         isGameStarted = true; // Игра запущена
         nextBeatTime = Time.time + rhythmInterval; // Синхронизация ритма с текущим временем
+        Debug.Log("HUYYYYY  " + nextBeatTime);
         frogJump.Jump(); // Начинаем прыжок
         isToLeft = false; // Сбрасываем направление прыжка
     }
 
+
     private void CheckAccuracy()
-{
-    // Смещаем текущее время в ритм ближайшего такта
-    float timeSinceLastBeat = (Time.time - nextBeatTime + rhythmInterval) % rhythmInterval;
-    float timeDifference = Mathf.Min(timeSinceLastBeat, rhythmInterval - timeSinceLastBeat);
-
-    float allowedWindow = rhythmInterval * allowedAccuracy;
-    float moderateMissWindow = rhythmInterval * moderateMissAccuracy;
-
-    if (timeDifference <= allowedWindow) // Попадание в ритм
     {
-        menuManager.UpdateScore();
-        ChangeLilyPadColor(greenSprite);
-    }
-    else if (timeDifference <= moderateMissWindow) // Небольшой промах
-    {
-        ChangeLilyPadColor(yellowSprite);
-    }
-    else // Большой промах
-    {
-        ChangeLilyPadColor(redSprite);
-    }
-}
+        float timeDifference = Mathf.Abs(Time.time - nextBeatTime);
+        float allowedWindow = rhythmInterval * allowedAccuracy;
+        float moderateMissWindow = rhythmInterval * moderateMissAccuracy;
 
+        if (timeDifference <= allowedWindow) // Попадание в ритм
+        {
+            menuManager.UpdateScore();
+            ChangeLilyPadColor(defaultSprite); // Вернуть стандартный цвет
+            ScaleLilyPads(); // Анимация кувшинок
+        }
+        else if (timeDifference <= moderateMissWindow) // Небольшой промах
+        {
+            ChangeLilyPadColor(yellowSprite);
+            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f)); // Возвращение цвета через 0.5 секунды
+        }
+        else // Большой промах
+        {
+            ChangeLilyPadColor(redSprite);
+            StartCoroutine(ResetLilyPadColorAfterDelay(0.5f));
+        }
+    }
 
     private void ChangeLilyPadColor(Sprite newSprite)
     {
-        if (isToLeft)
+        if (leftRenderer != null) leftRenderer.sprite = newSprite;
+        if (rightRenderer != null) rightRenderer.sprite = newSprite;
+    }
+
+    private IEnumerator ResetLilyPadColorAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ChangeLilyPadColor(defaultSprite);
+    }
+
+
+    //private IEnumerator ResetLilyPadColorAfterDelay(float delay, SpriteRenderer renderer)
+    //{
+    //    yield return new WaitForSeconds(delay);
+    //    if (isGameStarted && renderer != null)
+    //    {
+    //        renderer.sprite = defaultSprite;
+    //    }
+    //}
+    private void ScaleLilyPads()
+    {
+        if (leftLilyPad != null && !isLeftLilyPadScaling)
         {
-            if (leftRenderer != null)
-            {
-                if (leftResetCoroutine != null) StopCoroutine(leftResetCoroutine);
-                leftRenderer.sprite = newSprite;
-                leftResetCoroutine = StartCoroutine(ResetLilyPadColorAfterDelay(0.3f, leftRenderer));
-            }
+            StartCoroutine(ScaleLilyPad(leftLilyPad, 1.2f, isLeft: true));
         }
-        else
+        if (rightLilyPad != null && !isRightLilyPadScaling)
         {
-            if (rightRenderer != null)
-            {
-                if (rightResetCoroutine != null) StopCoroutine(rightResetCoroutine);
-                rightRenderer.sprite = newSprite;
-                rightResetCoroutine = StartCoroutine(ResetLilyPadColorAfterDelay(0.3f, rightRenderer));
-            }
+            StartCoroutine(ScaleLilyPad(rightLilyPad, 1.2f, isLeft: false));
         }
     }
 
-    private IEnumerator ResetLilyPadColorAfterDelay(float delay, SpriteRenderer renderer)
+    private IEnumerator ScaleLilyPad(GameObject lilyPad, float scaleFactor, bool isLeft)
     {
-        yield return new WaitForSeconds(delay);
-        if (isGameStarted && renderer != null)
+        if (isLeft)
+            isLeftLilyPadScaling = true;
+        else
+            isRightLilyPadScaling = true;
+
+        Vector3 targetScale = lilyPad.transform.localScale * scaleFactor;
+        Vector3 originalScale = lilyPad.transform.localScale;
+
+        float timeElapsed = 0f;
+        float scaleDuration = 0.2f;
+
+        while (timeElapsed < scaleDuration)
         {
-            renderer.sprite = defaultSprite;
+            lilyPad.transform.localScale = Vector3.Lerp(originalScale, targetScale, timeElapsed / scaleDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
         }
+
+        lilyPad.transform.localScale = targetScale;
+
+        timeElapsed = 0f;
+        while (timeElapsed < scaleDuration)
+        {
+            lilyPad.transform.localScale = Vector3.Lerp(targetScale, originalScale, timeElapsed / scaleDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        lilyPad.transform.localScale = originalScale;
+
+        if (isLeft)
+            isLeftLilyPadScaling = false;
+        else
+            isRightLilyPadScaling = false;
     }
+
 
     private void UpdateRhythmInterval()
     {
@@ -159,20 +195,30 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
                 lastRhythmInterval = newRhythmInterval;
                 isGameStarted = false;
                 frogJump.ResetToStart();
-                isToLeft = false;
+
+
             }
         }
     }
 
     public void OnSpacePressed()
     {
-        if (!isGameStarted)
+        
+        if (isWaitingForFirstInput) // Если ждем первого пробела
         {
-            StartGame();
+            StartGameAfterPause();
         }
         else
         {
-            CheckAccuracy();
+                
+            if (!isGameStarted)
+            {
+                StartGame();
+            }
+            else
+            {
+                CheckAccuracy();
+            }
         }
     }
 

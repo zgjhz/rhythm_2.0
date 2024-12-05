@@ -30,7 +30,7 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text SvetoforStreak;
     public TMP_Text scoreText;
     private SerialPort serialPort;
-    public string portName = "COM3"; // �������� COM-�����, ��������, "COM3"
+    private string portName; // �������� COM-�����, ��������, "COM3"
     public int baudRate = 38400; // �������� �������� ������
     public GameObject loginErrorPanel;
     public GameObject soundSettingsPanel;
@@ -71,6 +71,8 @@ public class MainMenuScript : MonoBehaviour
         // Получаем доступные порты
         string[] ports = SerialPort.GetPortNames();
 
+        Debug.Log(ports.Length);
+
         // Очищаем текущие опции Dropdown
         comportDropdown.ClearOptions();
 
@@ -105,11 +107,11 @@ public class MainMenuScript : MonoBehaviour
         }
 
         try
-        {
-            serialPort = new SerialPort(portName, baudRate);
+        { 
+            serialPort = new SerialPort(selectedPort, baudRate);
             serialPort.Open();
             serialPort.ReadTimeout = 10000; // Установка таймаута чтения
-            Debug.Log("Успешное подключение к порту: " + portName);
+            Debug.Log("Успешное подключение к порту: " + selectedPort);
             statusImage.sprite = connected;
             isPortOpened = true;
         }

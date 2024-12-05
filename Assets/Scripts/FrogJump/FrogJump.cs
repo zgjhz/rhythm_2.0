@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 public class FrogJump : MonoBehaviour
 {
     public Transform startPosition;   // Позиция левого берега (стартовая)
@@ -88,6 +88,7 @@ public class FrogJump : MonoBehaviour
     }
     
 
+
     private IEnumerator LandingPause()
     {
         spriteRenderer.sprite = frogIdle; // Меняем спрайт на состояние "ожидания"
@@ -98,7 +99,7 @@ public class FrogJump : MonoBehaviour
             yield return null; // Ждем, пока пауза не закончится
         }
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        yield return new WaitForSeconds(jumpDuration * 0.05f); // Уменьшенное время паузы
+        yield return new WaitForSeconds(jumpDuration * 0.15f); // Уменьшенное время паузы
         StartNextJump(); // Стартуем следующий прыжок
     }
 
@@ -113,7 +114,7 @@ public class FrogJump : MonoBehaviour
     }
 
     public void ResetToStart()
-    {
+    {   
         transform.position = startPosition.position; // Возвращаем лягушку в начальное положение
         spriteRenderer.sprite = frogIdle; // Сбрасываем спрайт
         onStartPosition = true; // Сбрасываем флаг позиции

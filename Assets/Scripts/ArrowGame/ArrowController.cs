@@ -96,7 +96,7 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
 
     public void MetronomTicked()
     {
-        movementSpeed = (movementRange + Mathf.Abs(transform.position.x)) / interval;
+        transform.position = new Vector2(0, -3.5f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -122,19 +122,12 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
     {
         transform.position = new Vector3(0, -3.5f, 0);
         interval = menuManager.interval;
-        testTimer = interval;
-    }
-
-    public void OnIntervalChanged()
-    {
-        interval = menuManager.interval;
         movementSpeed = movementRange / interval;
         transform.position = new Vector3(0, -3.5f, 0);
         isInMenu = false;
         testTimer = interval;
+        testTimer = interval;
         isFirst = 0;
-        //Invoke("Resume", 2f);
-        Debug.Log("Intreval changed HUUUY" + transform.position);
     }
 
     void FireArrow(float deltaTime)

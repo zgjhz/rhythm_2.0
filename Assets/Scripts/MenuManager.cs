@@ -115,8 +115,8 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
-        //if (metronomSound != null)
-        //{
+            
+
             // Синхронизация метронома после паузы
             if (firstSpacePressTime < 0)
             {
@@ -126,9 +126,14 @@ public class MenuManager : MonoBehaviour
             }
             else
             {
+                if (gameTag == "ArrowGame")
+                {
+                    GameObject arrowControllerObj = GameObject.Find("Arrow Controller");
+                    arrowControllerObj.GetComponent<ArrowController>().MetronomTicked();
+                }
                 metronomSound.Play();
             }
-        //}
+    
     }
 
 
