@@ -39,7 +39,7 @@ public class FrogJump : MonoBehaviour
         {
             jumpTime += Time.deltaTime;
 
-            float adjustedJumpDuration = jumpDuration * 0.85f; // Длительность анимации прыжка
+            float adjustedJumpDuration = jumpDuration * 0.95f; // Длительность анимации прыжка
             float normalizedTime = jumpTime / adjustedJumpDuration;
 
             if (normalizedTime <= 1f)
