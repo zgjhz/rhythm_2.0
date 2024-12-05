@@ -86,7 +86,7 @@ public class FrogJump : MonoBehaviour
             isJumping = true; // Лягушка начинает прыжок
         }
     }
-
+    
 
     private IEnumerator LandingPause()
     {

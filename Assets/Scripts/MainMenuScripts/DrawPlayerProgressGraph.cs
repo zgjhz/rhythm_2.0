@@ -20,8 +20,8 @@ public class DrawGraphWithXCharts : MonoBehaviour
     void Start()
     {
         numGames = gameTagList.Count;
-        filePath = @"Z:\Unity\rhythm_2.0\Assets\stats.csv";
-        // ????????? ?????? ?? CSV
+        filePath = Path.Combine(Application.dataPath, "stats.csv");
+        // ��������� ������ �� CSV
         playerData = LoadPlayerData(filePath);
     }
 

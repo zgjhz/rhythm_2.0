@@ -3,7 +3,7 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ArrowController : MonoBehaviour
+public class ArrowController : MonoBehaviour, ISpacePressHandler
 {
     public List<GameObject> arrowPrefabs;
     public MenuManager menuManager;

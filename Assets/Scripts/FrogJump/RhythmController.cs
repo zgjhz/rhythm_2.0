@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RhythmController : MonoBehaviour
+public class RhythmController : MonoBehaviour, ISpacePressHandler
 {
-    private float rhythmInterval = 1.0f;
+    private float rhythmInterval;
     private float nextBeatTime;
     private FrogJump frogJump;
     private bool isGameStarted = false;
@@ -31,14 +31,13 @@ public class RhythmController : MonoBehaviour
     private Coroutine rightResetCoroutine = null;
     private bool isToLeft;
 
-
     void Start()
     {
         frogJump = FindObjectOfType<FrogJump>();
         menuManager = FindObjectOfType<MenuManager>();
+
         if (menuManager != null)
         {
-            Debug.Log("PUUUUSYUSYYSYS");
             speedSlider = menuManager.speedSlider;
             rhythmInterval = speedSlider.value;
             lastRhythmInterval = rhythmInterval;
@@ -46,75 +45,76 @@ public class RhythmController : MonoBehaviour
 
         if (leftLilyPad != null) leftRenderer = leftLilyPad.GetComponent<SpriteRenderer>();
         if (rightLilyPad != null) rightRenderer = rightLilyPad.GetComponent<SpriteRenderer>();
+        isToLeft = false;
     }
 
-    
-      void Update()
+    void Update()
+    {
+        if (menuManager.isPaused)
         {
-            if (menuManager.isPaused)
+            isGameStarted = false; // Игра приостановлена
+            isWaitingForFirstInput = true; // После паузы ждем первого пробела
+            frogJump.ResetToStart();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isWaitingForFirstInput) // Если ждем первого пробела
             {
-                isGameStarted = false; // Игра приостановлена
-                isWaitingForFirstInput = true; // После паузы ждем первого пробела
-                frogJump.ResetToStart();
-                return;
+                StartGameAfterPause();
             }
-
-            if (Input.GetKeyDown(KeyCode.Space))
+            else
             {
-                if (isWaitingForFirstInput) // Если ждем первого пробела
-                {
-                    StartGameAfterPause();
-                }
-                else
-                {
-                    OnSpacePressed(); // Обычная проверка попадания в ритм
-                }
-            }
-
-            UpdateRhythmInterval();
-
-            if (Time.timeScale == 0 || !isGameStarted) return;
-
-            if (isGameStarted && Time.time >= nextBeatTime)
-            {
-               nextBeatTime += rhythmInterval;
-                frogJump.Jump();
-                isToLeft = !isToLeft;
+                OnSpacePressed(); // Обычная проверка попадания в ритм
             }
         }
 
+        UpdateRhythmInterval();
+
+        if (Time.timeScale == 0 || !isGameStarted) return;
+
+        if (isGameStarted && Time.time >= nextBeatTime)
+        {
+            nextBeatTime += rhythmInterval;
+            frogJump.Jump();
+            isToLeft = !isToLeft;
+        }
+    }
 
     private void StartGameAfterPause()
     {
         isWaitingForFirstInput = false; // Сбрасываем флаг ожидания
         isGameStarted = true; // Игра запущена
         nextBeatTime = Time.time + rhythmInterval; // Синхронизация ритма с текущим временем
-        Debug.Log("HUYYYYY  " + nextBeatTime);
         frogJump.Jump(); // Начинаем прыжок
         isToLeft = false; // Сбрасываем направление прыжка
     }
 
-
     private void CheckAccuracy()
-    {
-        float timeDifference = Mathf.Abs(Time.time - nextBeatTime);
-        float allowedWindow = rhythmInterval * allowedAccuracy;
-        float moderateMissWindow = rhythmInterval * moderateMissAccuracy;
+{
+    // Смещаем текущее время в ритм ближайшего такта
+    float timeSinceLastBeat = (Time.time - nextBeatTime + rhythmInterval) % rhythmInterval;
+    float timeDifference = Mathf.Min(timeSinceLastBeat, rhythmInterval - timeSinceLastBeat);
 
-        if (timeDifference <= allowedWindow) // Попадание в ритм
-        {
-            menuManager.UpdateScore();
-            ChangeLilyPadColor(greenSprite);
-        }
-        else if (timeDifference <= moderateMissWindow) // Небольшой промах
-        {
-            ChangeLilyPadColor(yellowSprite);
-        }
-        else // Большой промах
-        {
-            ChangeLilyPadColor(redSprite);
-        }
+    float allowedWindow = rhythmInterval * allowedAccuracy;
+    float moderateMissWindow = rhythmInterval * moderateMissAccuracy;
+
+    if (timeDifference <= allowedWindow) // Попадание в ритм
+    {
+        menuManager.UpdateScore();
+        ChangeLilyPadColor(greenSprite);
     }
+    else if (timeDifference <= moderateMissWindow) // Небольшой промах
+    {
+        ChangeLilyPadColor(yellowSprite);
+    }
+    else // Большой промах
+    {
+        ChangeLilyPadColor(redSprite);
+    }
+}
+
 
     private void ChangeLilyPadColor(Sprite newSprite)
     {
@@ -159,13 +159,12 @@ public class RhythmController : MonoBehaviour
                 lastRhythmInterval = newRhythmInterval;
                 isGameStarted = false;
                 frogJump.ResetToStart();
-
-               
+                isToLeft = false;
             }
         }
     }
 
-    private void OnSpacePressed()
+    public void OnSpacePressed()
     {
         if (!isGameStarted)
         {

@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class Ritmamida : MonoBehaviour
+public class Ritmamida : MonoBehaviour, ISpacePressHandler
 {
     private float lastSoundTime = 0f;
     public GameObject linePrefab;
@@ -52,7 +52,7 @@ public class Ritmamida : MonoBehaviour
 
     }
 
-    void OnSpacePressed()
+    public void OnSpacePressed()
     {
         // Перезапуск игры после паузы
         if (firstPress)
