@@ -105,7 +105,6 @@ public class UserManager : MonoBehaviour
         int svetoforPercentHits = PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0);
         float totalScore = LoadScore();
 
-
         // ???????? ??????? ????
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
