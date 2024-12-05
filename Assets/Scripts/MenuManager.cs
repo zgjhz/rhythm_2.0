@@ -263,15 +263,34 @@ public class MenuManager : MonoBehaviour
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
+        string userStats = "";
         // Формат строки для записи
-        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
-
+        switch (gameTag) {
+            case "Metronom":
+                userStats = $"{username};{metronomMaxStreak};-;-;-;-;-;{metronomPercentHits};-;-;-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "YourRhythm":
+                userStats = $"{username};-;{yourRhythmMaxStreak};-;-;-;-;-;{yourRhythmPercentHits};-;-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "FrogGame":
+                userStats = $"{username};-;-;{frogGameMaxStreak};-;-;-;-;-;{frogGamePercentHits};-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "Ritmamida":
+                userStats = $"{username};-;-;-;{ritmamidaMaxStreak};-;-;-;-;-;{ritmamidaPercentHits};-;-;{totalScore};{sessionDate}";
+                break;
+            case "ArrowGame":
+                userStats = $"{username};-;-;-;-;{arrowGameMaxStreak};-;-;-;-;-;{arrowGamePercentHits};-;{totalScore};{sessionDate}";
+                break;
+            case "Svetofor":
+                userStats = $"{username};-;-;-;-;-;{svetoforMaxStreak};-;-;-;-;-;{svetoforPercentHits};{totalScore};{sessionDate}";
+                break;
+        }
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
 
         for (int i = 1; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
         {
-            if (lines[i].StartsWith(username + ","))
+            if (lines[i].StartsWith(username + ",")) //TODO: не нужно ли тут ";" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             {
                 // Если пользователь найден, обновляем его строку
                 lines[i] = userStats;

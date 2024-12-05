@@ -40,7 +40,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             chartIndex = 0;
         }
-        Debug.Log("chartIndex: " + chartIndex);
         if (chartIndex == 0)
         {
             OpenChartPanel();
@@ -62,7 +61,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             CloseChartPanel();
         }
-        Debug.Log("chartIndex: " + chartIndex);
     }
 
     public void OpenChartPanel()
@@ -83,28 +81,45 @@ public class DrawGraphWithXCharts : MonoBehaviour
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // ?????????? ?????????
+            // Пропускаем заголовок
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
-                string[] line = sr.ReadLine().Split(';');
-                string playerName = line[0]; // ?????? ??????? - ??? ??????
-                float score = float.Parse(line[6 + chartIndex]); // ??????? YourRhythmPercentHits
+                string[] parts = sr.ReadLine().Split(';');
+                string playerName = parts[0]; // Имя игрока
+                string scoreString = parts[7 + chartIndex]; // Значение YourRhythmPercentHits
+                Debug.Log($"column index: {7 + chartIndex}");
+
+                Debug.Log("scoreString: " + scoreString);
+
+                // Проверяем, является ли значение счёта числом
+                if (!float.TryParse(scoreString, out float score))
+                    continue;
+
+                Debug.Log("score can be parsed");
 
                 if (!data.ContainsKey(playerName))
                     data[playerName] = new List<float>();
+
+                data[playerName].Add(score);
             }
         }
         return data;
     }
+
+
 
     // ????? ??? ?????????? ???????
     private void PlotGraph()
     {
         playerData = LoadPlayerData(filePath);
         string playerName = PlayerPrefs.GetString("current_user");
-        List<float> scores = playerData[playerName];
+        List<float> scores = new List<float>(0);
+        if (playerData.Count != 0)
+        {
+            scores = playerData[playerName];
+        }
         chart.ClearData(); // ???????? ?????? ?????? (???? ??????????)
 
         var yAxis = chart.GetChartComponent<YAxis>();
@@ -113,7 +128,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         yAxis.max = 100;
 
         var title = chart.EnsureChartComponent<Title>();
-        Debug.Log(chartIndex);
         title.text = gameTagList[chartIndex];
 
         // ???????? ????? (Series) ??? ??????
@@ -121,7 +135,7 @@ public class DrawGraphWithXCharts : MonoBehaviour
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("??????" + (i + 1));
+            chart.AddXAxisData("Сессия" + (i + 1));
             chart.AddData(playerName, i, scores[i]); // ???????? ????? ? ??????
         }
     }
