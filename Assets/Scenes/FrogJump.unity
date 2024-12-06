@@ -1062,6 +1062,7 @@ MonoBehaviour:
   greenSprite: {fileID: 21300000, guid: b747e25c0264244eb922e27b9f0cd48b, type: 3}
   yellowSprite: {fileID: 21300000, guid: 04a7303ab05f1409b8901a2fa21bdd96, type: 3}
   redSprite: {fileID: 21300000, guid: 65411e32ddd044338860337cbbbbfaf4, type: 3}
+  isToLeft: 0
 --- !u!1 &936977211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1143,7 +1144,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 936977214}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1063003492}
+        m_TargetAssemblyTypeName: FrogJump, Assembly-CSharp
+        m_MethodName: ResetToStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &936977214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2025,7 +2038,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4b90d46d96bca47b9b63ca4ef8f0e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portName: COM3
   baudRate: 38400
   MainController: {fileID: 846420078}
   gameTag: FrogGame
