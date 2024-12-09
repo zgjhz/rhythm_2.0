@@ -397,20 +397,20 @@ public class MainMenuScript : MonoBehaviour
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
-        metronomStreak.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
+        metronomStreak.text = "Метроном: " + PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
         yourRhythmStreak.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
-        frogGameStreak.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
-        ritmamidaStreak.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
-        ArrowGameStreak.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
-        SvetoforStreak.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
+        frogGameStreak.text = "Ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
+        ritmamidaStreak.text = "Ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
+        ArrowGameStreak.text = "Почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
+        SvetoforStreak.text = "Светофор: " + PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
 
 
-        metronomAcc.text = "метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) + "%";
+        metronomAcc.text = "Метроном: " + PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) + "%";
         yourRhythmAcc.text = "Твой ритм: " + PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) + "%";
-        frogGameAcc.text = "ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) + "%";
-        ritmamidaAcc.text = "ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) + "%";
-        ArrowGameAcc.text = "почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) + "%";
-        SvetoforAcc.text = "светофор: " + PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) + "%";
+        frogGameAcc.text = "Ритмогушка: " + PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) + "%";
+        ritmamidaAcc.text = "Ритмамида: " + PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) + "%";
+        ArrowGameAcc.text = "Почтальон: " + PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) + "%";
+        SvetoforAcc.text = "Светофор: " + PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) + "%";
     }
 
 

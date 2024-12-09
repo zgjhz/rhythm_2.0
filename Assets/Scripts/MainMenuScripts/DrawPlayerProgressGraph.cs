@@ -81,19 +81,19 @@ public class DrawGraphWithXCharts : MonoBehaviour
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // Пропускаем заголовок
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
                 string[] parts = sr.ReadLine().Split(';');
-                string playerName = parts[0]; // Имя игрока
-                string scoreString = parts[7 + chartIndex]; // Значение YourRhythmPercentHits
+                string playerName = parts[0]; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                string scoreString = parts[7 + chartIndex]; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ YourRhythmPercentHits
                 Debug.Log($"column index: {7 + chartIndex}");
 
                 Debug.Log("scoreString: " + scoreString);
 
-                // Проверяем, является ли значение счёта числом
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 if (!float.TryParse(scoreString, out float score))
                     continue;
 
@@ -129,13 +129,34 @@ public class DrawGraphWithXCharts : MonoBehaviour
 
         var title = chart.EnsureChartComponent<Title>();
         title.text = gameTagList[chartIndex];
+        switch(gameTagList[chartIndex]){
+            case "Metronom": 
+                title.text = "РњРµС‚СЂРѕРЅРѕРј";
+                break;
+            case "Ritmamida": 
+                title.text = "Р РёС‚РјР°РјРёРґР°";
+                break;
+            case "YourRhythm": 
+                title.text = "РўРІРѕР№ Р РёС‚Рј";
+                break;
+            case "FrogGame": 
+                title.text = "Р РёС‚РјРѕРіСѓС€РєР°";
+                break;
+            case "ArrowGame": 
+                title.text = "РџРѕС‡С‚Р°Р»СЊРѕРЅ";
+                break;
+            case "Svetofor": 
+                title.text = "РЎРІРµС‚РѕС„РѕСЂ";
+                break;
+        }
+        
 
         // ???????? ????? (Series) ??? ??????
         chart.AddSerie<Line>(playerName);
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("Сессия" + (i + 1));
+            chart.AddXAxisData("пїЅпїЅпїЅпїЅпїЅпїЅ" + (i + 1));
             chart.AddData(playerName, i, scores[i]); // ???????? ????? ? ??????
         }
     }
