@@ -28,7 +28,6 @@ public class MainMenuScript : MonoBehaviour
     public TMP_Text ritmamidaStreak;
     public TMP_Text ArrowGameStreak;
     public TMP_Text SvetoforStreak;
-    public TMP_Text scoreText;
     private SerialPort serialPort;
     private string portName; // �������� COM-�����, ��������, "COM3"
     public int baudRate = 38400; // �������� �������� ������
@@ -268,7 +267,6 @@ public class MainMenuScript : MonoBehaviour
         Debug.Log("Файл сохраняется в: " + Path.GetFullPath(filePath));
         HideAllPreviews(); // Скрываем все превью при старте
         HideDarkenBackground(); // Скрываем затемняющий фон при старте
-        scoreText.text = "Счёт: " + LoadScore();
         statusImage.sprite = connecting;
         loginErrorPanel.SetActive(false);
         soundSettingsPanel.SetActive(false);
