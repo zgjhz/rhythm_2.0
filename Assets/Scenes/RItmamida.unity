@@ -1096,14 +1096,15 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
+  isLeft: 1
   score: 0
   currentStreak: 0
   maxStreak: 0
   metronomAudioClips:
-  - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
+  - {fileID: 8300000, guid: 265e3a34e5c2c9a4a88c1e6375618035, type: 3}
+  - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
+  - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
-  - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
-  - {fileID: 8300000, guid: d9608be57484b2447a610d3c1ba8e0c0, type: 3}
 --- !u!4 &840231720
 Transform:
   m_ObjectHideFlags: 0
@@ -1423,9 +1424,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linePrefab: {fileID: 7713269393738047397, guid: 1cdb45a284a5345d5a534c23986538c5, type: 3}
-  linePrefab_purple: {fileID: 7713269393738047397, guid: c75e9c54d0d6a2948bb1116088a6069c, type: 3}
+  linePrefab_purple: {fileID: 7713269393738047397, guid: 0b85bfe6e89f9624fb7a5fc96e7e6e04, type: 3}
   lineContainer: {fileID: 1571684974}
-  lineWidthMultiplier: 25
   lineSpacing: 100
   menuManager: {fileID: 840231719}
   scoreText: {fileID: 1332154789}

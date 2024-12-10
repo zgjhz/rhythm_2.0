@@ -451,19 +451,20 @@ MonoBehaviour:
   mainMenuButton: {fileID: 1566193727}
   closeButton: {fileID: 936977213}
   scoreText: {fileID: 767728757}
-  gameTag: FrogJump
+  gameTag: FrogGame
   metronomSound: {fileID: 416437643}
   interval: 1
   canClick: 1
   isPaused: 0
+  isLeft: 1
   score: 0
   currentStreak: 0
   maxStreak: 0
   metronomAudioClips:
-  - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
+  - {fileID: 8300000, guid: 265e3a34e5c2c9a4a88c1e6375618035, type: 3}
+  - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
+  - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
-  - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
-  - {fileID: 8300000, guid: d9608be57484b2447a610d3c1ba8e0c0, type: 3}
 --- !u!4 &161708136
 Transform:
   m_ObjectHideFlags: 0
@@ -1034,7 +1035,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 846420078}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1053,9 +1054,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21e9cbf8fdf5b44e0b96de5ebf346928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWaitingForFirstInput: 0
   leftLilyPad: {fileID: 991911436}
   rightLilyPad: {fileID: 1571525853}
-  scaleFactor: 1.2
+  defaultSprite: {fileID: 21300000, guid: 877f339d2751a4e89b0995d6ea4699af, type: 3}
+  greenSprite: {fileID: 21300000, guid: b747e25c0264244eb922e27b9f0cd48b, type: 3}
+  yellowSprite: {fileID: 21300000, guid: 04a7303ab05f1409b8901a2fa21bdd96, type: 3}
+  redSprite: {fileID: 21300000, guid: 65411e32ddd044338860337cbbbbfaf4, type: 3}
 --- !u!1 &936977211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1188,7 +1193,7 @@ GameObject:
   - component: {fileID: 991911437}
   m_Layer: 0
   m_Name: LeftBank
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1234,12 +1239,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: b747e25c0264244eb922e27b9f0cd48b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 877f339d2751a4e89b0995d6ea4699af, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 18.45, y: 9.92}
+  m_Size: {x: 3.33, y: 1.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1296,6 +1301,7 @@ MonoBehaviour:
   jumpDuration: 1
   menuManager: {fileID: 161708135}
   spriteRenderer: {fileID: 1063003493}
+  rhythmController: {fileID: 846420080}
   frogIdle: {fileID: 21300000, guid: 35581761f8cd94b158e1242a33c7bf4e, type: 3}
   frogStart: {fileID: 21300000, guid: 5b6bd0eabad834d1587339c31174dd99, type: 3}
   frogJumping: {fileID: 21300000, guid: 1a269e8c534d4408bbd0ba9d0dd52912, type: 3}
@@ -1869,7 +1875,7 @@ GameObject:
   - component: {fileID: 1571525854}
   m_Layer: 0
   m_Name: RightBank
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1915,12 +1921,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: b747e25c0264244eb922e27b9f0cd48b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 877f339d2751a4e89b0995d6ea4699af, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.30625, y: 1.24}
+  m_Size: {x: 2.22, y: 1.2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2710,8 +2716,8 @@ SceneRoots:
   - {fileID: 416437644}
   - {fileID: 1571525855}
   - {fileID: 846420079}
+  - {fileID: 1096989147}
   - {fileID: 1660413628}
   - {fileID: 629775903}
   - {fileID: 1678340497}
   - {fileID: 2035676287}
-  - {fileID: 1096989147}

@@ -33,9 +33,6 @@ public class SpawnBall : MonoBehaviour
         isCounting = false;
         interval = menuManager.interval;
         canClick = menuManager.canClick;
-        if (Input.GetKeyDown(KeyCode.Space)){
-            OnSpacePressed();
-        }
     }
 
     void Update()
@@ -45,6 +42,10 @@ public class SpawnBall : MonoBehaviour
         if (isCounting)
         {
             lastSoundTime = Time.time - startTime;
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnSpacePressed();
         }
     }
 

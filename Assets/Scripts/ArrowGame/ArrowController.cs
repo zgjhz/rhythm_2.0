@@ -42,6 +42,7 @@ public class ArrowController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isFirst == 0)
         {
             isFirst = 1;
+            menuManager.PlaySound();
         }
         if (isFirst == 1 || isFirst == 2 && canClick)
         {
@@ -56,13 +57,18 @@ public class ArrowController : MonoBehaviour
                 //}
                 if (Input.GetKeyDown(KeyCode.Space) && isFirst == 2)
                 {
-                    FireArrow(testTimer);
-                    oldTime = Time.time;
-                    testTimer = interval;
+                    OnSpacePressed();
                 }
                 isFirst = 2;
             }
         }
+    }
+
+    public void OnSpacePressed()
+    {
+        FireArrow(testTimer);
+        oldTime = Time.time;
+        testTimer = interval;
     }
 
     private void MoveBow()
@@ -124,6 +130,9 @@ public class ArrowController : MonoBehaviour
         else {
             menuManager.ResetStreak();
         }
+        float percent = (8 - Mathf.Abs(transform.position.x)) / 8 * 100;
+
+
 
         StartCoroutine(ShrinkArrow(newArrow, 1f));
 
