@@ -2283,10 +2283,11 @@ MonoBehaviour:
   currentStreak: 0
   maxStreak: 0
   metronomAudioClips:
+  - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
   - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
-  - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
   - {fileID: 8300000, guid: 29417752567174e4c88659b3d82363b0, type: 3}
+  serialPortReader: {fileID: 0}
 --- !u!4 &1313567619
 Transform:
   m_ObjectHideFlags: 0

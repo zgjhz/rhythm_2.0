@@ -24,7 +24,7 @@ public class Svetoforscript : MonoBehaviour
     {
         lastMetronomeTime = Time.time;
         lastKeyPressTime = Time.time;
-        spriteActiveDuration = menuManager.interval * 0.5f;
+        spriteActiveDuration = menuManager.interval * 0.45f;
         // Делаем все спрайты неактивными в начале
         DeactivateAllSprites();
 
@@ -36,59 +36,79 @@ public class Svetoforscript : MonoBehaviour
 
     void Update()
     {
-        spriteActiveDuration = menuManager.interval * 0.45f;
         // Старт игры и метронома по нажатию пробела
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!isGameStarted)
-            {
-                isGameStarted = true;
-                lastMetronomeTime = Time.time;
-                lastKeyPressTime = Time.time;
-            }
+            OnSpacePressed();
         }
 
         if (isGameStarted)
         {
-            float currentTime = Time.time;
-            float keyPressDelta = currentTime - lastKeyPressTime;
-            metronomeInterval = menuManager.interval;
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // Рассчитываем разницу между временем удара метронома и временем нажатия
-                float difference = keyPressDelta - metronomeInterval;
-
-                // Определяем, какой спрайт зажечь
-                if (difference > 0 && difference > 0.7f * metronomeInterval)
-                {
-                    ActivateSprite(leftRedSprite, -5.5f);
-                    menuManager.ResetStreak();
-                }
-                else if (difference < 0 && Mathf.Abs(difference) > 0.7f * metronomeInterval)
-                {
-                    ActivateSprite(rightRedSprite, 5.5f);
-                    menuManager.ResetStreak();
-                }
-                else if (difference > 0 && difference >= 0.3f * metronomeInterval && difference <= 0.7f * metronomeInterval)
-                {
-                    ActivateSprite(leftYellowSprite, -2.75f);
-                    menuManager.ResetStreak();
-                }
-                else if (difference < 0 && Mathf.Abs(difference) >= 0.3f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
-                {
-                    ActivateSprite(rightYellowSprite, 2.75f);
-                    menuManager.ResetStreak();
-                }
-                else
-                {
-                    ActivateSprite(greenSprite, 0f);
-                    menuManager.UpdateScore();
-                }
-
-                lastKeyPressTime = currentTime;
-            }
+            TrackMetronome();
         }
+    }
+    private void TrackMetronome()
+    {
+        float interval = menuManager.interval; // Интервал метронома
+        float currentTime = Time.time;
+
+        // Если текущий момент соответствует следующему звуку метронома
+        if (currentTime >= lastMetronomeTime + interval)
+        {
+            lastMetronomeTime = currentTime; // Обновляем время последнего звука
+            Debug.Log("Metronome sound detected! Time: " + lastMetronomeTime);
+        }
+    }
+    void OnSpacePressed()
+    {
+        // Проверяем, началась ли игра
+        if (!isGameStarted)
+        {
+            isGameStarted = true;
+            lastMetronomeTime = Time.time;
+            lastKeyPressTime = Time.time;
+            return; // Завершаем обработку, так как это первое нажатие
+        }
+
+        float currentTime = Time.time;
+        float keyPressDelta = currentTime - lastMetronomeTime; // Разница между нажатием и временем метронома
+        metronomeInterval = menuManager.interval; // Обновляем интервал метронома
+
+        // Рассчитываем разницу между нажатием и текущим временем метронома
+        float difference = keyPressDelta % metronomeInterval;
+
+        // Если разница отрицательная, приводим ее к положительному виду
+        if (difference > metronomeInterval / 2)
+            difference -= metronomeInterval;
+
+        // Определяем, какой спрайт активировать
+        if (difference > 0 && difference > 0.35f * metronomeInterval)
+        {
+            ActivateSprite(leftRedSprite, -5.5f);
+            menuManager.ResetStreak(); // Сбрасываем серию
+        }
+        else if (difference < 0 && Mathf.Abs(difference) > 0.35f * metronomeInterval)
+        {
+            ActivateSprite(rightRedSprite, 5.5f);
+            menuManager.ResetStreak(); // Сбрасываем серию
+        }
+        else if (difference > 0 && difference >= 0.15f * metronomeInterval && difference <= 0.35f * metronomeInterval)
+        {
+            ActivateSprite(leftYellowSprite, -2.75f);
+            menuManager.ResetStreak(); // Сбрасываем серию
+        }
+        else if (difference < 0 && Mathf.Abs(difference) >= 0.15f * metronomeInterval && Mathf.Abs(difference) <= 0.35f * metronomeInterval)
+        {
+            ActivateSprite(rightYellowSprite, 2.75f);
+            menuManager.ResetStreak(); // Сбрасываем серию
+        }
+        else
+        {
+            ActivateSprite(greenSprite, 0f);
+            menuManager.UpdateScore(); // Увеличиваем счет
+        }
+
+        lastKeyPressTime = currentTime; // Обновляем время последнего нажатия
     }
 
     void ActivateSprite(GameObject sprite, float xPosition)

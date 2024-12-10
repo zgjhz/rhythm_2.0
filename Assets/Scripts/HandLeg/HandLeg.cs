@@ -9,11 +9,13 @@ public class HandLeg : MonoBehaviour
     public GameObject LeftBlueHand, LeftYellowHand, LeftRedHand, LeftGreenHand;
     public GameObject RightBlueHand, RightYellowHand, RightRedHand, RightGreenHand;
     public GameObject RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot;
-
+    private float lastMetronomeTime = 0f;
+    private float flag = 0;
     // Ссылка на MenuManager
     public MenuManager menuManager;
 
     private float lastKeyPressTime;
+    private bool isFirstPress = true; // Флаг для отслеживания первого нажатия
 
     // Время, на которое зеленый, желтый или красный спрайт будет активен
     private float feedbackTime = 0.3f;
@@ -31,7 +33,17 @@ public class HandLeg : MonoBehaviour
     void Update()
     {
         // Если игра на паузе, ничего не делаем
-        if (menuManager.isPaused) return;
+        if (menuManager.isPaused)
+        {
+            flag = 0;
+            return;
+        }
+
+        // Запуск трекинга метронома после первого нажатия
+        if (!isFirstPress)
+        {
+            TrackMetronome();
+        }
 
         // Проверяем нажатие клавиш и вызываем соответствующие функции
         if (Input.GetKeyDown(KeyCode.Space)) OnSpacePressed();
@@ -40,11 +52,26 @@ public class HandLeg : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Y)) OnYPressed();
     }
 
+    private void TrackMetronome()
+    {
+        float interval = menuManager.interval; // Интервал метронома
+        float currentTime = Time.time;
+
+        // Если текущий момент соответствует следующему звуку метронома
+        if (currentTime >= lastMetronomeTime + interval)
+        {
+            lastMetronomeTime = currentTime; // Обновляем время последнего звука
+            Debug.Log("Metronome sound detected! Time: " + lastMetronomeTime);
+        }
+    }
+
     /// <summary>
     /// Логика нажатия клавиши Space (левая нога)
     /// </summary>
     void OnSpacePressed()
     {
+        OnFirstPress();
+        
         ProcessKeyPress(LeftBlueFoot, LeftYellowFoot, LeftRedFoot, LeftGreenFoot);
     }
 
@@ -53,6 +80,8 @@ public class HandLeg : MonoBehaviour
     /// </summary>
     void OnHPressed()
     {
+        OnFirstPress();
+
         ProcessKeyPress(LeftBlueHand, LeftYellowHand, LeftRedHand, LeftGreenHand);
     }
 
@@ -61,6 +90,7 @@ public class HandLeg : MonoBehaviour
     /// </summary>
     void OnUPressed()
     {
+        OnFirstPress();
         ProcessKeyPress(RightBlueHand, RightYellowHand, RightRedHand, RightGreenHand);
     }
 
@@ -69,7 +99,21 @@ public class HandLeg : MonoBehaviour
     /// </summary>
     void OnYPressed()
     {
+        OnFirstPress();
         ProcessKeyPress(RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot);
+    }
+
+    /// <summary>
+    /// Обработка первого нажатия клавиши
+    /// </summary>
+    void OnFirstPress()
+    {
+        if (isFirstPress)
+        {
+            isFirstPress = false; // Сбрасываем флаг первого нажатия
+            lastMetronomeTime = Time.time; // Устанавливаем время начала метронома
+            Debug.Log("First key press detected! Starting metronome tracking.");
+        }
     }
 
     /// <summary>
@@ -79,13 +123,14 @@ public class HandLeg : MonoBehaviour
     {
         float currentTime = Time.time;
         float interval = menuManager.interval; // Интервал из MenuManager
-        float difference = (currentTime - lastKeyPressTime) % interval;
+        float metronomeTime = lastMetronomeTime; // Предположим, это переменная с временем удара метронома
+        float difference = Mathf.Abs(currentTime - metronomeTime); // Разница между нажатием и ударом метронома
 
         // Сбрасываем все спрайты перед активацией нужного
         ResetAllSprites();
-
+        if (flag > 0) { 
         // Определяем нужный спрайт в зависимости от разницы
-        if (difference < 0.3f * interval)
+        if (difference < 0.35f * interval)
         {
             ActivateSprite(green); // Зелёный
             menuManager.UpdateScore();
@@ -100,6 +145,8 @@ public class HandLeg : MonoBehaviour
         }
 
         lastKeyPressTime = currentTime;
+         }
+        flag += 1;
     }
 
     /// <summary>

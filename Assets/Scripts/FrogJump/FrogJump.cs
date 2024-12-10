@@ -32,6 +32,7 @@ public class FrogJump : MonoBehaviour
         if (menuManager != null)
         {
             jumpDuration = menuManager.speedSlider.value;
+            //ResetToStart();
         }
 
         // Если лягушка прыгает, выполняем анимацию прыжка
