@@ -133,6 +133,10 @@ public class MainMenuScript : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void ToGeneralMenu() {
+        SceneManager.LoadScene("MainMainMenu");
+    }
+
     // Метод для кнопки "Play"
     public void PlayMetronom()
     {
@@ -277,9 +281,23 @@ public class MainMenuScript : MonoBehaviour
         }
         int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         audioToggles[toggleIndex].isOn = true;
-        PlayerPrefs.SetString("current_user", "пользователь");
-        PlayerPrefs.Save();
+        //PlayerPrefs.SetString("current_user", "пользователь");
+        //PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
+    }
+
+
+    public TMP_InputField nameInputField;
+    public void OnLoginButtonClick() {
+        if (nameInputField.name.Length >= 2)
+        {
+            Debug.Log("huy");
+            PlayerPrefs.SetString("current_user", nameInputField.text);
+        }
+        else {
+            Debug.Log(nameInputField.text);
+            loginErrorPanel.SetActive(true);
+        }
     }
 
     public void ListenSound(int index) {
