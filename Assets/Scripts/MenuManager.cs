@@ -30,7 +30,7 @@ public class MenuManager : MonoBehaviour
     public List<AudioClip> metronomAudioClips;
 
     // Для подсчёта нажатий на пробел
-    private float spacePressCount = 0; // Счётчик нажатий на пробел
+    public float spacePressCount = 0; // Счётчик нажатий на пробел
     private bool isSpacePressed = false;
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
