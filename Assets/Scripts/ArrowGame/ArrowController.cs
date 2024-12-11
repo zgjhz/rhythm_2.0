@@ -3,17 +3,17 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ArrowController : MonoBehaviour
+public class ArrowController : MonoBehaviour, ISpacePressHandler
 {
     public List<GameObject> arrowPrefabs;
     public MenuManager menuManager;
     public GameObject newArrow;
     public float movementSpeed = 5f;
     public float movementRange = 12f;
-    public float arrowSpeed = 10f;
+    private float arrowSpeed = 5f;
     public TMP_Text scoreText;
     private bool isFired = false;
-    private Vector3 direction;
+    private Vector2 direction;
     private float interval = 1f;
     private int isFirst = 0;
     private float testTimer = 0.5f;
@@ -24,6 +24,8 @@ public class ArrowController : MonoBehaviour
     private float positionError = 0;
     private bool canClick = true;
     private int prefabsNum = 0;
+    private Rigidbody2D rb;
+    private int errorIndex;
 
     private void Start()
     {
@@ -31,9 +33,11 @@ public class ArrowController : MonoBehaviour
         Debug.Log("On start" + interval);
         movementSpeed = movementRange / interval;
         testTimer = interval;
-        direction = Vector3.right;
+        direction = Vector2.right;
         scoreText.text = "Счёт: 0";
         prefabsNum = arrowPrefabs.Count;
+        rb = GetComponent<Rigidbody2D>();
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
     }
 
     void Update()
@@ -42,12 +46,10 @@ public class ArrowController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isFirst == 0)
         {
             isFirst = 1;
-            menuManager.PlaySound();
         }
         if (isFirst == 1 || isFirst == 2 && canClick)
         {
-            testTimer -= Time.deltaTime;
-            MoveBow();
+            //testTimer -= Time.deltaTime;
             if (!isFired && canClick)
             {
                 newArrow.transform.position = transform.position;
@@ -64,23 +66,40 @@ public class ArrowController : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (isFirst == 1 || isFirst == 2 && canClick)
+        {
+            MoveBow();
+        }
+    }
+
     public void OnSpacePressed()
     {
-        FireArrow(testTimer);
-        oldTime = Time.time;
-        testTimer = interval;
+        if (isFirst == 0) {
+            isFirst = 1;
+        }
+
+        if (isFirst == 2)
+        {
+            FireArrow(testTimer);
+            oldTime = Time.time;
+            testTimer = interval;
+        }
     }
 
     private void MoveBow()
     {
-        transform.Translate(direction * movementSpeed * Time.deltaTime);
+        testTimer -= Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + direction * movementSpeed * Time.fixedDeltaTime);
+    }   
+
+    public void MetronomTicked()
+    {
+        transform.position = new Vector2(0, -3.5f);
     }
 
-    public void MetronomTicked() {
-        movementSpeed = (movementRange + Mathf.Abs(transform.position.x)) / interval;
-    }
-
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
@@ -99,62 +118,57 @@ public class ArrowController : MonoBehaviour
         //shouldMove = false;
     }
 
-    public void OnMenuClosed() {
-        transform.position = new Vector3(0, -3.5f, 0);
-        interval = menuManager.interval;
-        testTimer = interval;
-    }
-
-    public void OnIntervalChanged()
+    public void OnMenuClosed()
     {
+        transform.position = new Vector3(0, -3.5f, 0);
         interval = menuManager.interval;
         movementSpeed = movementRange / interval;
         transform.position = new Vector3(0, -3.5f, 0);
         isInMenu = false;
         testTimer = interval;
+        testTimer = interval;
         isFirst = 0;
-        //Invoke("Resume", 2f);
-        Debug.Log("Intreval changed HUUUY" + transform.position);
     }
 
     void FireArrow(float deltaTime)
     {
         isFired = false;
-        Rigidbody rb = newArrow.GetComponent<Rigidbody>();
+        Rigidbody2D rb = newArrow.GetComponent<Rigidbody2D>();
         rb.velocity = transform.up * arrowSpeed;
         rb.freezeRotation = true;
         if (Mathf.Abs(transform.position.x) <= 1.5f)
         {
             menuManager.UpdateScore();
         }
-        else {
+        else
+        {
             menuManager.ResetStreak();
         }
         float percent = (8 - Mathf.Abs(transform.position.x)) / 8 * 100;
 
-
-
-        StartCoroutine(ShrinkArrow(newArrow, 1f));
+        StartCoroutine(ShrinkArrowToSize(newArrow, new Vector3(0.7f, 0.7f, 0.7f), 0.01f));
 
         SpawnNewArrow();
         // Создание новой стрелы через время
         //Invoke("SpawnNewArrow", 2f);
     }
 
-    private IEnumerator ShrinkArrow(GameObject arrow, float duration)
+    private IEnumerator ShrinkArrowToSize(GameObject arrow, Vector3 targetScale, float shrinkStep)
     {
-        if (arrow != null) {
+        if (arrow != null)
+        {
             Vector3 initialScale = arrow.transform.localScale;
-            Vector3 targetScale = Vector3.zero; // Размер, к которому будем уменьшать стрелу
-            float elapsed = 0f;
 
-            while (elapsed < duration)
+            // Уменьшать, пока текущий масштаб не станет меньше или равен целевому
+            while (arrow.transform.localScale.x > targetScale.x ||
+                   arrow.transform.localScale.y > targetScale.y ||
+                   arrow.transform.localScale.z > targetScale.z)
             {
-                arrow.transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsed / duration);
-                elapsed += Time.deltaTime;
-                yield return null;
+                arrow.transform.localScale = Vector3.MoveTowards(arrow.transform.localScale, targetScale, shrinkStep);
+                yield return null; // Ждем следующий кадр
             }
 
+            // Убедимся, что достигли точно целевого масштаба
             arrow.transform.localScale = targetScale;
         }
     }
@@ -164,7 +178,7 @@ public class ArrowController : MonoBehaviour
     {
         int index = Random.Range(0, prefabsNum);
         newArrow = Instantiate(arrowPrefabs[index], transform.position, transform.rotation); // Новая стрела
-        Rigidbody rb = newArrow.GetComponent<Rigidbody>();
+        Rigidbody2D rb = newArrow.GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         //Destroy(gameObject); // Удалить старую стрелу
     }

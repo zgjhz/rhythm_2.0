@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 
-public class BallMovement : MonoBehaviour
+public class BallMovement : MonoBehaviour, ISpacePressHandler
 {
     public MenuManager menuManager;
     public float speed = 5f; // Скорость движения мяча
@@ -27,12 +27,12 @@ public class BallMovement : MonoBehaviour
 
     void Update()
     {
-        interval = menuManager.interval;
+        interval = menuManager.interval - 0.085f;
 
         // Обработка нажатий на пробел вынесена в отдельную функцию
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            onSpacePressed();
+            OnSpacePressed();
         }
 
         // Если мяч готов к движению и игра не на паузе
@@ -52,7 +52,7 @@ public class BallMovement : MonoBehaviour
         }
     }
 
-    void onSpacePressed()
+    public void OnSpacePressed()
     {
         if (isPaused)
         {

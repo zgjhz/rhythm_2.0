@@ -7,22 +7,31 @@ using TMPro;
 
 public class DrawGraphWithXCharts : MonoBehaviour
 {
-    private string filePath = "path_to_your_csv_file.csv"; // ???? ? ?????
-    public BaseChart chart; // ?????? ?? ?????? ??????? ?? ?????
-    public MainMenuScript mainMenuScript;
+    private string filePath = "path_to_your_csv_file.csv";
+    public BaseChart chart;
     public List<string> gameTagList;
     private int chartIndex = -1;
     private int numGames = 0;
     public GameObject chartPanel;
+    public string sceneName;
+    public TMP_Dropdown dropdown;
+    private string selectedOption;
 
     private Dictionary<string, List<float>> playerData;
 
     void Start()
     {
         numGames = gameTagList.Count;
-        filePath = @"Z:\Unity\rhythm_2.0\Assets\stats.csv";
-        // ????????? ?????? ?? CSV
+        filePath = Path.Combine(Application.dataPath, "stats.csv");
         playerData = LoadPlayerData(filePath);
+        chartPanel.SetActive(false);
+        dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+    }
+
+    void OnDropdownValueChanged(int index)
+    {
+        selectedOption = dropdown.options[index].text;
+        Debug.Log("Выбранный элемент: " + selectedOption);
     }
 
     public void ResetValues()
@@ -40,7 +49,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             chartIndex = 0;
         }
-        Debug.Log("chartIndex: " + chartIndex);
         if (chartIndex == 0)
         {
             OpenChartPanel();
@@ -62,7 +70,6 @@ public class DrawGraphWithXCharts : MonoBehaviour
         {
             CloseChartPanel();
         }
-        Debug.Log("chartIndex: " + chartIndex);
     }
 
     public void OpenChartPanel()
@@ -76,50 +83,43 @@ public class DrawGraphWithXCharts : MonoBehaviour
         chartPanel.SetActive(false);
     }
 
-    // ????? ??? ???????? ?????? ?? CSV
     private Dictionary<string, List<float>> LoadPlayerData(string path)
     {
         Dictionary<string, List<float>> data = new Dictionary<string, List<float>>();
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // Читаем заголовок
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
-                string[] line = sr.ReadLine().Split(';');
-                string playerName = line[0]; // Имя игрока - это первый элемент
-                string scoreValue = line[6 + chartIndex]; // Значение YourRhythmPercentHits
+                string[] parts = sr.ReadLine().Split(';');
+                string playerName = parts[0];
+                string scoreString = parts[7 + chartIndex];
 
-                // Проверка на "-" в значении
-                if (scoreValue == "-")
-                {
-                    continue; // Пропускаем сессию, если значение "-"
-                }
-                
-                float score = float.Parse(scoreValue); // Парсим значение, если оно не "-"
+                if (!float.TryParse(scoreString, out float score))
+                    continue;
 
                 if (!data.ContainsKey(playerName))
-                {
                     data[playerName] = new List<float>();
-                }
 
                 data[playerName].Add(score);
             }
         }
-
         return data;
     }
 
 
-    // ????? ??? ?????????? ???????
     private void PlotGraph()
     {
         playerData = LoadPlayerData(filePath);
-        string playerName = PlayerPrefs.GetString("current_user");
-        List<float> scores = playerData[playerName];
-        chart.ClearData(); // ???????? ?????? ?????? (???? ??????????)
+        string playerName = sceneName == "MainMenu" ? PlayerPrefs.GetString("current_user") : selectedOption;
+        List<float> scores = new List<float>(0);
+        if (playerData.ContainsKey(playerName))
+        {
+            scores = playerData[playerName];
+        }
+        chart.ClearData();
 
         var yAxis = chart.GetChartComponent<YAxis>();
         yAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -127,16 +127,34 @@ public class DrawGraphWithXCharts : MonoBehaviour
         yAxis.max = 100;
 
         var title = chart.EnsureChartComponent<Title>();
-        Debug.Log(chartIndex);
         title.text = gameTagList[chartIndex];
-
-        // ???????? ????? (Series) ??? ??????
+        switch(gameTagList[chartIndex]){
+            case "Metronom": 
+                title.text = "Метроном";
+                break;
+            case "Ritmamida": 
+                title.text = "Ритмамида";
+                break;
+            case "YourRhythm": 
+                title.text = "Твой Ритм";
+                break;
+            case "FrogGame": 
+                title.text = "Ритмогушка";
+                break;
+            case "ArrowGame": 
+                title.text = "Почтальон";
+                break;
+            case "Svetofor": 
+                title.text = "Светофор";
+                break;
+        }
+        
         chart.AddSerie<Line>(playerName);
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("??????" + (i + 1));
-            chart.AddData(playerName, i, scores[i]); // ???????? ????? ? ??????
+            chart.AddXAxisData("Сессия" + (i + 1));
+            chart.AddData(playerName, i, scores[i]);
         }
     }
 }

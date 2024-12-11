@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class SpawnBall : MonoBehaviour
+public class SpawnBall : MonoBehaviour, ISpacePressHandler
 {
     public GameObject markerPrefab;  // Префаб для создания новой точки
     public RectTransform accuracyBar; // Зона для отображения точности

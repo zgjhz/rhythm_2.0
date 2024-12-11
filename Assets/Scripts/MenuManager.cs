@@ -35,7 +35,6 @@ public class MenuManager : MonoBehaviour
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
     public SerialPortReader serialPortReader;
-
     private void Start()
     {
         int audioIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
@@ -116,8 +115,6 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
-        //if (metronomSound != null)
-        //{
 
             // Синхронизация метронома после паузы
             if (firstSpacePressTime < 0)
@@ -128,9 +125,14 @@ public class MenuManager : MonoBehaviour
             }
             else
             {
+                if (gameTag == "ArrowGame")
+                {
+                    GameObject arrowControllerObj = GameObject.Find("Arrow Controller");
+                    arrowControllerObj.GetComponent<ArrowController>().MetronomTicked();
+                }
                 metronomSound.Play();
             }
-        //}
+    
     }
 
 
@@ -160,6 +162,7 @@ public class MenuManager : MonoBehaviour
     {
         canClick = true;
         isPaused = false; // Сбрасываем флаг паузы
+        isLeft = true;
         Time.timeScale = 1f;
         openMenuButton.gameObject.SetActive(true);
         closeButton.gameObject.SetActive(false);
@@ -189,7 +192,7 @@ public class MenuManager : MonoBehaviour
     // Метод выхода в главное меню
     public void ReturnToMainMenu()
     {
-        //serialPortReader.OnApplicationQuitSuka();
+        serialPortReader.OnApplicationQuitSuka();
         string username = PlayerPrefs.GetString("current_user");
         Debug.Log("USERNAME SAVE " + username);
         float oldScore = PlayerPrefs.GetFloat(username + gameTag + "_score");
@@ -266,24 +269,28 @@ public class MenuManager : MonoBehaviour
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
+        string userStats = "";
         // Формат строки для записи
-        string userStats = $"{username};" +
-            $"{(gameTag == "Metronom" ? metronomMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "YourRhythm" ? yourRhythmMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "FrogJump" ? frogGameMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "Ritmamida" ? ritmamidaMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "ArrowGame" ? arrowGameMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "Svetofor" ? svetoforMaxStreak.ToString() : "-")};" +
-            $"{(gameTag == "Metronom" ? metronomPercentHits.ToString() : "-")};" +
-            $"{(gameTag == "YourRhythm" ? yourRhythmPercentHits.ToString() : "-")};" +
-            $"{(gameTag == "FrogJump" ? frogGamePercentHits.ToString() : "-")};" +
-            $"{(gameTag == "Ritmamida" ? ritmamidaPercentHits.ToString() : "-")};" +
-            $"{(gameTag == "ArrowGame" ? arrowGamePercentHits.ToString() : "-")};" +
-            $"{(gameTag == "Svetofor" ? svetoforPercentHits.ToString() : "-")};" +
-            $"{(gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor" ? totalScore.ToString() : "-")};" +
-            $"{sessionDate}";
-
-
+        switch (gameTag) {
+            case "Metronom":
+                userStats = $"{username};{metronomMaxStreak};-;-;-;-;-;{metronomPercentHits};-;-;-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "YourRhythm":
+                userStats = $"{username};-;{yourRhythmMaxStreak};-;-;-;-;-;{yourRhythmPercentHits};-;-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "FrogGame":
+                userStats = $"{username};-;-;{frogGameMaxStreak};-;-;-;-;-;{frogGamePercentHits};-;-;-;{totalScore};{sessionDate}";
+                break;
+            case "Ritmamida":
+                userStats = $"{username};-;-;-;{ritmamidaMaxStreak};-;-;-;-;-;{ritmamidaPercentHits};-;-;{totalScore};{sessionDate}";
+                break;
+            case "ArrowGame":
+                userStats = $"{username};-;-;-;-;{arrowGameMaxStreak};-;-;-;-;-;{arrowGamePercentHits};-;{totalScore};{sessionDate}";
+                break;
+            case "Svetofor":
+                userStats = $"{username};-;-;-;-;-;{svetoforMaxStreak};-;-;-;-;-;{svetoforPercentHits};{totalScore};{sessionDate}";
+                break;
+        }
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
 
