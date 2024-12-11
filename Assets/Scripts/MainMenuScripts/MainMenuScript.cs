@@ -6,6 +6,7 @@ using System.IO.Ports;
 using System.IO;
 using System.Collections.Generic;
 using System;
+using System.Text;
 public class MainMenuScript : MonoBehaviour
 {
     // Ссылки на панели превью для каждой игры
@@ -262,6 +263,8 @@ public class MainMenuScript : MonoBehaviour
     }
 
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
+    public TMP_InputField nameInputField;
+    //public EncodeRussian encodeRussian;
     private void Start()
     {
         // Обновляем текст общего времени
@@ -281,21 +284,18 @@ public class MainMenuScript : MonoBehaviour
         }
         int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         audioToggles[toggleIndex].isOn = true;
+        nameInputField.text = PlayerPrefs.GetString("current_user");
         //PlayerPrefs.SetString("current_user", "пользователь");
         //PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
     }
 
-
-    public TMP_InputField nameInputField;
     public void OnLoginButtonClick() {
-        if (nameInputField.name.Length >= 2)
+        if (nameInputField.text.Length >= 2)
         {
-            Debug.Log("huy");
             PlayerPrefs.SetString("current_user", nameInputField.text);
         }
         else {
-            Debug.Log(nameInputField.text);
             loginErrorPanel.SetActive(true);
         }
     }

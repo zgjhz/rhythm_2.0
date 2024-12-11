@@ -7,13 +7,15 @@ using TMPro;
 
 public class DrawGraphWithXCharts : MonoBehaviour
 {
-    private string filePath = "path_to_your_csv_file.csv"; // ???? ? ?????
-    public BaseChart chart; // ?????? ?? ?????? ??????? ?? ?????
-    public MainMenuScript mainMenuScript;
+    private string filePath = "path_to_your_csv_file.csv";
+    public BaseChart chart;
     public List<string> gameTagList;
     private int chartIndex = -1;
     private int numGames = 0;
     public GameObject chartPanel;
+    public string sceneName;
+    public TMP_Dropdown dropdown;
+    private string selectedOption;
 
     private Dictionary<string, List<float>> playerData;
 
@@ -21,8 +23,15 @@ public class DrawGraphWithXCharts : MonoBehaviour
     {
         numGames = gameTagList.Count;
         filePath = Path.Combine(Application.dataPath, "stats.csv");
-        // ��������� ������ �� CSV
         playerData = LoadPlayerData(filePath);
+        chartPanel.SetActive(false);
+        dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+    }
+
+    void OnDropdownValueChanged(int index)
+    {
+        selectedOption = dropdown.options[index].text;
+        Debug.Log("Выбранный элемент: " + selectedOption);
     }
 
     public void ResetValues()
@@ -74,30 +83,22 @@ public class DrawGraphWithXCharts : MonoBehaviour
         chartPanel.SetActive(false);
     }
 
-    // ????? ??? ???????? ?????? ?? CSV
     private Dictionary<string, List<float>> LoadPlayerData(string path)
     {
         Dictionary<string, List<float>> data = new Dictionary<string, List<float>>();
 
         using (StreamReader sr = new StreamReader(path))
         {
-            // ���������� ���������
             string header = sr.ReadLine();
 
             while (!sr.EndOfStream)
             {
                 string[] parts = sr.ReadLine().Split(';');
-                string playerName = parts[0]; // ��� ������
-                string scoreString = parts[7 + chartIndex]; // �������� YourRhythmPercentHits
-                Debug.Log($"column index: {7 + chartIndex}");
+                string playerName = parts[0];
+                string scoreString = parts[7 + chartIndex];
 
-                Debug.Log("scoreString: " + scoreString);
-
-                // ���������, �������� �� �������� ����� ������
                 if (!float.TryParse(scoreString, out float score))
                     continue;
-
-                Debug.Log("score can be parsed");
 
                 if (!data.ContainsKey(playerName))
                     data[playerName] = new List<float>();
@@ -109,18 +110,16 @@ public class DrawGraphWithXCharts : MonoBehaviour
     }
 
 
-
-    // ????? ??? ?????????? ???????
     private void PlotGraph()
     {
         playerData = LoadPlayerData(filePath);
-        string playerName = PlayerPrefs.GetString("current_user");
+        string playerName = sceneName == "MainMenu" ? PlayerPrefs.GetString("current_user") : selectedOption;
         List<float> scores = new List<float>(0);
-        if (playerData.Count != 0)
+        if (playerData.ContainsKey(playerName))
         {
             scores = playerData[playerName];
         }
-        chart.ClearData(); // ???????? ?????? ?????? (???? ??????????)
+        chart.ClearData();
 
         var yAxis = chart.GetChartComponent<YAxis>();
         yAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -150,14 +149,12 @@ public class DrawGraphWithXCharts : MonoBehaviour
                 break;
         }
         
-
-        // ???????? ????? (Series) ??? ??????
         chart.AddSerie<Line>(playerName);
 
         for (int i = 0; i < scores.Count; i++)
         {
-            chart.AddXAxisData("������" + (i + 1));
-            chart.AddData(playerName, i, scores[i]); // ???????? ????? ? ??????
+            chart.AddXAxisData("Сессия" + (i + 1));
+            chart.AddData(playerName, i, scores[i]);
         }
     }
 }
