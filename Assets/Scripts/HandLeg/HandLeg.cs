@@ -47,7 +47,7 @@ public class HandLeg : MonoBehaviour
 
         // Проверяем нажатие клавиш и вызываем соответствующие функции
         if (Input.GetKeyDown(KeyCode.Space)) OnSpacePressed();
-        if (Input.GetKeyDown(KeyCode.H)) OnHPressed();
+        if (Input.GetKeyDown(KeyCode.KeypadEnter)) OnEnterPressed();
         if (Input.GetKeyDown(KeyCode.U)) OnUPressed();
         if (Input.GetKeyDown(KeyCode.Y)) OnYPressed();
     }
@@ -78,7 +78,7 @@ public class HandLeg : MonoBehaviour
     /// <summary>
     /// Логика нажатия клавиши H (левая рука)
     /// </summary>
-    void OnHPressed()
+    void OnEnterPressed()
     {
         OnFirstPress();
 
