@@ -30,7 +30,7 @@ public class MenuManager : MonoBehaviour
     public List<AudioClip> metronomAudioClips;
 
     // Для подсчёта нажатий на пробел
-    private float spacePressCount = 0; // Счётчик нажатий на пробел
+    public float spacePressCount = 0; // Счётчик нажатий на пробел
     private bool isSpacePressed = false;
     private float firstSpacePressTime = -1f; // Время первого нажатия пробела
     private bool waitingForFirstPress = true; // Флаг ожидания первого нажатия
@@ -115,7 +115,6 @@ public class MenuManager : MonoBehaviour
 
     public void PlaySound()
     {
-            
 
             // Синхронизация метронома после паузы
             if (firstSpacePressTime < 0)
@@ -248,21 +247,24 @@ public class MenuManager : MonoBehaviour
         }
 
         // Собираем данные для текущего пользователя
-        int metronomMaxStreak = PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0);
-        int yourRhythmMaxStreak = PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0);
-        int frogGameMaxStreak = PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0);
-        int ritmamidaMaxStreak = PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0);
-        int arrowGameMaxStreak = PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0);
-        int svetoforMaxStreak = PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0);
+        int metronomMaxStreak = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0) : 0;
+        int yourRhythmMaxStreak = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0) : 0;
+        int frogGameMaxStreak = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0) : 0;
+        int ritmamidaMaxStreak = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0) : 0;
+        int arrowGameMaxStreak = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0) : 0;
+        int svetoforMaxStreak = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0) : 0;
 
-        int metronomPercentHits = PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0);
-        int yourRhythmPercentHits = PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0);
-        int frogGamePercentHits = PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0);
-        int ritmamidaPercentHits = PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0);
-        int arrowGamePercentHits = PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0);
-        int svetoforPercentHits = PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0);
+        int metronomPercentHits = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) : 0;
+        int yourRhythmPercentHits = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) : 0;
+        int frogGamePercentHits = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) : 0;
+        int ritmamidaPercentHits = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) : 0;
+        int arrowGamePercentHits = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) : 0;
+        int svetoforPercentHits = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) : 0;
 
-        float totalScore = LoadScore();
+        float totalScore = (gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor")
+            ? LoadScore()
+            : 0;
+
 
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -294,7 +296,7 @@ public class MenuManager : MonoBehaviour
 
         for (int i = 1; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
         {
-            if (lines[i].StartsWith(username + ",")) //TODO: не нужно ли тут ";" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if (lines[i].StartsWith(username + ";"))
             {
                 // Если пользователь найден, обновляем его строку
                 lines[i] = userStats;

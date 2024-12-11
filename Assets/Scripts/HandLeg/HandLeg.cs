@@ -1,0 +1,207 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class HandLeg : MonoBehaviour
+{
+    // Ссылки на объекты
+    public GameObject LeftBlueFoot, LeftYellowFoot, LeftRedFoot, LeftGreenFoot;
+    public GameObject LeftBlueHand, LeftYellowHand, LeftRedHand, LeftGreenHand;
+    public GameObject RightBlueHand, RightYellowHand, RightRedHand, RightGreenHand;
+    public GameObject RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot;
+    private float lastMetronomeTime = 0f;
+    private float flag = 0;
+    // Ссылка на MenuManager
+    public MenuManager menuManager;
+
+    private float lastKeyPressTime;
+    private bool isFirstPress = true; // Флаг для отслеживания первого нажатия
+
+    // Время, на которое зеленый, желтый или красный спрайт будет активен
+    private float feedbackTime = 0.3f;
+    private Coroutine resetCoroutine;
+
+    void Start()
+    {
+        lastKeyPressTime = Time.time;
+
+        // Выключаем все спрайты, кроме синих
+        ResetAllSprites();
+        ActivateAllBlue();
+    }
+
+    void Update()
+    {
+        // Если игра на паузе, ничего не делаем
+        if (menuManager.isPaused)
+        {
+            flag = 0;
+            return;
+        }
+
+        // Запуск трекинга метронома после первого нажатия
+        if (!isFirstPress)
+        {
+            TrackMetronome();
+        }
+
+        // Проверяем нажатие клавиш и вызываем соответствующие функции
+        if (Input.GetKeyDown(KeyCode.Space)) OnSpacePressed();
+        if (Input.GetKeyDown(KeyCode.H)) OnHPressed();
+        if (Input.GetKeyDown(KeyCode.U)) OnUPressed();
+        if (Input.GetKeyDown(KeyCode.Y)) OnYPressed();
+    }
+
+    private void TrackMetronome()
+    {
+        float interval = menuManager.interval; // Интервал метронома
+        float currentTime = Time.time;
+
+        // Если текущий момент соответствует следующему звуку метронома
+        if (currentTime >= lastMetronomeTime + interval)
+        {
+            lastMetronomeTime = currentTime; // Обновляем время последнего звука
+            Debug.Log("Metronome sound detected! Time: " + lastMetronomeTime);
+        }
+    }
+
+    /// <summary>
+    /// Логика нажатия клавиши Space (левая нога)
+    /// </summary>
+    void OnSpacePressed()
+    {
+        OnFirstPress();
+        
+        ProcessKeyPress(LeftBlueFoot, LeftYellowFoot, LeftRedFoot, LeftGreenFoot);
+    }
+
+    /// <summary>
+    /// Логика нажатия клавиши H (левая рука)
+    /// </summary>
+    void OnHPressed()
+    {
+        OnFirstPress();
+
+        ProcessKeyPress(LeftBlueHand, LeftYellowHand, LeftRedHand, LeftGreenHand);
+    }
+
+    /// <summary>
+    /// Логика нажатия клавиши U (правая рука)
+    /// </summary>
+    void OnUPressed()
+    {
+        OnFirstPress();
+        ProcessKeyPress(RightBlueHand, RightYellowHand, RightRedHand, RightGreenHand);
+    }
+
+    /// <summary>
+    /// Логика нажатия клавиши Y (правая нога)
+    /// </summary>
+    void OnYPressed()
+    {
+        OnFirstPress();
+        ProcessKeyPress(RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot);
+    }
+
+    /// <summary>
+    /// Обработка первого нажатия клавиши
+    /// </summary>
+    void OnFirstPress()
+    {
+        if (isFirstPress)
+        {
+            isFirstPress = false; // Сбрасываем флаг первого нажатия
+            lastMetronomeTime = Time.time; // Устанавливаем время начала метронома
+            Debug.Log("First key press detected! Starting metronome tracking.");
+        }
+    }
+
+    /// <summary>
+    /// Общая обработка нажатия клавиши
+    /// </summary>
+    void ProcessKeyPress(GameObject blue, GameObject yellow, GameObject red, GameObject green)
+    {
+        float currentTime = Time.time;
+        float interval = menuManager.interval; // Интервал из MenuManager
+        float metronomeTime = lastMetronomeTime; // Предположим, это переменная с временем удара метронома
+        float difference = Mathf.Abs(currentTime - metronomeTime); // Разница между нажатием и ударом метронома
+
+        // Сбрасываем все спрайты перед активацией нужного
+        ResetAllSprites();
+        if (flag > 0) { 
+        // Определяем нужный спрайт в зависимости от разницы
+        if (difference < 0.35f * interval)
+        {
+            ActivateSprite(green); // Зелёный
+            menuManager.UpdateScore();
+        }
+        else if (difference < 0.7f * interval)
+        {
+            ActivateSprite(yellow); // Жёлтый
+        }
+        else
+        {
+            ActivateSprite(red); // Красный
+        }
+
+        lastKeyPressTime = currentTime;
+         }
+        flag += 1;
+    }
+
+    /// <summary>
+    /// Активация определённого спрайта (зелёного, жёлтого или красного)
+    /// </summary>
+    void ActivateSprite(GameObject sprite)
+    {
+        sprite.SetActive(true);
+
+        // Сбрасываем цвет после заданного времени
+        if (resetCoroutine != null) StopCoroutine(resetCoroutine);
+        resetCoroutine = StartCoroutine(ResetAfterDelay(sprite));
+    }
+
+    /// <summary>
+    /// Сбрасывание цветного спрайта после задержки
+    /// </summary>
+    IEnumerator ResetAfterDelay(GameObject sprite)
+    {
+        yield return new WaitForSeconds(feedbackTime);
+        sprite.SetActive(false); // Выключаем цветной спрайт
+    }
+
+    /// <summary>
+    /// Выключить все спрайты, кроме синих
+    /// </summary>
+    void ResetAllSprites()
+    {
+        // Левые конечности
+        LeftYellowFoot.SetActive(false);
+        LeftRedFoot.SetActive(false);
+        LeftGreenFoot.SetActive(false);
+
+        LeftYellowHand.SetActive(false);
+        LeftRedHand.SetActive(false);
+        LeftGreenHand.SetActive(false);
+
+        // Правые конечности
+        RightYellowHand.SetActive(false);
+        RightRedHand.SetActive(false);
+        RightGreenHand.SetActive(false);
+
+        RightYellowFoot.SetActive(false);
+        RightRedFoot.SetActive(false);
+        RightGreenFoot.SetActive(false);
+    }
+
+    /// <summary>
+    /// Активировать все синие спрайты
+    /// </summary>
+    void ActivateAllBlue()
+    {
+        LeftBlueFoot.SetActive(true);
+        LeftBlueHand.SetActive(true);
+        RightBlueHand.SetActive(true);
+        RightBlueFoot.SetActive(true);
+    }
+}

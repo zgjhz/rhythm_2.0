@@ -141,6 +141,7 @@ public class MainMenuScript : MonoBehaviour
     // Метод для кнопки "Play"
     public void PlayMetronom()
     {
+        
         if (isPortOpened)
         {
             serialPort.Close();
@@ -435,6 +436,7 @@ public class MainMenuScript : MonoBehaviour
     private float LoadScore()
     {
         string username = PlayerPrefs.GetString("current_user");
+
         float m = PlayerPrefs.GetFloat(username + "Metronom_score", 0);
         float y = PlayerPrefs.GetFloat(username + "YourRhythm_score", 0);
         float f = PlayerPrefs.GetFloat(username + "FrogGame_score", 0);

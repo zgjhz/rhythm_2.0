@@ -122,16 +122,7 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
         yield return new WaitForSeconds(delay);
         ChangeLilyPadColor(defaultSprite);
     }
-
-
-    //private IEnumerator ResetLilyPadColorAfterDelay(float delay, SpriteRenderer renderer)
-    //{
-    //    yield return new WaitForSeconds(delay);
-    //    if (isGameStarted && renderer != null)
-    //    {
-    //        renderer.sprite = defaultSprite;
-    //    }
-    //}
+    
     private void ScaleLilyPads()
     {
         if (leftLilyPad != null && !isLeftLilyPadScaling)
