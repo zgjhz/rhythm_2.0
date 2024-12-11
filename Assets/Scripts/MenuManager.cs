@@ -224,16 +224,16 @@ public class MenuManager : MonoBehaviour
         SaveStatsToCSV(username, false);
         SceneManager.LoadScene("MainMenu");
     }
-
     public void SaveStatsToCSV(string username, bool start)
     {
         // Путь к файлу stats.csv
         string filePath = Path.Combine(Application.dataPath, "stats.csv");
+        string age = PlayerPrefs.GetString("current_user_age");
 
         // Создаем файл, если он не существует
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
+            File.WriteAllText(filePath, "Имя;Возраст;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
             Debug.Log("Файл stats.csv создан с заголовками.");
         }
 
@@ -243,7 +243,7 @@ public class MenuManager : MonoBehaviour
         // Проверяем, если файл пуст или содержит только пустую строку
         if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
         {
-            lines.Add("Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
+            lines.Add("Имя;Возраст;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
         }
 
         // Собираем данные для текущего пользователя
@@ -265,36 +265,38 @@ public class MenuManager : MonoBehaviour
             ? LoadScore()
             : 0;
 
-
         // Получаем текущую дату
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
         string userStats = "";
+
         // Формат строки для записи
-        switch (gameTag) {
+        switch (gameTag)
+        {
             case "Metronom":
-                userStats = $"{username};{metronomMaxStreak};-;-;-;-;-;{metronomPercentHits};-;-;-;-;-;{totalScore};{sessionDate}";
+                userStats = $"{username};{age};{metronomMaxStreak};-;-;-;-;-;{metronomPercentHits};-;-;-;-;-;{totalScore};{sessionDate}";
                 break;
             case "YourRhythm":
-                userStats = $"{username};-;{yourRhythmMaxStreak};-;-;-;-;-;{yourRhythmPercentHits};-;-;-;-;{totalScore};{sessionDate}";
+                userStats = $"{username};{age};-;{yourRhythmMaxStreak};-;-;-;-;-;{yourRhythmPercentHits};-;-;-;-;{totalScore};{sessionDate}";
                 break;
             case "FrogGame":
-                userStats = $"{username};-;-;{frogGameMaxStreak};-;-;-;-;-;{frogGamePercentHits};-;-;-;{totalScore};{sessionDate}";
+                userStats = $"{username};{age};-;-;{frogGameMaxStreak};-;-;-;-;{frogGamePercentHits};-;-;-;-;{totalScore};{sessionDate}";
                 break;
             case "Ritmamida":
-                userStats = $"{username};-;-;-;{ritmamidaMaxStreak};-;-;-;-;-;{ritmamidaPercentHits};-;-;{totalScore};{sessionDate}";
+                userStats = $"{username};{age};-;-;-;{ritmamidaMaxStreak};-;-;-;-;-;{ritmamidaPercentHits};-;-;{totalScore};{sessionDate}";
                 break;
             case "ArrowGame":
-                userStats = $"{username};-;-;-;-;{arrowGameMaxStreak};-;-;-;-;-;{arrowGamePercentHits};-;{totalScore};{sessionDate}";
+                userStats = $"{username};{age};-;-;-;-;{arrowGameMaxStreak};-;-;-;-;-;{arrowGamePercentHits};-;{totalScore};{sessionDate}";
                 break;
             case "Svetofor":
-                userStats = $"{username};-;-;-;-;-;{svetoforMaxStreak};-;-;-;-;-;{svetoforPercentHits};{totalScore};{sessionDate}";
+                userStats = $"{username};{age};-;-;-;-;-;{svetoforMaxStreak};-;-;-;-;-;{svetoforPercentHits};{totalScore};{sessionDate}";
                 break;
         }
+
         // Проверяем, есть ли пользователь уже в файле
         bool userExists = false;
 
-        for (int i = 1; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
+        for (int i = 2; i < lines.Count; i++) // Начинаем с 2, чтобы пропустить заголовок
         {
             if (lines[i].StartsWith(username + ";"))
             {
@@ -305,6 +307,7 @@ public class MenuManager : MonoBehaviour
                 break;
             }
         }
+
         if (start) userExists = false;
 
         // Если пользователь не найден, добавляем новую строку
@@ -318,6 +321,100 @@ public class MenuManager : MonoBehaviour
         File.WriteAllLines(filePath, lines.ToArray());
         Debug.Log("Данные сохранены в stats.csv");
     }
+
+    //public void SaveStatsToCSV(string username, bool start)
+    //{
+    //    // Путь к файлу stats.csv
+    //    string filePath = Path.Combine(Application.dataPath, "stats.csv");
+    //    string age = PlayerPrefs.GetString("current_user_age");
+    //    // Создаем файл, если он не су3ществует
+    //    if (!File.Exists(filePath))
+    //    {
+    //        File.WriteAllText(filePath, "Имя;Возраст;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
+    //        Debug.Log("Файл stats.csv создан с заголовками.");
+    //    }
+
+    //    // Читаем строки из файла
+    //    List<string> lines = new List<string>(File.ReadAllLines(filePath));
+
+    //    // Проверяем, если файл пуст или содержит только пустую строку
+    //    if (lines.Count == 0 || (lines.Count == 1 && string.IsNullOrWhiteSpace(lines[0])))
+    //    {
+    //        lines.Add("Имя;Возраст;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
+    //    }
+
+    //    // Собираем данные для текущего пользователя
+    //    int metronomMaxStreak = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_maxStreak", 0) : 0;
+    //    int yourRhythmMaxStreak = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_maxStreak", 0) : 0;
+    //    int frogGameMaxStreak = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_maxStreak", 0) : 0;
+    //    int ritmamidaMaxStreak = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_maxStreak", 0) : 0;
+    //    int arrowGameMaxStreak = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_maxStreak", 0) : 0;
+    //    int svetoforMaxStreak = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_maxStreak", 0) : 0;
+
+    //    int metronomPercentHits = (gameTag == "Metronom") ? PlayerPrefs.GetInt(username + "Metronom_PersentHits", 0) : 0;
+    //    int yourRhythmPercentHits = (gameTag == "YourRhythm") ? PlayerPrefs.GetInt(username + "YourRhythm_PersentHits", 0) : 0;
+    //    int frogGamePercentHits = (gameTag == "FrogJump") ? PlayerPrefs.GetInt(username + "FrogGame_PersentHits", 0) : 0;
+    //    int ritmamidaPercentHits = (gameTag == "Ritmamida") ? PlayerPrefs.GetInt(username + "Ritmamida_PersentHits", 0) : 0;
+    //    int arrowGamePercentHits = (gameTag == "ArrowGame") ? PlayerPrefs.GetInt(username + "ArrowGame_PersentHits", 0) : 0;
+    //    int svetoforPercentHits = (gameTag == "Svetofor") ? PlayerPrefs.GetInt(username + "Svetofor_PersentHits", 0) : 0;
+
+    //    float totalScore = (gameTag == "Metronom" || gameTag == "YourRhythm" || gameTag == "FrogJump" || gameTag == "Ritmamida" || gameTag == "ArrowGame" || gameTag == "Svetofor")
+    //        ? LoadScore()
+    //        : 0;
+
+
+    //    // Получаем текущую дату
+    //    string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+    //    string userStats = "";
+    //    // Формат строки для записи
+    //    switch (gameTag) {
+    //        case "Metronom":
+    //            userStats = $"{username};{age};{metronomMaxStreak};-;-;-;-;-;{metronomPercentHits};-;-;-;-;-;{totalScore};{sessionDate}";
+    //            break;
+    //        case "YourRhythm":
+    //            userStats = $"{username};{age};-;{yourRhythmMaxStreak};-;-;-;-;-;{yourRhythmPercentHits};-;-;-;-;{totalScore};{sessionDate}";
+    //            break;
+    //        case "FrogGame":
+    //            userStats = $"{username};-;-;{frogGameMaxStreak};-;-;-;-;-;{frogGamePercentHits};-;-;-;{totalScore};{sessionDate}";
+    //            break;
+    //        case "Ritmamida":
+    //            userStats = $"{username};-;-;-;{ritmamidaMaxStreak};-;-;-;-;-;{ritmamidaPercentHits};-;-;{totalScore};{sessionDate}";
+    //            break;
+    //        case "ArrowGame":
+    //            userStats = $"{username};-;-;-;-;{arrowGameMaxStreak};-;-;-;-;-;{arrowGamePercentHits};-;{totalScore};{sessionDate}";
+    //            break;
+    //        case "Svetofor":
+    //            userStats = $"{username};-;-;-;-;-;{svetoforMaxStreak};-;-;-;-;-;{svetoforPercentHits};{totalScore};{sessionDate}";
+    //            break;
+    //    }
+    //    // Проверяем, есть ли пользователь уже в файле
+    //    bool userExists = false;
+
+    //    for (int i = 2; i < lines.Count; i++) // Начинаем с 1, чтобы пропустить заголовок
+    //    {
+    //        if (lines[i].StartsWith(username + ";"))
+    //        {
+    //            // Если пользователь найден, обновляем его строку
+    //            lines[i] = userStats;
+    //            userExists = true;
+    //            Debug.Log($"Обновлены данные для пользователя: {username}");
+    //            break;
+    //        }
+    //    }
+    //    if (start) userExists = false;
+
+    //    // Если пользователь не найден, добавляем новую строку
+    //    if (!userExists)
+    //    {
+    //        lines.Add(userStats);
+    //        Debug.Log($"Добавлены данные для нового пользователя: {username}");
+    //    }
+
+    //    // Записываем обновленные данные обратно в файл
+    //    File.WriteAllLines(filePath, lines.ToArray());
+    //    Debug.Log("Данные сохранены в stats.csv");
+    //}
 
     private float LoadScore()
     {

@@ -415,6 +415,7 @@ public class MainMenuScript : MonoBehaviour
     public void ShowStats()
     {
         string username = PlayerPrefs.GetString("current_user");
+        string age = PlayerPrefs.GetString("current_user_age");
         HideAllPreviews();
         statsWindow.SetActive(true);
         ShowDarkenBackground();
