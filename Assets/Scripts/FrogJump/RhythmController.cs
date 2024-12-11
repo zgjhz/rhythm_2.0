@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RhythmController : MonoBehaviour
+public class RhythmController : MonoBehaviour, ISpacePressHandler
 {
     private float rhythmInterval = 1.0f;
     private float nextBeatTime;
@@ -29,7 +29,7 @@ public class RhythmController : MonoBehaviour
 
     private Coroutine leftResetCoroutine = null;
     private Coroutine rightResetCoroutine = null;
-    private bool isToLeft;
+    public bool isToLeft;
     private bool isLeftLilyPadScaling = false; // Флаг для масштабирования левой кувшинки
     private bool isRightLilyPadScaling = false;
 
@@ -56,19 +56,11 @@ public class RhythmController : MonoBehaviour
             isGameStarted = false; // Игра приостановлена
             isWaitingForFirstInput = true; // После паузы ждем первого пробела
             frogJump.ResetToStart();
-            return;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isWaitingForFirstInput) // Если ждем первого пробела
-            {
-                StartGameAfterPause();
-            }
-            else
-            {
-                OnSpacePressed(); // Обычная проверка попадания в ритм
-            }
+            OnSpacePressed();
         }
 
         UpdateRhythmInterval();
@@ -130,15 +122,7 @@ public class RhythmController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         ChangeLilyPadColor(defaultSprite);
     }
-
-    //private IEnumerator ResetLilyPadColorAfterDelay(float delay, SpriteRenderer renderer)
-    //{
-    //    yield return new WaitForSeconds(delay);
-    //    if (isGameStarted && renderer != null)
-    //    {
-    //        renderer.sprite = defaultSprite;
-    //    }
-    //}
+    
     private void ScaleLilyPads()
     {
         if (leftLilyPad != null && !isLeftLilyPadScaling)
@@ -208,15 +192,24 @@ public class RhythmController : MonoBehaviour
         }
     }
 
-    private void OnSpacePressed()
+    public void OnSpacePressed()
     {
-        if (!isGameStarted)
+        
+        if (isWaitingForFirstInput) // Если ждем первого пробела
         {
-            StartGame();
+            StartGameAfterPause();
         }
         else
         {
-            CheckAccuracy();
+                
+            if (!isGameStarted)
+            {
+                StartGame();
+            }
+            else
+            {
+                CheckAccuracy();
+            }
         }
     }
 

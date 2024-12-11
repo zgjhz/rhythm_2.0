@@ -465,6 +465,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
   - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
+  serialPortReader: {fileID: 1715590506}
 --- !u!4 &161708136
 Transform:
   m_ObjectHideFlags: 0
@@ -1006,7 +1007,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 3
   m_WholeNumbers: 0
-  m_Value: 1.5
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1061,6 +1062,7 @@ MonoBehaviour:
   greenSprite: {fileID: 21300000, guid: b747e25c0264244eb922e27b9f0cd48b, type: 3}
   yellowSprite: {fileID: 21300000, guid: 04a7303ab05f1409b8901a2fa21bdd96, type: 3}
   redSprite: {fileID: 21300000, guid: 65411e32ddd044338860337cbbbbfaf4, type: 3}
+  isToLeft: 0
 --- !u!1 &936977211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,7 +1144,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 936977214}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1063003492}
+        m_TargetAssemblyTypeName: FrogJump, Assembly-CSharp
+        m_MethodName: ResetToStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &936977214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1395,37 +1409,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!1 &1096989146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1096989147}
-  m_Layer: 0
-  m_Name: SerialPortManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1096989147
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096989146}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 54.700336, y: -7.316603, z: -0.53446054}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1106282620
 GameObject:
   m_ObjectHideFlags: 0
@@ -2021,6 +2004,54 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.5, y: -3.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1715590505
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1715590507}
+  - component: {fileID: 1715590506}
+  m_Layer: 0
+  m_Name: SerialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1715590506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715590505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a4b90d46d96bca47b9b63ca4ef8f0e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baudRate: 38400
+  MainController: {fileID: 846420078}
+  gameTag: FrogGame
+  menuManager: {fileID: 161708135}
+--- !u!4 &1715590507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715590505}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 269.14603, y: -1.0100578, z: -10.564843}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2716,8 +2747,8 @@ SceneRoots:
   - {fileID: 416437644}
   - {fileID: 1571525855}
   - {fileID: 846420079}
-  - {fileID: 1096989147}
   - {fileID: 1660413628}
   - {fileID: 629775903}
   - {fileID: 1678340497}
   - {fileID: 2035676287}
+  - {fileID: 1715590507}
