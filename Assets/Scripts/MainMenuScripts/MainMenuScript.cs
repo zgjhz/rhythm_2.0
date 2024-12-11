@@ -265,6 +265,7 @@ public class MainMenuScript : MonoBehaviour
 
     // Добавляем метод Start() для скрытия панелей и затемнения при старте игры
     public TMP_InputField nameInputField;
+    public TMP_InputField ageInputField;
     //public EncodeRussian encodeRussian;
     private void Start()
     {
@@ -295,6 +296,9 @@ public class MainMenuScript : MonoBehaviour
         if (nameInputField.text.Length >= 2)
         {
             PlayerPrefs.SetString("current_user", nameInputField.text);
+            PlayerPrefs.SetString("current_user_age", ageInputField.text);
+            Debug.Log(PlayerPrefs.GetString("current_user_age"));
+
         }
         else {
             loginErrorPanel.SetActive(true);
