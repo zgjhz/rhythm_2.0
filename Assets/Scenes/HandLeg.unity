@@ -185,7 +185,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -443,7 +443,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -562,6 +562,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sliderObject: {fileID: 320052452}
+  currentHitPercentage: 0
+  totalHits: 0
+  successfulHits: 0
   menuManager: {fileID: 1313567618}
 --- !u!1 &388376977
 GameObject:
@@ -1107,7 +1110,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1362,7 +1365,12 @@ MonoBehaviour:
   RightYellowFoot: {fileID: 1663251531}
   RightRedFoot: {fileID: 1371515564}
   RightGreenFoot: {fileID: 844125073}
+  lastMetronomeTime: 0
+  flag: 0
   menuManager: {fileID: 1313567618}
+  lastKeyPressTime: 0
+  isFirstPress: 1
+  feedbackTime: 0.3
 --- !u!1 &814478187
 GameObject:
   m_ObjectHideFlags: 0
@@ -1781,7 +1789,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1987,7 +1995,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2071,7 +2079,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2545,7 +2553,6 @@ MonoBehaviour:
   interval: 1
   canClick: 1
   isPaused: 0
-  isLeft: 1
   score: 0
   currentStreak: 0
   maxStreak: 0
@@ -2554,8 +2561,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
   - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
   - {fileID: 8300000, guid: 29417752567174e4c88659b3d82363b0, type: 3}
-  spacePressCount: 0
-  serialPortReader: {fileID: 0}
 --- !u!4 &1313567619
 Transform:
   m_ObjectHideFlags: 0
@@ -2853,7 +2858,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3265,7 +3270,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3349,7 +3354,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.79, y: 4.55}
+  m_Size: {x: 2.5266666, y: 3.0333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

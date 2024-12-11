@@ -18,19 +18,19 @@ public class Switch : MonoBehaviour
     private float lastKeyPressTime;
     public MenuManager menuManager;
 
+    private float arrowActiveDuration = 0.3f; // Время, через которое стрелка гаснет
+
     void Start()
     {
         lastMetronomeTime = Time.time;
         lastKeyPressTime = Time.time;
 
-        // Отключаем все цветные стрелки
-        DeactivateAllArrows();
-
-        // Включаем изначально синие стрелки
+        // Постоянно включаем синие стрелки
         leftArrowBlue.SetActive(true);
         rightArrowBlue.SetActive(true);
 
-        
+        // Отключаем все остальные цветные стрелки
+        DeactivateColoredArrows();
     }
 
     void Update()
@@ -54,30 +54,34 @@ public class Switch : MonoBehaviour
     void ProcessKeyPress(float currentTime, bool isLeftArrow)
     {
         float keyPressDelta = currentTime - lastKeyPressTime;
-        float metronomeDelta = menuManager.interval;
-        float difference = keyPressDelta - metronomeDelta;
+        float difference = keyPressDelta - metronomeInterval;
 
         if (isLeftArrow) // Если нажата клавиша пробела, изменяем левую кнопку
         {
             if (difference > 0 && difference > 0.7f * metronomeInterval)
             {
                 ActivateArrow(leftArrowRed); // Левая красная
+                menuManager.ResetStreak();
             }
             else if (difference < 0 && Mathf.Abs(difference) > 0.7f * metronomeInterval)
             {
                 ActivateArrow(leftArrowRed); // Левая красная
+                menuManager.ResetStreak();
             }
-            else if (difference > 0 && difference >= 0.3f * metronomeInterval && difference <= 0.7f * metronomeInterval)
+            else if (difference > 0 && difference >= 0.15f * metronomeInterval && difference <= 0.7f * metronomeInterval)
             {
                 ActivateArrow(leftArrowYellow); // Левая желтая
+                menuManager.ResetStreak();
             }
-            else if (difference < 0 && Mathf.Abs(difference) >= 0.3f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
+            else if (difference < 0 && Mathf.Abs(difference) >= 0.15f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
             {
                 ActivateArrow(leftArrowYellow); // Левая желтая
+                menuManager.ResetStreak();
             }
             else
             {
                 ActivateArrow(leftArrowGreen); // Левая зеленая
+                menuManager.UpdateScore();
             }
         }
         else // Если нажата клавиша Enter, изменяем правую кнопку
@@ -85,22 +89,27 @@ public class Switch : MonoBehaviour
             if (difference > 0 && difference > 0.7f * metronomeInterval)
             {
                 ActivateArrow(rightArrowRed); // Правая красная
+                menuManager.ResetStreak();
             }
             else if (difference < 0 && Mathf.Abs(difference) > 0.7f * metronomeInterval)
             {
                 ActivateArrow(rightArrowRed); // Правая красная
+                menuManager.ResetStreak();
             }
-            else if (difference > 0 && difference >= 0.3f * metronomeInterval && difference <= 0.7f * metronomeInterval)
+            else if (difference > 0 && difference >= 0.15f * metronomeInterval && difference <= 0.7f * metronomeInterval)
             {
                 ActivateArrow(rightArrowYellow); // Правая желтая
+                menuManager.ResetStreak();
             }
-            else if (difference < 0 && Mathf.Abs(difference) >= 0.3f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
+            else if (difference < 0 && Mathf.Abs(difference) >= 0.15f * metronomeInterval && Mathf.Abs(difference) <= 0.7f * metronomeInterval)
             {
                 ActivateArrow(rightArrowYellow); // Правая желтая
+                menuManager.ResetStreak();
             }
             else
             {
                 ActivateArrow(rightArrowGreen); // Правая зеленая
+                menuManager.UpdateScore();
             }
         }
 
@@ -110,17 +119,24 @@ public class Switch : MonoBehaviour
 
     void ActivateArrow(GameObject arrow)
     {
-        // Выключаем все стрелки
-        DeactivateAllArrows();
+        // Выключаем все цветные стрелки
+        DeactivateColoredArrows();
 
         // Включаем только нужную
         arrow.SetActive(true);
+
+        // Автоматически выключаем стрелку через заданное время
+        StartCoroutine(DeactivateArrowAfterDelay(arrow));
     }
 
-    void DeactivateAllArrows()
+    IEnumerator DeactivateArrowAfterDelay(GameObject arrow)
     {
-        leftArrowBlue.SetActive(false);
-        rightArrowBlue.SetActive(false);
+        yield return new WaitForSeconds(arrowActiveDuration);
+        arrow.SetActive(false);
+    }
+
+    void DeactivateColoredArrows()
+    {
         leftArrowRed.SetActive(false);
         rightArrowRed.SetActive(false);
         leftArrowYellow.SetActive(false);
