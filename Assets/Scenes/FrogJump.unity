@@ -465,6 +465,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
   - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
+  spacePressCount: 0
   serialPortReader: {fileID: 1715590506}
 --- !u!4 &161708136
 Transform:
@@ -1807,7 +1808,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1566193728}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 161708135}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: ReturnToMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1566193728
 MonoBehaviour:
   m_ObjectHideFlags: 0

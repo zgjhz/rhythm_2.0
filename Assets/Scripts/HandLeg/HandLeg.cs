@@ -45,7 +45,15 @@ public class HandLeg : MonoBehaviour
             TrackMetronome();
         }
 
-        OnSpacePressed(flag);
+        if (Input.GetKey(KeyCode.Return))
+        {
+            OnSpacePressed(0);
+        }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            OnSpacePressed(1);
+        }
     }
 
     private void TrackMetronome()

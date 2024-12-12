@@ -64,7 +64,7 @@ public class SerialPortReader : MonoBehaviour
         {
             Debug.Log("Получено сообщение: " + message);
             script?.OnSpacePressed(); // Вызов метода через интерфейс
-            menuManager.OnSpacePressed();
+
         }
     }
 
