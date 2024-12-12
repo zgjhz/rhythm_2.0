@@ -110,7 +110,7 @@ public class MainMenuScript : MonoBehaviour
         {
             serialPort = new SerialPort(selectedPort, baudRate);
             serialPort.Open();
-            serialPort.ReadTimeout = 10000; // Установка таймаута чтения
+            serialPort.ReadTimeout = 1000; // Установка таймаута чтения
             Debug.Log("Успешное подключение к порту: " + selectedPort);
 
             // Отправка текстового сообщения после подключения
@@ -293,6 +293,7 @@ public class MainMenuScript : MonoBehaviour
         int toggleIndex = PlayerPrefs.GetInt("chosen_sound") - 1;
         audioToggles[toggleIndex].isOn = true;
         nameInputField.text = PlayerPrefs.GetString("current_user");
+        ageInputField.text = PlayerPrefs.GetString("current_user_age");
         //PlayerPrefs.SetString("current_user", "пользователь");
         //PlayerPrefs.Save();
         // Попытка подключения к COM-порту с обработкой ошибок
