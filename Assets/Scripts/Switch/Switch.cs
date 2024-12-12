@@ -37,30 +37,28 @@ public class Switch : MonoBehaviour
     {
         metronomeInterval = menuManager.interval;
 
-        // Левую стрелку управляет пробел
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Return))
         {
-            OnSpacePressed(2);
+            OnSpacePressed(0);
         }
 
-        // Правую стрелку управляет Enter
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKey(KeyCode.Space))
         {
-            OnSpacePressed(3); // false - правая стрелка
+            OnSpacePressed(1);
         }
     }
-    void OnSpacePressed(int Flag)
+    public void OnSpacePressed(int Flag)
     {
         ProcessKeyPress(Flag); // true - левая стрелка
     }
 
-    void ProcessKeyPress( int isLeftArrow)
+    void ProcessKeyPress(int isLeftArrow)
     {
         float currentTime = Time.time;
         float keyPressDelta = currentTime - lastKeyPressTime;
         float difference = keyPressDelta - metronomeInterval;
 
-        if (isLeftArrow==2) // Если нажата клавиша пробела, изменяем левую кнопку
+        if (isLeftArrow==2 || isLeftArrow == 0) // Если нажата клавиша пробела, изменяем левую кнопку
         {
             if (difference > 0 && difference > 0.7f * metronomeInterval)
             {

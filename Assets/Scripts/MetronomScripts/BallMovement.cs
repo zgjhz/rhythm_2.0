@@ -30,7 +30,7 @@ public class BallMovement : MonoBehaviour, ISpacePressHandler
         interval = menuManager.interval - 0.085f;
 
         // Обработка нажатий на пробел вынесена в отдельную функцию
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
             OnSpacePressed();
         }

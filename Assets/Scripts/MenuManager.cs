@@ -12,7 +12,6 @@ public class MenuManager : MonoBehaviour
     public Button openMenuButton;        // Кнопка открытия меню
     public Slider speedSlider;           // Ползунок для скорости мяча
     public Slider volumeSlider;          // Ползунок для громкости
-    public Button mainMenuButton;        // Кнопка выхода в главное меню
     public Button closeButton;           // Кнопка закрытия менюф
     public TMP_Text scoreText;           // Поле для отображения счёта
     public string gameTag = "";
@@ -46,7 +45,6 @@ public class MenuManager : MonoBehaviour
         // Подписываем кнопки на методы
         openMenuButton.onClick.AddListener(OpenMenu);
         closeButton.onClick.AddListener(CloseMenu);
-        mainMenuButton.onClick.AddListener(ReturnToMainMenu);
 
         // Устанавливаем начальные значения ползунков
         speedSlider.value = PlayerPrefs.GetFloat(gameTag + "_interval", 5f);

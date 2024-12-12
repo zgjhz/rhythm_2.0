@@ -43,7 +43,7 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
     void Update()
     {
         canClick = menuManager.canClick;
-        if (Input.GetKeyDown(KeyCode.Space) && isFirst == 0)
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) && isFirst == 0)
         {
             isFirst = 1;
         }
@@ -57,7 +57,7 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
                 //if (testTimer <= 0.02 && testTimer >= -0.02) {
                 //    movementSpeed = (movementRange + transform.position.x) / interval;
                 //}
-                if (Input.GetKeyDown(KeyCode.Space) && isFirst == 2)
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) && isFirst == 2)
                 {
                     OnSpacePressed();
                 }
