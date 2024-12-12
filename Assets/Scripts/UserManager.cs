@@ -64,9 +64,10 @@ public class UserManager : MonoBehaviour
         // ???? CSV-???? ?? ??????????, ??????? ??? ? ???????????
         if (!File.Exists(csvPath))
         {
-            File.WriteAllText(csvPath, "Имя;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
+            File.WriteAllText(csvPath, "Имя;Год рождения;Максимум подряд Метроном;Максимум подряд Твой ритм;Максимум подряд Ритмогушка;Максимум подряд Ритмамида;Максимум подряд Почтальон;Максимум подряд Светофор;Процент попаданий Меторном;Процент попаданий Твой ритм;Процент попаданий Ритмогушка;Процент попаданий Ритмамида;Процент попаданий Почтальон;Процент попаданий Светофор;Общий счет;Дата сессии\n");
         }
-        
+        string age = PlayerPrefs.GetString("current_user_age");
+
         List<string> csvLines = new List<string>(File.ReadAllLines(csvPath));
 
         bool userExists = csvLines.Exists(line => line.StartsWith(username + ","));
@@ -88,7 +89,7 @@ public class UserManager : MonoBehaviour
         float totalScore = LoadScore();
 
         string sessionDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        string userStats = $"{username};{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
+        string userStats = $"{username};{age},{metronomMaxStreak};{yourRhythmMaxStreak};{frogGameMaxStreak};{ritmamidaMaxStreak};{arrowGameMaxStreak};{svetoforMaxStreak};{metronomPercentHits};{yourRhythmPercentHits};{frogGamePercentHits};{ritmamidaPercentHits};{arrowGamePercentHits};{svetoforPercentHits};{totalScore};{sessionDate}";
         csvLines.Add(userStats);
 
         File.WriteAllLines(csvPath, csvLines.ToArray());

@@ -10,7 +10,7 @@ public class HandLeg : MonoBehaviour
     public GameObject RightBlueHand, RightYellowHand, RightRedHand, RightGreenHand;
     public GameObject RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot;
     private float lastMetronomeTime = 0f;
-    private float flag = 0;
+    private float flag1 = 0;
     // Ссылка на MenuManager
     public MenuManager menuManager;
 
@@ -20,7 +20,7 @@ public class HandLeg : MonoBehaviour
     // Время, на которое зеленый, желтый или красный спрайт будет активен
     private float feedbackTime = 0.3f;
     private Coroutine resetCoroutine;
-
+    int flag = 0;
     void Start()
     {
         lastKeyPressTime = Time.time;
@@ -35,7 +35,7 @@ public class HandLeg : MonoBehaviour
         // Если игра на паузе, ничего не делаем
         if (menuManager.isPaused)
         {
-            flag = 0;
+            flag1 = 0;
             return;
         }
 
@@ -45,11 +45,7 @@ public class HandLeg : MonoBehaviour
             TrackMetronome();
         }
 
-        // Проверяем нажатие клавиш и вызываем соответствующие функции
-        if (Input.GetKeyDown(KeyCode.Space)) OnSpacePressed();
-        if (Input.GetKeyDown(KeyCode.H)) OnHPressed();
-        if (Input.GetKeyDown(KeyCode.U)) OnUPressed();
-        if (Input.GetKeyDown(KeyCode.Y)) OnYPressed();
+        OnSpacePressed(flag);
     }
 
     private void TrackMetronome()
@@ -65,20 +61,28 @@ public class HandLeg : MonoBehaviour
         }
     }
 
+    void OnSpacePressed(int flag)
+    {
+
+        if (flag == 0) OnSpacePressed1();
+        if (flag == 1) OnAPressed();
+        if (flag == 2) OnEnterPressed();
+        if (flag == 3) OnUPressed();
+     }
+
     /// <summary>
     /// Логика нажатия клавиши Space (левая нога)
     /// </summary>
-    void OnSpacePressed()
+    void OnSpacePressed1()
     {
+
         OnFirstPress();
-        
         ProcessKeyPress(LeftBlueFoot, LeftYellowFoot, LeftRedFoot, LeftGreenFoot);
     }
-
     /// <summary>
     /// Логика нажатия клавиши H (левая рука)
     /// </summary>
-    void OnHPressed()
+    void OnEnterPressed()
     {
         OnFirstPress();
 
@@ -97,7 +101,7 @@ public class HandLeg : MonoBehaviour
     /// <summary>
     /// Логика нажатия клавиши Y (правая нога)
     /// </summary>
-    void OnYPressed()
+    void OnAPressed()
     {
         OnFirstPress();
         ProcessKeyPress(RightBlueFoot, RightYellowFoot, RightRedFoot, RightGreenFoot);
@@ -128,7 +132,7 @@ public class HandLeg : MonoBehaviour
 
         // Сбрасываем все спрайты перед активацией нужного
         ResetAllSprites();
-        if (flag > 0) { 
+        if (flag1 > 0) { 
         // Определяем нужный спрайт в зависимости от разницы
         if (difference < 0.35f * interval)
         {
@@ -146,7 +150,7 @@ public class HandLeg : MonoBehaviour
 
         lastKeyPressTime = currentTime;
          }
-        flag += 1;
+        flag1 += 1;
     }
 
     /// <summary>
