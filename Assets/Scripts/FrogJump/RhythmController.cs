@@ -58,7 +58,7 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
             frogJump.ResetToStart();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
             OnSpacePressed();
         }

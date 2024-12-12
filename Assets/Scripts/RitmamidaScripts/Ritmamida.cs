@@ -44,7 +44,7 @@ public class Ritmamida : MonoBehaviour, ISpacePressHandler
         }
 
         // Запуск по пробелу, если игра не на паузе
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space)|| Input.GetKeyDown(KeyCode.Return))
         {
             OnSpacePressed();
         }

@@ -37,7 +37,7 @@ public class Svetoforscript : MonoBehaviour
     void Update()
     {
         // Старт игры и метронома по нажатию пробела
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
             OnSpacePressed();
         }
