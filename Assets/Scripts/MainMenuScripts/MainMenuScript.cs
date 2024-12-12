@@ -107,23 +107,29 @@ public class MainMenuScript : MonoBehaviour
         }
 
         try
-        { 
+        {
             serialPort = new SerialPort(selectedPort, baudRate);
             serialPort.Open();
             serialPort.ReadTimeout = 10000; // Установка таймаута чтения
             Debug.Log("Успешное подключение к порту: " + selectedPort);
+
+            // Отправка текстового сообщения после подключения
+            string messageToSend = "400,100,1000,2,1,0,*";
+            serialPort.WriteLine(messageToSend);
+            Debug.Log("Сообщение отправлено: " + messageToSend);
+
             statusImage.sprite = connected;
             isPortOpened = true;
         }
         catch (System.IO.IOException e)
         {
-            Debug.LogError($"Ошибка подключения к порту {portName}: {e.Message}");
+            Debug.LogError($"Ошибка подключения к порту {selectedPort}: {e.Message}");
             serialPort = null; // Оставляем объект null, чтобы избежать вызовов в Update
             statusImage.sprite = disconnected;
         }
         catch (System.UnauthorizedAccessException e)
         {
-            Debug.LogError($"Доступ к порту {portName} запрещён: {e.Message}");
+            Debug.LogError($"Доступ к порту {selectedPort} запрещён: {e.Message}");
             serialPort = null;
             statusImage.sprite = disconnected;
         }
