@@ -4,8 +4,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ReturnToGrandMenu : MonoBehaviour
-{
+{    
+    public SerialPortReader serialPortReader;
     public void OnExitButtonClick() {
+        serialPortReader.OnApplicationQuitSuka();
         SceneManager.LoadScene("TestMenu");
     }
+
 }

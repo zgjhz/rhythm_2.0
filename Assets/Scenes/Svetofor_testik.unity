@@ -1301,7 +1301,6 @@ MonoBehaviour:
   openMenuButton: {fileID: 1572639869}
   speedSlider: {fileID: 1734716387}
   volumeSlider: {fileID: 1181746625}
-  mainMenuButton: {fileID: 1608078784}
   closeButton: {fileID: 956595713}
   scoreText: {fileID: 1222463193}
   gameTag: Svetofor
@@ -2720,6 +2719,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe9c93c1afbb34e4abd84b4611f63ec0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serialPortReader: {fileID: 1257968805}
 --- !u!1 &1665544937
 GameObject:
   m_ObjectHideFlags: 0

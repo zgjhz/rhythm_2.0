@@ -45,12 +45,12 @@ public class HandLeg : MonoBehaviour, ISpacePressHandler
             TrackMetronome();
         }
 
-        if (Input.GetKey(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             OnSpacePressed(0);
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             OnSpacePressed(1);
         }

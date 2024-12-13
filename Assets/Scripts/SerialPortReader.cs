@@ -63,6 +63,7 @@ public class SerialPortReader : MonoBehaviour
         while (messageQueue.TryDequeue(out string message))
         {
             Debug.Log("Получено сообщение: " + message);
+            menuManager.OnSpacePressed();
             if (message.Split(",")[0] != "0")
             {
                 script?.OnSpacePressed(2);

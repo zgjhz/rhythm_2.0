@@ -2536,7 +2536,6 @@ MonoBehaviour:
   openMenuButton: {fileID: 1067152586}
   speedSlider: {fileID: 954919542}
   volumeSlider: {fileID: 689349390}
-  mainMenuButton: {fileID: 2066376679}
   closeButton: {fileID: 1742741056}
   scoreText: {fileID: 388376979}
   gameTag: HandLeg
@@ -2549,10 +2548,10 @@ MonoBehaviour:
   currentStreak: 0
   maxStreak: 0
   metronomAudioClips:
-  - {fileID: 8300000, guid: 204ce58cd0155d748a9d0632f08c6994, type: 3}
+  - {fileID: 8300000, guid: 265e3a34e5c2c9a4a88c1e6375618035, type: 3}
+  - {fileID: 8300000, guid: 96c1cbf9ecc8fe34694472c528186266, type: 3}
+  - {fileID: 8300000, guid: 4d309da69c6bbcb418b5b954a08ec852, type: 3}
   - {fileID: 8300000, guid: 6d9c7912a805d402b9f6ba076b7251c1, type: 3}
-  - {fileID: 8300000, guid: 52f807391f223403b9ea8c462bdaa237, type: 3}
-  - {fileID: 8300000, guid: 29417752567174e4c88659b3d82363b0, type: 3}
   spacePressCount: 0
   serialPortReader: {fileID: 1683518827}
 --- !u!4 &1313567619
@@ -4122,6 +4121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe9c93c1afbb34e4abd84b4611f63ec0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serialPortReader: {fileID: 1683518827}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
