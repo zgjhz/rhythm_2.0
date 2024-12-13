@@ -6,7 +6,7 @@ using UnityEngine;
 // Интерфейс для обработки события "SpacePressed"
 public interface ISpacePressHandler
 {
-    void OnSpacePressed();
+    void OnSpacePressed(int flag);
 }
 
 public class SerialPortReader : MonoBehaviour
@@ -63,7 +63,13 @@ public class SerialPortReader : MonoBehaviour
         while (messageQueue.TryDequeue(out string message))
         {
             Debug.Log("Получено сообщение: " + message);
-            script?.OnSpacePressed(); // Вызов метода через интерфейс
+            if (message.Split(",")[0] != "0")
+            {
+                script?.OnSpacePressed(2);
+            }
+            else {
+                script?.OnSpacePressed(3);
+            }
 
         }
     }

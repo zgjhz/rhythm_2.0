@@ -59,7 +59,7 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
                 //}
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) && isFirst == 2)
                 {
-                    OnSpacePressed();
+                    OnSpacePressed(0);
                 }
                 isFirst = 2;
             }
@@ -74,7 +74,7 @@ public class ArrowController : MonoBehaviour, ISpacePressHandler
         }
     }
 
-    public void OnSpacePressed()
+    public void OnSpacePressed(int flag)
     {
         if (isFirst == 0) {
             isFirst = 1;

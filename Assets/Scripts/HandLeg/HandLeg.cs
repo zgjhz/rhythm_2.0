@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HandLeg : MonoBehaviour
+public class HandLeg : MonoBehaviour, ISpacePressHandler
 {
     // Ссылки на объекты
     public GameObject LeftBlueFoot, LeftYellowFoot, LeftRedFoot, LeftGreenFoot;
@@ -69,7 +69,7 @@ public class HandLeg : MonoBehaviour
         }
     }
 
-    void OnSpacePressed(int flag)
+    public void OnSpacePressed(int flag)
     {
 
         if (flag == 0) OnSpacePressed1();

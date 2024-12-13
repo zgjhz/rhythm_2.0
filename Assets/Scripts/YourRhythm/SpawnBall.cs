@@ -43,9 +43,9 @@ public class SpawnBall : MonoBehaviour, ISpacePressHandler
         {
             lastSoundTime = Time.time - startTime;
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            OnSpacePressed();
+            OnSpacePressed(0);
         }
     }
 
@@ -70,7 +70,7 @@ public class SpawnBall : MonoBehaviour, ISpacePressHandler
         return flag;
     }
 
-    public void OnSpacePressed()
+    public void OnSpacePressed(int flag)
     {
         if (canClick)
         {

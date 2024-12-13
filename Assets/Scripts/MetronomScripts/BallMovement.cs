@@ -32,7 +32,7 @@ public class BallMovement : MonoBehaviour, ISpacePressHandler
         // Обработка нажатий на пробел вынесена в отдельную функцию
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            OnSpacePressed();
+            OnSpacePressed(0);
         }
 
         // Если мяч готов к движению и игра не на паузе
@@ -52,7 +52,7 @@ public class BallMovement : MonoBehaviour, ISpacePressHandler
         }
     }
 
-    public void OnSpacePressed()
+    public void OnSpacePressed(int flag)
     {
         if (isPaused)
         {

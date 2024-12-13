@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Svetoforscript : MonoBehaviour
+public class Svetoforscript : MonoBehaviour, ISpacePressHandler
 {
     public GameObject greenSprite;
     public GameObject leftRedSprite;
@@ -39,7 +39,7 @@ public class Svetoforscript : MonoBehaviour
         // Старт игры и метронома по нажатию пробела
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            OnSpacePressed();
+            OnSpacePressed(0);
         }
 
         if (isGameStarted)
@@ -59,7 +59,7 @@ public class Svetoforscript : MonoBehaviour
             Debug.Log("Metronome sound detected! Time: " + lastMetronomeTime);
         }
     }
-    void OnSpacePressed()
+    public void OnSpacePressed(int flag)
     {
         // Проверяем, началась ли игра
         if (!isGameStarted)

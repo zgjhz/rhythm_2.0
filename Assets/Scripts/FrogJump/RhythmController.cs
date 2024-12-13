@@ -60,7 +60,7 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            OnSpacePressed();
+            OnSpacePressed(0);
         }
 
         UpdateRhythmInterval();
@@ -192,7 +192,7 @@ public class RhythmController : MonoBehaviour, ISpacePressHandler
         }
     }
 
-    public void OnSpacePressed()
+    public void OnSpacePressed(int flag)
     {
         
         if (isWaitingForFirstInput) // Если ждем первого пробела

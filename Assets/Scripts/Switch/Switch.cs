@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Switch : MonoBehaviour
+public class Switch : MonoBehaviour, ISpacePressHandler
 {
     public GameObject leftArrowBlue;
     public GameObject rightArrowBlue;
